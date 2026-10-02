@@ -14,11 +14,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StepCard } from "@/components/ui/step-card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 
 // ─── Types & Helper ──────────────────────────────────────────────────────────
 
 type Point = { id: number; x: number; y: number };
+
+export type FlavorCorrelationData = {
+  positiveTitle: string;
+  negativeTitle: string;
+  seriesList: Series[];
+};
 
 type Series = {
   id: string;
@@ -62,125 +68,121 @@ const SERIES_COLORS = [
 ];
 
 export function FlavorCorrelationSection({
-  isStepCompleted, isNa, onToggleStep, onToggleNa, title = "Correlación"
+  data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, onToggleNa, title = "Correlación"
 }: {
+  data?: FlavorCorrelationData | null;
+  onChange?: (data: FlavorCorrelationData) => void;
+  onForceSave?: () => void;
+  removeNode?: React.ReactNode;
   isStepCompleted?: boolean;
   isNa?: boolean | undefined;
   onToggleStep?: () => void;
   onToggleNa?: (() => void) | undefined;
   title?: string;
 }) {
-  const [positiveTitle, setPositiveTitle] = useState(
-    "SENSORY (GLOBAL PANEL) VS % OF TASTERS WHO IDENTIFY THE POSITIVE ATTRIBUTES",
-  );
-  const [negativeTitle, setNegativeTitle] = useState(
-    "SENSORY (GLOBAL PANEL) VS % OF TASTERS WHO IDENTIFY THE NEGATIVE ATTRIBUTES",
-  );
+  const defaultData: FlavorCorrelationData = {
+    positiveTitle: "SENSORY (GLOBAL PANEL) VS % OF TASTERS WHO IDENTIFY THE POSITIVE ATTRIBUTES",
+    negativeTitle: "SENSORY (GLOBAL PANEL) VS % OF TASTERS WHO IDENTIFY THE NEGATIVE ATTRIBUTES",
+    seriesList: [
+      {
+        id: "1",
+        name: "Clean-End-Finish",
+        type: "positive",
+        fill: "#000",
+        stroke: "#f1c40f",
+        points: [
+          { id: 1, x: 30, y: 6.3 },
+          { id: 2, x: 8, y: 6.1 },
+          { id: 3, x: 10, y: 6.2 },
+          { id: 4, x: 70, y: 7.7 },
+          { id: 5, x: 85, y: 7.1 },
+        ],
+      },
+      {
+        id: "2",
+        name: "Esters",
+        type: "positive",
+        fill: "#f1c40f",
+        stroke: "#000",
+        points: [
+          { id: 6, x: 10, y: 6.2 },
+          { id: 7, x: 2, y: 6.1 },
+          { id: 8, x: 5, y: 6.1 },
+          { id: 9, x: 30, y: 7.2 },
+          { id: 10, x: 55, y: 7.7 },
+        ],
+      },
+      { id: "pos3", name: "Positivo 3", type: "positive", fill: "#3498db", stroke: "#2980b9", points: [] },
+      { id: "pos4", name: "Positivo 4", type: "positive", fill: "#e74c3c", stroke: "#c0392b", points: [] },
+      {
+        id: "3",
+        name: "Linger-Bitter",
+        type: "negative",
+        fill: "#4a2e00",
+        stroke: "#000",
+        points: [
+          { id: 11, x: 30, y: 7.8 },
+          { id: 12, x: 50, y: 7.1 },
+          { id: 13, x: 60, y: 6.4 },
+          { id: 14, x: 135, y: 6.1 },
+        ],
+      },
+      {
+        id: "4",
+        name: "Smokey-Phenolic",
+        type: "negative",
+        fill: "#f1c40f",
+        stroke: "#000",
+        points: [
+          { id: 15, x: 2, y: 7.7 },
+          { id: 16, x: 25, y: 7.2 },
+          { id: 17, x: 65, y: 6.2 },
+          { id: 18, x: 70, y: 6.2 },
+        ],
+      },
+      {
+        id: "5",
+        name: "Astringent-Drying",
+        type: "negative",
+        fill: "#654321",
+        stroke: "#f1c40f",
+        points: [
+          { id: 19, x: 30, y: 6.2 },
+          { id: 20, x: 50, y: 6.2 },
+          { id: 21, x: 60, y: 6.3 },
+          { id: 22, x: 50, y: 7.2 },
+        ],
+      },
+      { id: "neg4", name: "Negativo 4", type: "negative", fill: "#9b59b6", stroke: "#8e44ad", points: [] },
+    ]
+  };
 
-  // Estado dinámico para todas las series, iniciado con 4 en cada lado
-  const [seriesList, setSeriesList] = useState<Series[]>([
-    // POSITIVOS
-    {
-      id: "1",
-      name: "Clean-End-Finish",
-      type: "positive",
-      fill: "#000",
-      stroke: "#f1c40f",
-      points: [
-        { id: 1, x: 30, y: 6.3 },
-        { id: 2, x: 8, y: 6.1 },
-        { id: 3, x: 10, y: 6.2 },
-        { id: 4, x: 70, y: 7.7 },
-        { id: 5, x: 85, y: 7.1 },
-      ],
-    },
-    {
-      id: "2",
-      name: "Esters",
-      type: "positive",
-      fill: "#f1c40f",
-      stroke: "#000",
-      points: [
-        { id: 6, x: 10, y: 6.2 },
-        { id: 7, x: 2, y: 6.1 },
-        { id: 8, x: 5, y: 6.1 },
-        { id: 9, x: 30, y: 7.2 },
-        { id: 10, x: 55, y: 7.7 },
-      ],
-    },
-    {
-      id: "pos3",
-      name: "Positivo 3",
-      type: "positive",
-      fill: "#3498db",
-      stroke: "#2980b9",
-      points: [],
-    },
-    {
-      id: "pos4",
-      name: "Positivo 4",
-      type: "positive",
-      fill: "#e74c3c",
-      stroke: "#c0392b",
-      points: [],
-    },
-    // NEGATIVOS
-    {
-      id: "3",
-      name: "Linger-Bitter",
-      type: "negative",
-      fill: "#4a2e00",
-      stroke: "#000",
-      points: [
-        { id: 11, x: 30, y: 7.8 },
-        { id: 12, x: 50, y: 7.1 },
-        { id: 13, x: 60, y: 6.4 },
-        { id: 14, x: 135, y: 6.1 },
-      ],
-    },
-    {
-      id: "4",
-      name: "Smokey-Phenolic",
-      type: "negative",
-      fill: "#f1c40f",
-      stroke: "#000",
-      points: [
-        { id: 15, x: 2, y: 7.7 },
-        { id: 16, x: 25, y: 7.2 },
-        { id: 17, x: 65, y: 6.2 },
-        { id: 18, x: 70, y: 6.2 },
-      ],
-    },
-    {
-      id: "5",
-      name: "Astringent-Drying",
-      type: "negative",
-      fill: "#654321",
-      stroke: "#f1c40f",
-      points: [
-        { id: 19, x: 30, y: 6.2 },
-        { id: 20, x: 50, y: 6.2 },
-        { id: 21, x: 60, y: 6.3 },
-        { id: 22, x: 50, y: 7.2 },
-      ],
-    },
-    {
-      id: "neg4",
-      name: "Negativo 4",
-      type: "negative",
-      fill: "#9b59b6",
-      stroke: "#8e44ad",
-      points: [],
-    },
-  ]);
+  const currentData = data || defaultData;
+  const positiveTitle = currentData?.positiveTitle || defaultData.positiveTitle;
+  const negativeTitle = currentData?.negativeTitle || defaultData.negativeTitle;
+  const rawSeriesList = currentData?.seriesList || defaultData.seriesList;
+  const seriesList = Array.isArray(rawSeriesList) ? rawSeriesList : Object.values(rawSeriesList || {});
+
+  const updateData = (newData) => {
+    onChange?.({ ...currentData, ...newData });
+  };
+  
+  const setPositiveTitle = (val) => updateData({ positiveTitle: val });
+  const setNegativeTitle = (val) => updateData({ negativeTitle: val });
+  const setSeriesList = (updater) => {
+    updateData({
+      seriesList: typeof updater === "function" ? updater(seriesList) : updater
+    });
+  };
+
 
   // ─── Funciones de actualización ──────────────────────────────────────────────
 
   const addSeries = (type: "positive" | "negative") => {
-    const currentCount = seriesList.filter((s) => s.type === type).length;
+    const currentCount = (seriesList || []).filter((s) => s.type === type).length;
     if (currentCount >= 4) return; // Límite de 4 correlaciones
 
-    const colorObj = SERIES_COLORS[seriesList.length % SERIES_COLORS.length] ?? {
+    const colorObj = SERIES_COLORS[(seriesList || []).length % SERIES_COLORS.length] ?? {
       fill: "#000000",
       stroke: "#f1c40f",
     };
@@ -210,20 +212,21 @@ export function FlavorCorrelationSection({
     setSeriesList((prev) =>
       prev.map((s) => {
         if (s.id === seriesId) {
-          return { ...s, points: [...s.points, { id: Date.now(), x: 0, y: 6.0 }] };
+          return { ...s, points: [...(Array.isArray(s.points) ? s.points : Object.values(s.points || {})), { id: Date.now() + Math.random(), x: 0, y: 6.0 }] };
         }
         return s;
       }),
     );
   };
 
-  const updatePoint = (seriesId: string, pointId: number, field: "x" | "y", value: number) => {
+  const updatePoint = (seriesId: string, pointIndex: number, field: "x" | "y", value: number) => {
     setSeriesList((prev) =>
       prev.map((s) => {
         if (s.id === seriesId) {
+          const arr = Array.isArray(s.points) ? s.points : Object.values(s.points || {});
           return {
             ...s,
-            points: s.points.map((p) => (p.id === pointId ? { ...p, [field]: value } : p)),
+            points: arr.map((p, i) => (i === pointIndex ? { ...p, [field]: value } : p)),
           };
         }
         return s;
@@ -231,19 +234,20 @@ export function FlavorCorrelationSection({
     );
   };
 
-  const removePoint = (seriesId: string, pointId: number) => {
+  const removePoint = (seriesId: string, pointIndex: number) => {
     setSeriesList((prev) =>
       prev.map((s) => {
         if (s.id === seriesId) {
-          return { ...s, points: s.points.filter((p) => p.id !== pointId) };
+          const arr = Array.isArray(s.points) ? s.points : Object.values(s.points || {});
+          return { ...s, points: arr.filter((_, i) => i !== pointIndex) };
         }
         return s;
       }),
     );
   };
 
-  const positiveSeries = seriesList.filter((s) => s.type === "positive");
-  const negativeSeries = seriesList.filter((s) => s.type === "negative");
+  const positiveSeries = (seriesList || []).filter((s) => s.type === "positive");
+  const negativeSeries = (seriesList || []).filter((s) => s.type === "negative");
 
   // ─── Componente Editor de Serie ──────────────────────────────────────────────
 
@@ -274,13 +278,13 @@ export function FlavorCorrelationSection({
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
-        {series.points.map((p) => (
-          <div key={p.id} className="flex items-center gap-1 bg-secondary/30 p-1 rounded border">
+        {(Array.isArray(series.points) ? series.points : Object.values(series.points || {})).map((p, index) => (
+          <div key={p.id || index} className="flex items-center gap-1 bg-secondary/30 p-1 rounded border">
             <span className="text-[10px] font-bold w-3 text-center">X</span>
             <Input
               type="number"
               value={p.x}
-              onChange={(e) => updatePoint(series.id, p.id, "x", Number(e.target.value))}
+              onChange={(e) => updatePoint(series.id, index, "x", Number(e.target.value))}
               className="h-6 text-xs px-1"
             />
             <span className="text-[10px] font-bold w-3 text-center ml-1">Y</span>
@@ -288,20 +292,20 @@ export function FlavorCorrelationSection({
               type="number"
               step="0.1"
               value={p.y}
-              onChange={(e) => updatePoint(series.id, p.id, "y", Number(e.target.value))}
+              onChange={(e) => updatePoint(series.id, index, "y", Number(e.target.value))}
               className="h-6 text-xs px-1"
             />
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => removePoint(series.id, p.id)}
+              onClick={() => removePoint(series.id, index)}
               className="h-6 w-6 text-destructive shrink-0"
             >
               <X className="size-3" />
             </Button>
           </div>
         ))}
-        {series.points.length === 0 && (
+        {(Array.isArray(series.points) ? series.points : Object.values(series.points || {})).length === 0 && (
           <p className="text-xs text-muted-foreground col-span-2">
             No hay puntos. Añade uno para comenzar.
           </p>
@@ -318,7 +322,9 @@ export function FlavorCorrelationSection({
       isNa={isNa}
       onToggleNa={onToggleNa}
       headerRight={
-        <Dialog>
+        <div className="flex items-center gap-2">
+          {removeNode}
+          <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="h-8">
               <FileText className="size-4 mr-2" /> Editar Puntos
@@ -369,8 +375,16 @@ export function FlavorCorrelationSection({
                 ))}
               </div>
             </div>
+            <div className="flex justify-end pt-4 border-t mt-4">
+              <DialogClose asChild>
+                <Button onClick={() => onForceSave?.()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
+                  Guardar y Cerrar
+                </Button>
+              </DialogClose>
+            </div>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       }
     >
       <div className="grid xl:grid-cols-2 gap-6">
@@ -437,7 +451,7 @@ export function FlavorCorrelationSection({
                   {s.name}
                 </span>
                 <span className="bg-amber-400 font-bold px-4 py-0.5 text-black mt-1 rounded-sm">
-                  {calculatePearson(s.points)}
+                  {calculatePearson(Array.isArray(s.points) ? s.points : Object.values(s.points || {}))}
                 </span>
               </div>
             ))}
@@ -512,7 +526,7 @@ export function FlavorCorrelationSection({
                   {s.name}
                 </span>
                 <span className="bg-amber-400 font-bold px-3 py-0.5 text-black mt-1 rounded-sm">
-                  {calculatePearson(s.points)}
+                  {calculatePearson(Array.isArray(s.points) ? s.points : Object.values(s.points || {}))}
                 </span>
               </div>
             ))}

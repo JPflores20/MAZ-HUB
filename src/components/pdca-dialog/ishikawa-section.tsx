@@ -227,7 +227,7 @@ export function IshikawaSection({
   return (
     <StepCard
       className="space-y-6"
-      title="PASO 14: FISHBONE"
+      title="PASO 16: FISHBONE"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}

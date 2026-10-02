@@ -125,7 +125,7 @@ export function GopThemesSection({
 
   return (
     <StepCard
-      title="PASO 14: GOPS"
+      title="PASO 15: GOPS"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}

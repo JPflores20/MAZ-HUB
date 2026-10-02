@@ -226,7 +226,7 @@ export function FiveWhysSection({
   return (
     <StepCard
       className="overflow-hidden"
-      title="PASO 15: 5 WHY'S"
+      title="PASO 17: 5 WHY'S"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}

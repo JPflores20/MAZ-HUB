@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { AREAS } from "@/data/pdca";
 import type { 
   DefinicionMeta, 
@@ -228,6 +229,9 @@ interface PhasePlanProps {
   on_conclusiones_causa_raiz_change?: ((items: any[]) => void) | undefined;
   has_flavor_correlation?: boolean | undefined;
   set_has_flavor_correlation?: ((val: boolean) => void) | undefined;
+  flavor_correlation_data?: any;
+  on_flavor_correlation_data_change?: (data: any) => void;
+  on_force_save?: () => void;
   gop_themes_data?: GopThemeItem[] | undefined;
   on_gop_themes_data_change?: ((data: GopThemeItem[]) => void) | undefined;
   rendimiento_actual_pis?: RendimientoActualPiItem[] | undefined;
@@ -305,6 +309,9 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
   on_conclusiones_causa_raiz_change,
   has_flavor_correlation,
   set_has_flavor_correlation,
+  flavor_correlation_data,
+  on_flavor_correlation_data_change,
+  on_force_save,
   gop_themes_data,
   on_gop_themes_data_change,
   rendimiento_actual_pis,
@@ -559,7 +566,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         </AccordionItem>
         <AccordionItem value="subfase-2" className="border rounded-md bg-white shadow-sm overflow-hidden">
           <AccordionTrigger className="px-4 py-3 bg-[#0078D7] text-white hover:bg-[#005ea6] hover:no-underline font-bold text-lg">
-            Subfase 2: Análisis (Pasos 8-17)
+            Subfase 2: Análisis (Pasos 8-18)
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
 
@@ -601,41 +608,45 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
       {/* Correlaciones (Análisis de Flavors) */}
       <div className="pt-2">
         {has_flavor_correlation ? (
-          <div className="relative group/flavor pt-4 border-t border-border/40 mt-4">
-            {is_admin_user && (
-              <div className="absolute top-2 right-2 opacity-0 group-hover/flavor:opacity-100 transition-opacity z-10 bg-background/80 backdrop-blur-sm p-1 rounded-md shadow-sm border border-border/50">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                      <X className="size-4 mr-2" /> Quitar Análisis
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80" align="end">
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-sm">¿QUITAR CORRELACIÓN DE FLAVORS?</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Esta acción ocultará la sección.
-                      </p>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => set_has_flavor_correlation?.(false)}
-                        >
-                          Sí, quitar
+          <div className="pt-4 border-t border-border/40 mt-4">
+              <FlavorCorrelationSection
+                onForceSave={on_force_save}
+                data={flavor_correlation_data}
+                onChange={on_flavor_correlation_data_change}
+                title="PASO 11: CORRELACIÓN"
+                isStepCompleted={completed_steps.has("step-flavor")}
+                onToggleStep={() => on_toggle_step("step-flavor")}
+                isNa={na_steps?.has("step-flavor")} onToggleNa={() => on_toggle_na?.("step-flavor")}
+                removeNode={
+                  is_admin_user ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                          <X className="size-4 mr-2" /> Quitar Análisis
                         </Button>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-            <FlavorCorrelationSection
-              isStepCompleted={completed_steps.has("step-flavor")}
-              onToggleStep={() => on_toggle_step("step-flavor")}
-              isNa={na_steps?.has("step-flavor")} onToggleNa={() => on_toggle_na?.("step-flavor")}
-            />
-          </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Quitar Análisis de Correlación?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción ocultará la sección de correlación de flavors.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={() => set_has_flavor_correlation?.(false)}
+                          >
+                            Sí, quitar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : null
+                }
+              />
+            </div>
         ) : (
           is_admin_user && (
             <div className="flex justify-center mt-4">
@@ -651,29 +662,29 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         )}
       </div>
 
-      {/* ── PASO 11: Especificaciones del Proceso ─────────────────────────── */}
+      {/* ── PASO 12: Especificaciones del Proceso ─────────────────────────── */}
       <ImageUploadSection
         image={especificacion_procesos_image || null}
         onChange={(img) => on_especificacion_procesos_image_change?.(img || undefined)}
-        title="PASO 11: ESPECIFICACIONES DEL PROCESO"
+        title="PASO 12: ESPECIFICACIONES DEL PROCESO"
         subtitle="Sube una imagen con las especificaciones"
         isStepCompleted={completed_steps.has("step-10")}
         onToggleStep={() => on_toggle_step("step-10")}
         isNa={na_steps?.has("step-10")} onToggleNa={() => on_toggle_na?.("step-10")}
       />
 
-      {/* ── PASO 12: Benchmark ───────────────────────── */}
+      {/* ── PASO 13: Benchmark ───────────────────────── */}
       <ImageUploadSection
         image={benchmark_image || null}
         onChange={(img) => on_benchmark_image_change?.(img || undefined)}
-        title="PASO 12: BENCHMARK"
+        title="PASO 13: BENCHMARK"
         subtitle="Sube una imagen representativa del Benchmark"
         isStepCompleted={completed_steps.has("step-11")}
         onToggleStep={() => on_toggle_step("step-11")}
         isNa={na_steps?.has("step-11")} onToggleNa={() => on_toggle_na?.("step-11")}
       />
 
-      {/* ── PASO 13: Rendimiento Actual del Proceso ────────────── */}
+      {/* ── PASO 14: Rendimiento Actual del Proceso ────────────── */}
       <RendimientoActualStep
         items={rendimiento_actual_pis || []}
         onChange={on_rendimiento_actual_pis_change!}
@@ -684,7 +695,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-13")} onToggleNa={() => on_toggle_na?.("step-13")}
       />
 
-      {/* ── PASO 14: GOP Themes ───────────────────────────────────────── */}
+      {/* ── PASO 15: GOP Themes ───────────────────────────────────────── */}
       <GopThemesSection
         data={gop_themes_data || []}
         onChange={on_gop_themes_data_change!}
@@ -693,7 +704,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-gops")} onToggleNa={() => on_toggle_na?.("step-gops")}
       />
 
-      {/* ── PASO 15: Fishbone ───────────────────────────────────────── */}
+      {/* ── PASO 16: Fishbone ───────────────────────────────────────── */}
       <IshikawaSection
         ishikawas={ishikawas || []}
         onChange={on_ishikawas_change!}
@@ -702,7 +713,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-14")} onToggleNa={() => on_toggle_na?.("step-14")}
       />
 
-      {/* ── PASO 16: 5 Why's ────────────────────────────────────────── */}
+      {/* ── PASO 17: 5 Why's ────────────────────────────────────────── */}
       <FiveWhysSection
         tables={five_whys_tables || []}
         onChange={on_five_whys_tables_change!}
@@ -710,9 +721,9 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         onToggleStep={() => on_toggle_step("step-15")}
         isNa={na_steps?.has("step-15")} onToggleNa={() => on_toggle_na?.("step-15")}
       />
-      {/* ── PASO 17: Causas Raíz Definidas ──────────── */}
+      {/* ── PASO 18: Causas Raíz Definidas ──────────── */}
       <ConclusionesCausaRaizTable
-        title="PASO 17: CAUSAS RAÍZ DEFINIDAS"
+        title="PASO 18: CAUSAS RAÍZ DEFINIDAS"
         items={conclusiones_causa_raiz || []}
         onChange={on_conclusiones_causa_raiz_change!}
         isStepCompleted={completed_steps.has("step-17")}

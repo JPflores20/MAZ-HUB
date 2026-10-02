@@ -116,7 +116,7 @@ export const RendimientoActualStep: React.FC<RendimientoActualStepProps> = ({
 
   return (
     <StepCard
-      title="PASO 13: PERFORMANCE ACTUAL DEL PROCESO ( ANÁLISIS DE PIS)"
+      title="PASO 14: PERFORMANCE ACTUAL DEL PROCESO ( ANÁLISIS DE PIS)"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
