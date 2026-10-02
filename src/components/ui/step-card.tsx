@@ -1,0 +1,201 @@
+import * as React from "react";
+import { ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface StepCardProps {
+  title: React.ReactNode;
+  isStepCompleted?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  children: React.ReactNode;
+  defaultExpanded?: boolean | undefined;
+  className?: string | undefined;
+  headerRight?: React.ReactNode;
+  isNa?: boolean | undefined;
+  onToggleNa?: (() => void) | undefined;
+  /** Explicit storage key for persisting collapsed state. */
+  storageId?: string | undefined;
+}
+
+export type { StepCardProps };
+
+export function StepCard({
+  title,
+  isStepCompleted, isNa, onToggleStep, onToggleNa,
+  children,
+  defaultExpanded = false, // Obliga a cerrarse por defecto
+  className,
+  headerRight,
+  storageId,
+}: StepCardProps) {
+  const storageKey = React.useMemo(() => {
+    if (storageId) {
+      return `pdca_step_${storageId}`;
+    }
+    if (typeof title === "string") {
+      return `pdca_step_${title.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase()}`;
+    }
+    return null;
+  }, [storageId, title]);
+
+  const [isExpanded, setIsExpanded] = React.useState(() => {
+    if (storageKey) {
+      const stored = localStorage.getItem(storageKey);
+      if (stored !== null) {
+        return stored === "true";
+      }
+    }
+    return defaultExpanded;
+  });
+
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+
+  // Prevenir scroll en body cuando está en pantalla completa
+  React.useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isFullscreen]);
+
+  const toggleExpanded = () => {
+    if (isFullscreen) return; // No permitir colapsar si está en fullscreen
+    const nextState = !isExpanded;
+    setIsExpanded(nextState);
+    if (storageKey) {
+      localStorage.setItem(storageKey, String(nextState));
+    }
+  };
+
+  const toggleFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isExpanded && !isFullscreen) {
+      setIsExpanded(true); // Auto expandir si estaba colapsado
+    }
+    setIsFullscreen(!isFullscreen);
+  };
+
+  return (
+    <div
+      className={cn(
+        "transition-all",
+        isFullscreen
+          ? "fixed inset-4 z-[100] bg-background border border-border shadow-2xl rounded-xl p-6 overflow-y-auto"
+          : cn("rounded-xl border border-border p-4 shadow-[var(--shadow-card)]", isNa ? "bg-muted/30" : "bg-card"),
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-between select-none group",
+          !isFullscreen && "cursor-pointer",
+        )}
+        onClick={toggleExpanded}
+      >
+        <div className="flex items-center gap-3">
+          {onToggleStep !== undefined && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleStep();
+              }}
+              className={`flex items-center justify-center size-6 rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                isStepCompleted
+                  ? "bg-emerald-500 border-emerald-500 text-white"
+                  : "border-muted-foreground/30 text-transparent hover:border-emerald-500/50 hover:bg-emerald-500/10"
+              }`}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 3L4.5 8.5L2 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
+          <h3
+            className={cn(
+              "font-display text-base font-semibold uppercase tracking-wide flex flex-wrap items-center gap-2",
+              isStepCompleted ? "text-emerald-600 dark:text-emerald-400" : "",
+            )}
+          >
+            <span>{title}</span>
+            {isStepCompleted && !isNa && (
+              <span className="text-xs font-normal normal-case px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-sans">
+                Completado
+              </span>
+            )}
+            {onToggleNa && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleNa();
+                }}
+                className={cn(
+                  "text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  isNa 
+                    ? "bg-slate-500 text-white border-slate-500" 
+                    : "bg-transparent text-slate-500 border-slate-500/50 hover:bg-slate-500/10"
+                )}
+                title={isNa ? "Reactivar paso" : "Marcar paso como No Aplica (N/A)"}
+              >
+                N/A
+              </button>
+            )}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {headerRight && <div onClick={(e) => e.stopPropagation()}>{headerRight}</div>}
+
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            title={isFullscreen ? "Minimizar" : "Expandir pantalla"}
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+
+          {!isFullscreen && (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary/80 transition-colors">
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 transition-transform duration-200",
+                  isExpanded ? "rotate-180" : "rotate-0",
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "grid transition-all duration-300 ease-in-out",
+          isExpanded ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0",
+          isNa && "opacity-50 pointer-events-none grayscale"
+        )}
+      >
+        <div
+          className={cn("overflow-hidden", isFullscreen && "overflow-visible h-full flex flex-col")}
+        >
+          <div className={cn("space-y-4", isFullscreen && "flex-1")}>{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
