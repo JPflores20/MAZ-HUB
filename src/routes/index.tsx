@@ -41,14 +41,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
-import { PhaseBadge } from "@/components/pdca-badge";
+import { PhaseBadge } from "@/components/pdca/pdca-badge";
 
-import { PdcaDialog } from "@/components/pdca-dialog";
+import { PdcaDialog } from "@/components/pdca/pdca-dialog-wrapper";
 import { deletePdcaFromFirestore, updatePdcaDeadline } from "@/services/pdca-service";
 import { phases, type Phase, type Pdca } from "@/data/pdca";
 import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
-import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca_dialog/pdca_dialog_header";
+import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
 
 function getComputedProgress(p: Pdca): number {
   if (!p.completedSteps) return p.progreso || 0;
@@ -261,7 +261,7 @@ function MisPdcas() {
       </header>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {phases.map((phase) => {
+        {phases.filter((phase) => phase !== "Resumen").map((phase) => {
           const borderColor: Record<string, string> = {
             Plan: "border-t-phase-plan",
             Do: "border-t-phase-do",

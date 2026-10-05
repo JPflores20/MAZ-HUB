@@ -159,7 +159,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                 </TableRow>
                 <TableRow>
                   <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-                    ¿Este PDCA/ITF mejoró los PI?
+                    ¿Este pdca/ITF mejoró los PI?
                   </TableCell>
                   <TableCell className="p-0 border-r border-border">
                     <textarea
@@ -181,7 +181,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                 </TableRow>
                 <TableRow>
                   <TableCell rowSpan={3} className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-                    ¿Este PDCA/ITF mejoró los KPI(s)?
+                    ¿Este pdca/ITF mejoró los KPI(s)?
                   </TableCell>
                   <TableCell rowSpan={3} className="p-0 border-r border-border">
                     <textarea

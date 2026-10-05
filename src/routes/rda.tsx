@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RdaDialog } from "@/components/rda_dialog/RdaDialog";
+import { RdaDialog } from "@/components/RDA/RdaDialog";
 import { subscribeToRdas, createRda, updateRda, deleteRda } from "@/services/rda-service";
 import { Rda, defaultRda } from "@/data/rda";
 

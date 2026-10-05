@@ -80,7 +80,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { PhaseBadge } from "@/components/pdca-badge";
+import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import {
   phases,
   DEFAULT_TARGET_VS_ACTUAL,
@@ -102,7 +102,7 @@ import {
   PdcaGoalDefinition,
   PdcaParticipants,
   DEFAULT_DEFINICION_META,
-} from "@/components/pdca-goal-definition";
+} from "@/components/pdca/1.PLAN/pdca-goal-definition";
 import { KpiTreeInteractive } from "../../kpi-tree";
 import { ActionKanban } from "../../action-kanban";
 // Removed firestore imports

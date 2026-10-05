@@ -52,7 +52,7 @@ export const AnalisisRiesgosProcesoTable: React.FC<AnalisisRiesgosProcesoTablePr
     <div className="space-y-4">
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
-          <li>Identificar todos los posibles riesgos asociados a los cambios permanentes realizados como resultado del PDCA/ITF y luego llenar en el cuadro la columna que corresponde a esa informaciÃ³n.</li>
+          <li>Identificar todos los posibles riesgos asociados a los cambios permanentes realizados como resultado del pdca/ITF y luego llenar en el cuadro la columna que corresponde a esa informaciÃ³n.</li>
           <li>Aplicar todos los procesos de gestiÃ³n del cambio necesarios en funciÃ³n de los riesgos. Utilice la herramienta MOC en el Portal Global de VPO para ayudar en este proceso.</li>
         </ol>
       </StepInstructions>

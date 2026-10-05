@@ -17,10 +17,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { PhaseBadge } from "@/components/pdca-badge";
+import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import { usePdcas } from "@/context/pdca-context";
 import { useAuth } from "@/context/auth-context";
-import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca_dialog/pdca_dialog_header";
+import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
 import { type Pdca } from "@/data/pdca";
 
 function getRdaComputedProgress(r: Rda): number {

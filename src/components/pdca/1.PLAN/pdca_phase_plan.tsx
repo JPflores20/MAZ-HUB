@@ -1,13 +1,13 @@
 import React, { useRef } from "react";
 import { Bold, Italic, List, ListOrdered, Plus, X } from "lucide-react";
-import { PdcaGoalDefinition, PdcaParticipants } from "@/components/pdca-goal-definition";
+import { PdcaGoalDefinition, PdcaParticipants } from "@/components/pdca/1.PLAN/pdca-goal-definition";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../step-instructions";
 import { TeamMembersInput } from "../team-members-input";
 import { VpoCheckpointTable } from "./vpo-checkpoint-table";
 import { TimeSeriesYTD } from "./time-series-ytd";
 import { ImageUploadSection, MultiImageUploadSection, ALL_ACCEPT_STRING } from "../image-upload-section";
-import { ParetoSection } from "@/components/pdca-dialog/pareto-section";
+import { ParetoSection } from "@/components/pdca/1.PLAN/pareto-section";
 import { IshikawaSection } from "./ishikawa-section";
 import { FiveWhysSection } from "./five-whys-section";
 import { FlavorCorrelationSection } from "./flavor-correlation-section";

@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft, Check, UploadCloud, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PhaseBadge } from "@/components/pdca-badge";
+import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import { cn } from "@/lib/utils";
 import { differenceInDays, startOfDay } from "date-fns";
 import type { Phase } from "@/data/pdca";

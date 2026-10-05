@@ -1,7 +1,7 @@
-ï»¿/**
+/**
  * pareto_import_dialog.tsx
  * Modal para importar datos desde Excel (copiar y pegar).
- * Responsabilidad Ãºnica: captura y envÃ­o del texto pegado.
+ * Responsabilidad única: captura y envío del texto pegado.
  */
 import { useState } from "react";
 import {
@@ -40,8 +40,8 @@ export function ParetoImportDialog({
         <DialogHeader>
           <DialogTitle>Importar Datos (Copiar y Pegar desde Excel)</DialogTitle>
           <DialogDescription>
-            Copia dos columnas de tu Excel (CategorÃ­a y Frecuencia/Costo) y pÃ©galas aquÃ­. Los datos
-            se agruparÃ¡n automÃ¡ticamente por categorÃ­a. Soporta miles de filas.
+            Copia dos columnas de tu Excel (Categoría y Frecuencia/Costo) y pégalas aquí. Los datos
+            se agruparán automáticamente por categoría. Soporta miles de filas.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 pt-4">

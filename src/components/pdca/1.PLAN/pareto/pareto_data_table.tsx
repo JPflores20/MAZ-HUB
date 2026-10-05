@@ -1,7 +1,7 @@
-Ôªø/**
+/**
  * pareto_data_table.tsx
  * Tabla editable de items del Pareto con porcentajes calculados.
- * Responsabilidad √∫nica: renderizar y editar la tabla de datos.
+ * Responsabilidad ˙nica: renderizar y editar la tabla de datos.
  */
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function ParetoDataTable({
       <Table className="text-xs">
         <TableHeader className="bg-secondary/40">
           <TableRow>
-            <TableHead className="py-2 px-3">√ÅREA / CATEGOR√çA</TableHead>
+            <TableHead className="py-2 px-3">¡REA / CATEGORÕA</TableHead>
             <TableHead className="py-2 px-3 w-24">VALOR (GAP)</TableHead>
             <TableHead className="py-2 px-3 w-20">% IND.</TableHead>
             <TableHead className="py-2 px-3 w-20">% ACUM.</TableHead>

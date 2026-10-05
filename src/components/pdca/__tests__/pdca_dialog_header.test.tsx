@@ -38,7 +38,7 @@ describe("PdcaDialogHeader", () => {
     );
 
     expect(screen.getByText("Cambios pendientes")).toBeDefined();
-    const save_button = screen.getByRole("button", { name: /Guardar PDCA/i });
+    const save_button = screen.getByRole("button", { name: /Guardar pdca/i });
     fireEvent.click(save_button);
 
     expect(handle_save).toHaveBeenCalledTimes(1);

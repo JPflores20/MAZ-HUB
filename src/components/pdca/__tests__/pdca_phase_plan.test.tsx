@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PdcaPhasePlan } from "../1.PLAN/pdca_phase_plan";
-import { DEFAULT_DEFINICION_META } from "@/components/pdca-goal-definition";
+import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/pdca-goal-definition";
 import { DEFAULT_PARTICIPANTES, DEFAULT_VPO_CHECKPOINTS } from "@/data/pdca";
 
 describe("PdcaPhasePlan", () => {

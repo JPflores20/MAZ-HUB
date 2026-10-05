@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import type { Rda } from "@/data/rda";
-import { IshikawaSection } from "../PDCA/1.PLAN/ishikawa-section";
-import { FiveWhysSection } from "../PDCA/1.PLAN/five-whys-section";
+import { IshikawaSection } from "../pdca/1.PLAN/ishikawa-section";
+import { FiveWhysSection } from "../pdca/1.PLAN/five-whys-section";
 import { RdaContextForm } from "./RdaContextForm";
 import { RdaValidationTable } from "./RdaValidationTable";
 import { RdaPreventionTable } from "./RdaPreventionTable";

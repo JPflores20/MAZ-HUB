@@ -32,7 +32,7 @@ describe("PdcaDialogFooter", () => {
       />,
     );
 
-    const finish_button = screen.getByRole("button", { name: /Finalizar PDCA/i });
+    const finish_button = screen.getByRole("button", { name: /Finalizar pdca/i });
     expect(finish_button).toBeDefined();
 
     fireEvent.click(finish_button);

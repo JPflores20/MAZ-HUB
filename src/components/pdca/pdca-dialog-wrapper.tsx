@@ -1,7 +1,7 @@
-﻿/**
+/**
  * Barrel retrocompatible para PdcaDialog.
  * Re-exporta el componente orquestador refactorizado con arquitectura limpia.
- * Archivo conciso y modular (< 20 líneas).
+ * Archivo conciso y modular (< 20 l�neas).
  */
 
 import { PdcaDialog } from "./pdca_dialog";

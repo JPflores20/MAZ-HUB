@@ -2,8 +2,8 @@ import React from "react";
 import { StepCard } from "@/components/ui/step-card";
 import { TimeSeriesYTD } from "../1.PLAN/time-series-ytd";
 import { ImageUploadSection } from "../image-upload-section";
-import { ParetoSection } from "@/components/pdca-dialog/pareto-section";
-import { FlavorCorrelationSection } from "@/components/pdca-dialog/flavor-correlation-section";
+import { ParetoSection } from "@/components/pdca/1.PLAN/pareto-section";
+import { FlavorCorrelationSection } from "@/components/pdca/1.PLAN/flavor-correlation-section";
 import { PruebasEjecutadasTable } from "../2.DO/pruebas-ejecutadas-table";
 import { NuevoPerformanceTable } from "./nuevo-performance-table";
 

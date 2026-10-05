@@ -124,12 +124,12 @@ export const RendimientoActualStep: React.FC<RendimientoActualStepProps> = ({
     >
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
-          <li>Determinar las PI que serán analizadas. Idealmente, estos serán asignados a los Operadores o Técnicos en las estaciones de trabajo de los Operadores relevantes. En algunos casos, puede tener sentido que el equipo PDCA/ITF rastree un PI en particular.</li>
+          <li>Determinar las PI que serán analizadas. Idealmente, estos serán asignados a los Operadores o Técnicos en las estaciones de trabajo de los Operadores relevantes. En algunos casos, puede tener sentido que el equipo pdca/ITF rastree un PI en particular.</li>
           <li>Enumere los PIs a ser rastreados.</li>
           <li>Prepare los gráficos SIC necesarios (ya sea en versión digital o en papel/pizarra).</li>
           <li>Incluya planes de reacción para cualquier PI que deban rastrear los operadores/técnicos. Comunicar los SIC a las estaciones de trabajo impactadas, explicando por qué el equipo necesita la ayuda del Operador/Técnico para rastrear el PI, cómo debe llenarse el SIC, asegurándose de que se entienda el Plan de Reacción, cualquier información adicional que pueda ser útil, etc.</li>
           <li>Incluya fotos o capturas de pantalla de cualquier Carta SIC del Operador/Técnico en el espacio de abajo.</li>
-          <li>Si el equipo del PDCA/ITF va a realizar el seguimiento de un SIC, utilice cualquier herramienta gráfica apropiada disponible aquí en Excel y el espacio en esta pestaña para el gráfico, así como los datos en bruto.</li>
+          <li>Si el equipo del pdca/ITF va a realizar el seguimiento de un SIC, utilice cualquier herramienta gráfica apropiada disponible aquí en Excel y el espacio en esta pestaña para el gráfico, así como los datos en bruto.</li>
         </ol>
       </StepInstructions>
 

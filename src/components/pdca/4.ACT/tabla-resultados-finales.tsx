@@ -64,7 +64,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
               </tr>
               <tr>
                 <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000] border-b">
-                  ¿Este PDCA/ITF mejoró los PI?
+                  ¿Este pdca/ITF mejoró los PI?
                 </td>
                 <td rowSpan={2} className="p-0 border-b border-[#cc0000]">
                   <Select
@@ -104,7 +104,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
               </tr>
               <tr>
                 <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000]">
-                  ¿Este PDCA/ITF mejoró los KPI(s)?
+                  ¿Este pdca/ITF mejoró los KPI(s)?
                 </td>
                 <td rowSpan={2} className="p-0">
                   <Select
