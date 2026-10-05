@@ -54,26 +54,22 @@ export const DEFAULT_TARGET_VS_ACTUAL: {
   target: number;
   actual: number | null;
 }[] = [
-  { mes: "Ene", target: 2.1, actual: 2.59 },
-  { mes: "Feb", target: 2.1, actual: 2.58 },
-  { mes: "Mar", target: 2.1, actual: 2.58 },
-  { mes: "Abr", target: 2.1, actual: 2.57 },
-  { mes: "May", target: 2.1, actual: 2.47 },
-  { mes: "Jun", target: 2.1, actual: null },
-  { mes: "Jul", target: 2.1, actual: null },
-  { mes: "Ago", target: 2.1, actual: null },
-  { mes: "Sep", target: 2.1, actual: null },
-  { mes: "Oct", target: 2.1, actual: null },
-  { mes: "Nov", target: 2.1, actual: null },
-  { mes: "Dic", target: 2.1, actual: null },
+  { mes: "Ene", target: 0, actual: null },
+  { mes: "Feb", target: 0, actual: null },
+  { mes: "Mar", target: 0, actual: null },
+  { mes: "Abr", target: 0, actual: null },
+  { mes: "May", target: 0, actual: null },
+  { mes: "Jun", target: 0, actual: null },
+  { mes: "Jul", target: 0, actual: null },
+  { mes: "Ago", target: 0, actual: null },
+  { mes: "Sep", target: 0, actual: null },
+  { mes: "Oct", target: 0, actual: null },
+  { mes: "Nov", target: 0, actual: null },
+  { mes: "Dic", target: 0, actual: null },
 ];
 
 export const DEFAULT_PARETO_DATA_MAP: Record<string, ParetoItem[]> = {
-  root: [
-    { id: 1, area: "Cocimientos", gap: 0.07 },
-    { id: 2, area: "Cuartos frios", gap: 2.1 },
-    { id: 3, area: "Envasado", gap: 0.65 },
-  ],
+  root: [],
 };
 
 export const DEFAULT_VPO_CHECKPOINTS: VpoCheckpointItem[] = [

@@ -86,6 +86,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/", label: "Mis PDCAs", icon: ClipboardList },
+    { href: "/rda", label: "Mis RDAs", icon: ShieldAlert },
   ];
 
   if (currentUser.role === "admin") {
