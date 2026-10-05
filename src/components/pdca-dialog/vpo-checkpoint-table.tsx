@@ -180,7 +180,7 @@ export function VpoCheckpointTable({
 
   return (
     <StepCard
-      title="PASO 2: PHASE SDCA CHECKLIST"
+      title="PASO 2: FASE SDCA CHECKLIST"
       isStepCompleted={completedSteps.has("step-2")}
       onToggleStep={() => onToggleStep("step-2")}
       isNa={naSteps?.has("step-2")}

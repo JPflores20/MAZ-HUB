@@ -327,9 +327,9 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
             Subfase 1: Identificación del Problema (Pasos 1-7)
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
-      {/* ── PASO 1: PROYECT STATEMENT ─────────────────────────────────── */}
+      {/* ── PASO 1: DECLARACIÓN DEL PROYECTO ─────────────────────────────────── */}
       <StepCard
-        title="PASO 1: PROYECT STATEMENT"
+        title="PASO 1: DECLARACIÓN DEL PROYECTO"
         isStepCompleted={completed_steps.has("step-1")}
         onToggleStep={() => on_toggle_step("step-1")}
         isNa={na_steps?.has("step-1")} onToggleNa={() => on_toggle_na?.("step-1")}
@@ -478,16 +478,19 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
               readOnly={!is_editable}
             />
           </div>
+
+          {/* Participantes */}
+          <div className="space-y-1.5">
+            <PdcaParticipants
+              value={participants_info}
+              onChange={on_participants_info_change}
+              readOnly={!is_editable}
+            />
+          </div>
         </div>
       </StepCard>
 
-      {/* ── PASO 2: Participantes y VPO ───────────────────────────────── */}
-      <PdcaParticipants
-        value={participants_info}
-        onChange={on_participants_info_change}
-        readOnly={!is_editable}
-      />
-
+      {/* ── PASO 2: VPO ───────────────────────────────── */}
       <VpoCheckpointTable
         checkpoints={vpo_checkpoints}
         onChange={on_vpo_checkpoints_change}
@@ -673,12 +676,12 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-10")} onToggleNa={() => on_toggle_na?.("step-10")}
       />
 
-      {/* ── PASO 13: Benchmark ───────────────────────── */}
+      {/* ── PASO 13: PUNTO DE REFERENCIA ───────────────────────── */}
       <ImageUploadSection
         image={benchmark_image || null}
         onChange={(img) => on_benchmark_image_change?.(img || undefined)}
-        title="PASO 13: BENCHMARK"
-        subtitle="Sube una imagen representativa del Benchmark"
+        title="PASO 13: PUNTO DE REFERENCIA"
+        subtitle="Sube una imagen representativa del Punto de Referencia"
         isStepCompleted={completed_steps.has("step-11")}
         onToggleStep={() => on_toggle_step("step-11")}
         isNa={na_steps?.has("step-11")} onToggleNa={() => on_toggle_na?.("step-11")}

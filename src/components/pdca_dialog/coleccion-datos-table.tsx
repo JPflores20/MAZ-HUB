@@ -54,7 +54,7 @@ export const ColeccionDatosTable: React.FC<ColeccionDatosTableProps> = ({
 
   return (
     <StepCard
-      title="PASO 9: DATA COLLECTION PLAN"
+      title="PASO 9: PLAN DE RECOPILACIÓN DE DATOS"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
