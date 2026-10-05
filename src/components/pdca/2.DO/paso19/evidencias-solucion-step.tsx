@@ -63,18 +63,18 @@ export const EvidenciasSolucionStep: React.FC<EvidenciasSolucionStepProps> = ({
       onToggleNa={onToggleNa}
     >
       <StepInstructions>
-        Por cada acciÃ³n del plan, adjunta una foto o PDF como evidencia.
+        Por cada acción del plan, adjunta una foto o PDF como evidencia.
       </StepInstructions>
 
       <div className="mt-4 space-y-8">
         <div className="space-y-4">
-          <h4 className="text-sm font-bold text-slate-700 uppercase">EVIDENCIAS POR ACCIÃ“N</h4>
+          <h4 className="text-sm font-bold text-slate-700 uppercase">EVIDENCIAS POR ACCIÓN</h4>
           {actions.length === 0 ? (
             <p className="text-xs text-muted-foreground italic">No hay acciones definidas en el Paso 18.</p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {actions.map((action, i) => {
-                const label = `${action.accion || "Sin acciÃ³n"} - ${action.resultados || "Sin soluciÃ³n/resultado"}`;
+                const label = `${action.accion || "Sin acción"} - ${action.resultados || "Sin solución/resultado"}`;
                 const existing = evidencias.find((e) => e.actionId === action.id)?.image;
                 return (
                   <div key={action.id} className="flex flex-col border border-border rounded-xl p-3 bg-white">

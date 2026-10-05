@@ -1,8 +1,8 @@
 /**
  * pareto_section.tsx
- * Coordina mÃºltiples ParetoInteractive (root + drilldowns).
- * Responsabilidad Ãºnica: gestiÃ³n del Ã¡rbol de drill-down de Paretos.
- * Gestiona title_map para que cada ParetoInteractive tenga su propio tÃ­tulo.
+ * Coordina múltiples ParetoInteractive (root + drilldowns).
+ * Responsabilidad única: gestión del árbol de drill-down de Paretos.
+ * Gestiona title_map para que cada ParetoInteractive tenga su propio título.
  */
 import { useState } from "react";
 import { ParetoInteractive } from "./pareto_interactive";
@@ -46,7 +46,7 @@ export function ParetoSection({
   is_step_completed,
   on_toggle_step,
 }: ParetoSectionProps) {
-  /** Persiste el tÃ­tulo de grÃ¡fico de cada ParetoInteractive por ruta. */
+  /** Persiste el título de gráfico de cada ParetoInteractive por ruta. */
   const [title_map, set_title_map] = useState<Record<string, string>>({});
 
   const root_keys = Object.keys(data_map)
@@ -131,7 +131,7 @@ export function ParetoSection({
             key={actual_path}
             level={level}
             title={`Sub-Pareto: ${category}`}
-            subtitle={`Desglose especÃ­fico (Nivel ${level + 1}) de la categorÃ­a ${category}.`}
+            subtitle={`Desglose específico (Nivel ${level + 1}) de la categoría ${category}.`}
             pareto_items={data_map[actual_path] ?? []}
             on_items_change={(items) => update_data(actual_path, items)}
             on_bar_click={(cat) => handle_bar_click(cat, level, actual_path)}

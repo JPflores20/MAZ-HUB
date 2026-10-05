@@ -17,7 +17,7 @@ export const PdcaCollapsibleCard: React.FC<CollapsibleCardProps> = ({
   children,
   additional_header_node,
 }) => {
-  // ESTADO LOCAL: AÃ­sla la tarjeta de los autoguardados del padre.
+  // ESTADO LOCAL: Aísla la tarjeta de los autoguardados del padre.
   // Solo usa 'is_collapsed' para el valor inicial de la primera vez que carga.
   const [internalCollapsed, setInternalCollapsed] = useState(is_collapsed);
 
@@ -44,7 +44,7 @@ export const PdcaCollapsibleCard: React.FC<CollapsibleCardProps> = ({
         <button
           type="button"
           className="text-muted-foreground hover:text-foreground p-1 rounded-md transition-colors"
-          aria-label={internalCollapsed ? "Expandir secciÃ³n" : "Colapsar secciÃ³n"}
+          aria-label={internalCollapsed ? "Expandir sección" : "Colapsar sección"}
         >
           {internalCollapsed ? (
             <ChevronDown className="size-4" />

@@ -60,34 +60,34 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
   const noCount = vpoChecks.filter(c => c.status === "NO").length;
   const totalValid = vpoChecks.filter(c => c.status !== "N/A").length;
 
-  const kpiLabel = meta.kpi || "â€”";
-  const desdeVal = (meta as any).desde_valor || meta.desdeValor || "â€”";
-  const aVal = (meta as any).a_valor || meta.aValor || "â€”";
+  const kpiLabel = meta.kpi || "-";
+  const desdeVal = (meta as any).desde_valor || meta.desdeValor || "-";
+  const aVal = (meta as any).a_valor || meta.aValor || "-";
   const unidad = (meta as any).unidad_medida || meta.unidadMedida || "";
 
   // Combine actions from impact_matrix and action_items
   const displayActions = Array.isArray(action_items) && action_items.length > 0
     ? action_items.map((act) => ({
-        issue: act.tema || act.what || "â€”",
-        root_cause: act.causaRaiz || act.causaRaiz2 || "â€”",
-        accion: act.accion || act.accion2 || act.what || "â€”",
+        issue: act.tema || act.what || "-",
+        root_cause: act.causaRaiz || act.causaRaiz2 || "-",
+        accion: act.accion || act.accion2 || act.what || "-",
         priorizar: act.priorizar || "NO",
         quickWin: act.quickWin || "NO",
-        herramientaSdca: act.herramientaSdca || "â€”",
+        herramientaSdca: act.herramientaSdca || "-",
       }))
     : matrix.map((m) => ({
-        issue: m.issue || "â€”",
-        root_cause: m.root_cause || m.rootCause || "â€”",
-        accion: m.accion || "â€”",
+        issue: m.issue || "-",
+        root_cause: m.root_cause || m.rootCause || "-",
+        accion: m.accion || "-",
         priorizar: m.priorizar || "NO",
         quickWin: "NO",
-        herramientaSdca: "â€”",
+        herramientaSdca: "-",
       }));
 
   const prioritizedActionsCount = displayActions.filter(a => a.priorizar === "SI").length;
 
   // Calculate GAP if numeric
-  let gapText = "â€”";
+  let gapText = "-";
   const numDesde = parseFloat(desdeVal);
   const numA = parseFloat(aVal);
   if (!isNaN(numDesde) && !isNaN(numA)) {
@@ -98,7 +98,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
   return (
     <div className="space-y-5 pb-6">
 
-      {/* â”€â”€ FILA 1: MÃ©tricas Principales (3 Cajas Rojas en boceto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ FILA 1: Métricas Principales (3 Cajas Rojas en boceto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Box 1: Target / GAP & Indicador */}
         <div className="flex items-center gap-3 p-3.5 rounded-xl border bg-card shadow-sm">
@@ -145,12 +145,12 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
           <div className="min-w-0">
             <p className="text-[11px] font-medium text-muted-foreground leading-tight">Acciones Plan</p>
             <p className="text-xl font-bold">{prioritizedActionsCount} <span className="text-xs font-normal text-muted-foreground">de {displayActions.length} totales</span></p>
-            <p className="text-[11px] text-muted-foreground">priorizadas para ejecuciÃ³n</p>
+            <p className="text-[11px] text-muted-foreground">priorizadas para ejecución</p>
           </div>
         </div>
       </div>
 
-      {/* â”€â”€ FILA 2: GrÃ¡ficos y Visuales (3 Cajas Azules en boceto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ FILA 2: Gráficos y Visuales (3 Cajas Azules en boceto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Columna 1: Tendencia del KPI (paso 26) */}
         <Card className="shadow-sm border-border">
@@ -177,7 +177,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
               </div>
             ) : (
               <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
-                <p className="text-xs text-muted-foreground text-center">Sin datos de serie de tiempo aÃºn (Paso 26).</p>
+                <p className="text-xs text-muted-foreground text-center">Sin datos de serie de tiempo aún (Paso 26).</p>
               </div>
             )}
           </CardContent>
@@ -212,12 +212,12 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
           </CardContent>
         </Card>
 
-        {/* Columna 3: Pareto DespuÃ©s (paso 24) */}
+        {/* Columna 3: Pareto Después (paso 24) */}
         <Card className="shadow-sm border-border">
           <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <BarChart className="size-3.5 text-green-500" />
-              Pareto DespuÃ©s (Paso 24)
+              Pareto Después (Paso 24)
             </CardTitle>
           </CardHeader>
           <CardContent className="px-3 pt-3 pb-2">
@@ -236,8 +236,8 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
             ) : (
               <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
                 <p className="text-xs text-muted-foreground text-center px-4">
-                  Sin datos aÃºn de Pareto DespuÃ©s.<br />
-                  Se completarÃ¡ en la fase Check (Paso 24).
+                  Sin datos aún de Pareto Después.<br />
+                  Se completará en la fase Check (Paso 24).
                 </p>
               </div>
             )}
@@ -251,7 +251,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
           <div className="flex items-center gap-2">
             <ListChecks className="size-4 text-emerald-600 dark:text-emerald-400" />
             <CardTitle className="text-sm font-bold uppercase tracking-wide text-foreground">
-              Tabla Completa del Paso 18 Â· Plan de AcciÃ³n
+              Tabla Completa del Paso 18 · Plan de Acción
             </CardTitle>
           </div>
           <Badge variant="outline" className="text-xs border-emerald-500/40 text-emerald-700 dark:text-emerald-300">
@@ -265,8 +265,8 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
                 <tr className="border-b bg-muted/60 text-muted-foreground text-left">
                   <th className="py-2.5 px-3 font-semibold w-10 text-center">#</th>
                   <th className="py-2.5 px-3 font-semibold min-w-[150px]">Issue / Problema</th>
-                  <th className="py-2.5 px-3 font-semibold min-w-[180px]">Causa RaÃ­z</th>
-                  <th className="py-2.5 px-3 font-semibold min-w-[240px]">AcciÃ³n de Mejora</th>
+                  <th className="py-2.5 px-3 font-semibold min-w-[180px]">Causa Raíz</th>
+                  <th className="py-2.5 px-3 font-semibold min-w-[240px]">Acción de Mejora</th>
                   <th className="py-2.5 px-3 font-semibold text-center w-24">Priorizar</th>
                   <th className="py-2.5 px-3 font-semibold text-center w-24">Quick Win</th>
                   <th className="py-2.5 px-3 font-semibold min-w-[120px]">SDCA / SOP</th>
@@ -291,7 +291,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
                       <td className="py-2.5 px-3 text-center">
                         {act.priorizar === "SI" ? (
                           <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] py-0 px-2 font-bold">
-                            SÃ
+                            SÍ
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="text-[10px] py-0 px-2 text-muted-foreground">
@@ -305,7 +305,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
                             Quick Win
                           </Badge>
                         ) : (
-                          <span className="text-muted-foreground">â€”</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-muted-foreground">{act.herramientaSdca}</td>
@@ -325,7 +325,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
         </CardContent>
       </Card>
 
-      {/* â”€â”€ SECCIÃ“N ADICIONAL: Paso 1 & Paso 2 (Colapsables para soporte) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ SECCIÓN ADICIONAL: Paso 1 & Paso 2 (Colapsables para soporte) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="detalles-proyecto" className="border rounded-xl bg-card shadow-sm overflow-hidden">
           <AccordionTrigger className="px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:no-underline">
@@ -336,20 +336,20 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
               {/* Paso 1 */}
               <Card>
                 <CardHeader className="pb-2 pt-3 px-3">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paso 1 Â· Project Statement</CardTitle>
+                  <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paso 1 · Project Statement</CardTitle>
                 </CardHeader>
                 <CardContent className="px-3 pb-3 space-y-2 text-xs">
                   <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5">
                     <span className="font-medium text-muted-foreground">KPI</span>
-                    <span>{meta.kpi || "â€”"}</span>
+                    <span>{meta.kpi || "-"}</span>
                     <span className="font-medium text-muted-foreground">PIs</span>
-                    <span className="leading-snug">{meta.pis || "â€”"}</span>
+                    <span className="leading-snug">{meta.pis || "-"}</span>
                     <span className="font-medium text-muted-foreground">Meta</span>
                     <span>{desdeVal} â†’ {aVal} {unidad}</span>
                     <span className="font-medium text-muted-foreground">Benchmark</span>
-                    <span>{(meta as any).benchmark || "â€”"}</span>
+                    <span>{(meta as any).benchmark || "-"}</span>
                     <span className="font-medium text-muted-foreground">Responsable</span>
-                    <span>{(meta as any).responsable || "â€”"}</span>
+                    <span>{(meta as any).responsable || "-"}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -357,7 +357,7 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
               {/* Paso 2: SDCA Checklist */}
               <Card>
                 <CardHeader className="pb-2 pt-3 px-3">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paso 2 Â· SDCA Checklist</CardTitle>
+                  <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paso 2 · SDCA Checklist</CardTitle>
                 </CardHeader>
                 <CardContent className="px-3 pb-3">
                   <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">

@@ -1,7 +1,7 @@
 /**
  * Tipos e interfaces del dominio PDCA.
  * Este mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo contiene EXCLUSIVAMENTE definiciones de tipos TypeScript.
- * Soporta tanto camelCase como snake_case para mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡xima retrocompatibilidad.
+ * Soporta tanto camelCase como snake_case para mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡xima retrocompatibilidad.
  */
 
 export type Phase = "Resumen" | "Plan" | "Do" | "Check" | "Act" | "Evaluacion";
@@ -304,7 +304,7 @@ export type Pdca = {
   // Comentarios e Historial
   comentarios?: PdcaComment[];
   historial?: PdcaHistoryEvent[];
-  // AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico
+  // AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico
   statisticalAnalysisFiles?: string[];
   statistical_analysis_files?: string[];
   itf_r2d2_evaluation?: ItfR2d2Evaluation;
@@ -344,11 +344,11 @@ export type Pdca = {
   sipocMapFiles?: string[];
   sipoc_map_files?: string[];
 
-  // ColecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Datos (Tabla previa al AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico)
+  // ColecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Datos (Tabla previa al AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico)
   coleccionDatos?: ColeccionDatosItem[];
   coleccion_datos?: ColeccionDatosItem[];
 
-  // EspecificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Procesos (Posterior al AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico)
+  // EspecificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Procesos (Posterior al AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lisis EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­stico)
   especificacionProcesosText?: string | undefined;
   especificacion_procesos_text?: string | undefined;
   especificacionProcesosImage?: string | undefined;
@@ -480,12 +480,12 @@ export type EvidenciaSolucionItem = {
 
 export type ColeccionDatosItem = {
   id: string;
-  // ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿QuÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© Medir?
+  // ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚¿QuÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© Medir?
   xs_ys: string;
   variable: string;
   tipo_dato: string;
   definicion_operacional: string;
-  // ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³mo Medirlo?
+  // ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚¿CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³mo Medirlo?
   metodo_medicion: string;
   estratificacion: string;
   metodo_recoleccion: string;

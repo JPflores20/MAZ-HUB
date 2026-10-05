@@ -54,7 +54,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
           value={title_value}
           onChange={(e) => on_title_change(e.target.value)}
           disabled={!is_editable}
-          placeholder="Ej: ReducciÃ³n de mermas en cocimientos"
+          placeholder="Ej: Reducción de mermas en cocimientos"
           className="h-9 text-xs"
         />
       </div>
@@ -63,7 +63,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
         <Label className="text-xs font-semibold">ÃREA OPERATIVA</Label>
         <Select value={area_value} onValueChange={on_area_change} disabled={!is_editable}>
           <SelectTrigger className="h-9 text-xs">
-            <SelectValue placeholder="Seleccionar Ã¡rea" />
+            <SelectValue placeholder="Seleccionar área" />
           </SelectTrigger>
           <SelectContent>
             {AREAS.map((a) => (

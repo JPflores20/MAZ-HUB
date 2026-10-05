@@ -49,7 +49,7 @@ export function ImageUploadSection({
   onChange,
   title = "Imagen Adjunta",
   subtitle = "Sube tu imagen",
-  description = "Adjunta una foto o imagen (se comprimirÃ¡ y guardarÃ¡ automÃ¡ticamente).",
+  description = "Adjunta una foto o imagen (se comprimirá y guardará automáticamente).",
   isStepCompleted, isNa, onToggleStep, onToggleNa,
   hideCard = false,
   customBadge,
@@ -266,9 +266,9 @@ export function ImageUploadSection({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Â¿Eliminar imagen?</AlertDialogTitle>
+                  <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Â¿EstÃ¡s seguro de que deseas eliminar esta imagen? Esta acciÃ³n no se puede
+                    ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede
                     deshacer.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -293,10 +293,10 @@ export function ImageUploadSection({
               <ImageIcon className="size-5" />
             </div>
             <h4 className="font-semibold text-foreground">
-              {isDragging ? "Suelta la imagen aquÃ­" : subtitle}
+              {isDragging ? "Suelta la imagen aquí" : subtitle}
             </h4>
             <p className="text-sm max-w-sm mx-auto mt-1 text-muted-foreground mb-4">
-              {isDragging ? "Se subirÃ¡ y comprimirÃ¡ automÃ¡ticamente." : description}
+              {isDragging ? "Se subirá y comprimirá automáticamente." : description}
             </p>
             <div className="flex justify-center gap-2 mt-4 pointer-events-auto">
               <Button
@@ -403,7 +403,7 @@ function getFileTypeInfo(url: string): {
     lower.includes(".bmp")
   )
     return { type: "image", label: "Imagen" };
-  // Firebase URLs may not have file extensions â€“ check for common image hosting patterns
+  // Firebase URLs may not have file extensions - check for common image hosting patterns
   if (
     lower.includes("firebasestorage") &&
     !lower.includes(".pdf") &&
@@ -470,9 +470,9 @@ interface MultiImageUploadSectionProps {
 export function MultiImageUploadSection({
   images = [],
   onChange,
-  title = "ImÃ¡genes Adjuntas",
-  subtitle = "Sube tus imÃ¡genes",
-  description = "Adjunta fotos o imÃ¡genes (se comprimirÃ¡n y guardarÃ¡n automÃ¡ticamente).",
+  title = "Imágenes Adjuntas",
+  subtitle = "Sube tus imágenes",
+  description = "Adjunta fotos o imágenes (se comprimirán y guardarán automáticamente).",
   maxImages = 6,
   isStepCompleted, isNa, onToggleStep, onToggleNa,
   acceptTypes,
@@ -572,7 +572,7 @@ export function MultiImageUploadSection({
 
       onChange([...images, ...newUrls]);
     } catch (err) {
-      console.error("Error procesando imÃ¡genes:", err);
+      console.error("Error procesando imágenes:", err);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -678,7 +678,7 @@ export function MultiImageUploadSection({
           {isUploading ? (
             <div className="text-center">
               <div className="size-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin mx-auto mb-4" />
-              <p className="text-sm font-semibold text-foreground">Subiendo imÃ¡genes...</p>
+              <p className="text-sm font-semibold text-foreground">Subiendo imágenes...</p>
               <p className="text-xs text-muted-foreground mt-1">Por favor espera</p>
             </div>
           ) : (
@@ -689,12 +689,12 @@ export function MultiImageUploadSection({
                 <UploadCloud className="size-6 transition-colors" />
               </div>
               <h4 className="font-semibold text-foreground">
-                {isDragging ? "Suelta las imÃ¡genes aquÃ­" : "No hay evidencias"}
+                {isDragging ? "Suelta las imágenes aquí" : "No hay evidencias"}
               </h4>
               <p className="text-sm text-muted-foreground mt-1 max-w-sm mb-4">
                 {isDragging
-                  ? "Se subirÃ¡n y comprimirÃ¡n automÃ¡ticamente."
-                  : `Haz clic aquÃ­ o arrastra para adjuntar tus fotos o capturas (hasta ${maxImages}).`}
+                  ? "Se subirán y comprimirán automáticamente."
+                  : `Haz clic aquí o arrastra para adjuntar tus fotos o capturas (hasta ${maxImages}).`}
               </p>
               
               {!isDragging && (
@@ -758,7 +758,7 @@ export function MultiImageUploadSection({
                   <div
                     className="w-full h-full flex flex-col items-center justify-center bg-secondary/30 hover:bg-secondary/50 cursor-pointer transition-colors"
                     onClick={() => window.open(img, "_blank")}
-                    title={`Clic para abrir ${fileInfo.label} en nueva pestaÃ±a`}
+                    title={`Clic para abrir ${fileInfo.label} en nueva pestaña`}
                   >
                     <FileTypeIcon fileType={fileInfo.type} className="size-12 mb-2" />
                     <span className="text-xs font-semibold text-foreground">{fileInfo.label}</span>
@@ -842,9 +842,9 @@ export function MultiImageUploadSection({
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Â¿Eliminar imagen?</AlertDialogTitle>
+                      <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Â¿EstÃ¡s seguro de que deseas eliminar esta imagen de evidencia? Esta acciÃ³n
+                        ¿Estás seguro de que deseas eliminar esta imagen de evidencia? Esta acción
                         no se puede deshacer.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -884,7 +884,7 @@ export function MultiImageUploadSection({
                     <Plus className="size-4 transition-colors" />
                   </div>
                   <p className="text-xs font-medium text-foreground">
-                    {isDragging ? "Soltar aquÃ­" : "AÃ±adir mÃ¡s"}
+                    {isDragging ? "Soltar aquí" : "Añadir más"}
                   </p>
                   
                   {!isDragging && (

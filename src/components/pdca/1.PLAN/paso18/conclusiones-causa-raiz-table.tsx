@@ -66,11 +66,11 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
           <Table className="min-w-[900px] text-xs">
             <TableHeader>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-                <TableHead className="font-bold text-white text-center border-r border-white/20">Problema / DesviaciÃ³n</TableHead>
-                <TableHead className="font-bold text-white text-center border-r border-white/20 w-1/4">Causa RaÃ­z / Causa Potencial</TableHead>
-                <TableHead className="font-bold text-white text-center border-r border-white/20">TÃ©cnica de ValidaciÃ³n / Prueba HipÃ³tesis</TableHead>
-                <TableHead className="font-bold text-white text-center border-r border-white/20">Valor-P / Significancia EstadÃ­stica</TableHead>
-                <TableHead className="font-bold text-white text-center w-1/4">ConclusiÃ³n</TableHead>
+                <TableHead className="font-bold text-white text-center border-r border-white/20">Problema / Desviación</TableHead>
+                <TableHead className="font-bold text-white text-center border-r border-white/20 w-1/4">Causa Raíz / Causa Potencial</TableHead>
+                <TableHead className="font-bold text-white text-center border-r border-white/20">Técnica de Validación / Prueba Hipótesis</TableHead>
+                <TableHead className="font-bold text-white text-center border-r border-white/20">Valor-P / Significancia Estadística</TableHead>
+                <TableHead className="font-bold text-white text-center w-1/4">Conclusión</TableHead>
                 <TableHead className="w-12 bg-white"></TableHead>
               </TableRow>
             </TableHeader>
@@ -78,7 +78,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
               {(!items || items.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
-                    No hay causas raÃ­z definidas. Haz clic en "Agregar Fila".
+                    No hay causas raíz definidas. Haz clic en "Agregar Fila".
                   </TableCell>
                 </TableRow>
               )}
@@ -88,7 +88,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
                     <Textarea
                       value={item.problema}
                       onChange={(e) => handleUpdate(item.id, "problema", e.target.value)}
-                      placeholder="Problema o desviaciÃ³n..."
+                      placeholder="Problema o desviación..."
                       className="min-h-[80px] text-xs shadow-none resize-y"
                     />
                   </TableCell>
@@ -104,7 +104,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
                     <Textarea
                       value={item.validacion}
                       onChange={(e) => handleUpdate(item.id, "validacion", e.target.value)}
-                      placeholder="Ej. ValidaciÃ³n estadÃ­stica o prueba de hipÃ³tesis XÂ²"
+                      placeholder="Ej. Validación estadística o prueba de hipótesis XÂ²"
                       className="min-h-[80px] text-xs shadow-none resize-y text-center"
                     />
                   </TableCell>
@@ -120,7 +120,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
                     <Textarea
                       value={item.conclusion}
                       onChange={(e) => handleUpdate(item.id, "conclusion", e.target.value)}
-                      placeholder="ConclusiÃ³n..."
+                      placeholder="Conclusión..."
                       className="min-h-[80px] text-xs shadow-none resize-y"
                     />
                   </TableCell>

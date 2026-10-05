@@ -23,7 +23,7 @@ export function PdcaHistory({ history }: PdcaHistoryProps) {
       <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
         {sortedHistory.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4 italic">
-            No hay registros de historial aÃºn.
+            No hay registros de historial aún.
           </p>
         ) : (
           sortedHistory.map((item, index) => {

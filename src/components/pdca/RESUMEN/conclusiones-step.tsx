@@ -71,7 +71,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
     kpiName: "",
     kpiDe: "",
     kpiA: "",
-    kpiVerdeEs: "MÃ¡s alto",
+    kpiVerdeEs: "Más alto",
     kpiMejora: "",
   };
 
@@ -85,7 +85,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
       piName: "",
       piDe: "",
       piA: "",
-      piVerdeEs: "MÃ¡s alto",
+      piVerdeEs: "Más alto",
       piMejora: "",
     };
     onPiItemsChange([...(piItems || []), newItem]);
@@ -123,9 +123,9 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
             <AccordionContent className="px-4 pb-4">
               <p className="font-bold">Instrucciones</p>
               <ol className="list-decimal pl-4 space-y-1">
-                <li>Llene la fecha de finalizaciÃ³n</li>
-                <li>Llene la informaciÃ³n general del KPI incluyendo el valor inicial del KPI, el valor final del KPI. Si un aumento del valor equivale a una mejora del KPI, seleccione "MÃ¡s alto". De lo contrario, seleccione "MÃ¡s bajo".</li>
-                <li>Si su PDCA tenÃ­a un enfoque mÃ¡s limitado en un PI especÃ­fico, entonces llene la informaciÃ³n del PI para mostrar el PI antes y despuÃ©s del PDCA.</li>
+                <li>Llene la fecha de finalización</li>
+                <li>Llene la información general del KPI incluyendo el valor inicial del KPI, el valor final del KPI. Si un aumento del valor equivale a una mejora del KPI, seleccione "Más alto". De lo contrario, seleccione "Más bajo".</li>
+                <li>Si su PDCA tenía un enfoque más limitado en un PI específico, entonces llene la información del PI para mostrar el PI antes y después del PDCA.</li>
               </ol>
             </AccordionContent>
           </AccordionItem>
@@ -137,7 +137,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
               <TableBody>
                 <TableRow>
                   <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center w-1/3">
-                    Fecha de finalizaciÃ³n:
+                    Fecha de finalización:
                   </TableCell>
                   <TableCell className="p-0 border-r border-border w-1/3">
                     <DatePicker
@@ -159,7 +159,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                 </TableRow>
                 <TableRow>
                   <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-                    Â¿Este pdca/ITF mejorÃ³ los PI?
+                    ¿Este pdca/ITF mejoró los PI?
                   </TableCell>
                   <TableCell className="p-0 border-r border-border">
                     <textarea
@@ -181,7 +181,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                 </TableRow>
                 <TableRow>
                   <TableCell rowSpan={3} className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-                    Â¿Este pdca/ITF mejorÃ³ los KPI(s)?
+                    ¿Este pdca/ITF mejoró los KPI(s)?
                   </TableCell>
                   <TableCell rowSpan={3} className="p-0 border-r border-border">
                     <textarea
@@ -207,15 +207,15 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                   </TableCell>
                   <TableCell className="p-0">
                     <Select
-                      value={data.kpiVerdeEs || "MÃ¡s alto"}
+                      value={data.kpiVerdeEs || "Más alto"}
                       onValueChange={(v) => handleKpiChange("kpiVerdeEs", v)}
                     >
                       <SelectTrigger className="h-10 text-xs border-0 rounded-none shadow-none focus:ring-0">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="MÃ¡s alto">MÃ¡s alto</SelectItem>
-                        <SelectItem value="MÃ¡s bajo">MÃ¡s bajo</SelectItem>
+                        <SelectItem value="Más alto">Más alto</SelectItem>
+                        <SelectItem value="Más bajo">Más bajo</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -288,15 +288,15 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                       </TableCell>
                       <TableCell className="p-0 border-r border-border">
                         <Select
-                          value={item.piVerdeEs || "MÃ¡s alto"}
+                          value={item.piVerdeEs || "Más alto"}
                           onValueChange={(v) => handleUpdatePi(item.id, "piVerdeEs", v)}
                         >
                           <SelectTrigger className="h-10 text-xs border-0 rounded-none shadow-none focus:ring-0">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="MÃ¡s alto">MÃ¡s alto</SelectItem>
-                            <SelectItem value="MÃ¡s bajo">MÃ¡s bajo</SelectItem>
+                            <SelectItem value="Más alto">Más alto</SelectItem>
+                            <SelectItem value="Más bajo">Más bajo</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -328,13 +328,13 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
 
         <div className="pt-6 border-t">
           <p className="text-sm font-bold text-center mb-4">
-            Para la conclusiÃ³n - Crear el Storyboard de PDCA (insertar texto, capturas de pantalla, etc. para el resumen)
+            Para la conclusión - Crear el Storyboard de PDCA (insertar texto, capturas de pantalla, etc. para el resumen)
           </p>
           <RichTextEditor
             value={storyboardHtml || ""}
             onChange={onStoryboardHtmlChange || (() => {})}
             disabled={!isEditable}
-            placeholder="Pega el texto del Storyboard de PDCA aquÃ­..."
+            placeholder="Pega el texto del Storyboard de PDCA aquí..."
           />
           <div className="mt-4">
             <p className="text-xs font-bold mb-2">Subir imagen del Storyboard (opcional)</p>

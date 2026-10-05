@@ -95,15 +95,15 @@ const DATOS_POR_DEFECTO: DatosCorrelacionSabor = {
 export function FlavorCorrelationSection({
   data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, onToggleNa, title = "Correlación"
 }: {
-  data?: DatosCorrelacionSabor | null;
-  onChange?: (datosNuevos: DatosCorrelacionSabor) => void;
-  onForceSave?: () => void;
+  data?: DatosCorrelacionSabor | null | undefined;
+  onChange?: ((datosNuevos: DatosCorrelacionSabor) => void) | undefined;
+  onForceSave?: (() => void) | undefined;
   removeNode?: React.ReactNode;
-  isStepCompleted?: boolean;
+  isStepCompleted?: boolean | undefined;
   isNa?: boolean | undefined;
-  onToggleStep?: () => void;
+  onToggleStep?: (() => void) | undefined;
   onToggleNa?: (() => void) | undefined;
-  title?: string;
+  title?: string | undefined;
 }) {
   const datosActuales = data || DATOS_POR_DEFECTO;
   const tituloPositivo = datosActuales?.positiveTitle || DATOS_POR_DEFECTO.positiveTitle;

@@ -33,7 +33,7 @@ function compressImage(file: File, maxWidth = 2048, quality = 0.85): Promise<Blo
         canvas.height = img.height * scale;
         canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(
-          (blob) => (blob ? resolve(blob) : reject(new Error("CompresiÃ³n fallida"))),
+          (blob) => (blob ? resolve(blob) : reject(new Error("Compresión fallida"))),
           "image/jpeg",
           quality,
         );
@@ -70,7 +70,7 @@ export function GembaEvidenciasStep({
   onChange,
   isStepCompleted, isNa, onToggleStep, onToggleNa,
   title = "PASO 9: GEMBA (EVIDENCIAS)",
-  description = "Sube fotos del Gemba o documentos que respalden que el plan de acciÃ³n se ejecutÃ³ correctamente.",
+  description = "Sube fotos del Gemba o documentos que respalden que el plan de acción se ejecutó correctamente.",
 }: GembaEvidenciasStepProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -146,7 +146,7 @@ export function GembaEvidenciasStep({
       </StepInstructions>
 
       <div className="mt-4 space-y-4">
-        {/* GalerÃ­a de miniaturas */}
+        {/* Galería de miniaturas */}
         {(images.length > 0 || uploadingCount > 0) && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {images.map((url, idx) => (
@@ -215,7 +215,7 @@ export function GembaEvidenciasStep({
                 </div>
                 <p className="text-sm font-medium text-muted-foreground">No hay evidencias</p>
                 <p className="text-xs text-center text-primary/80 leading-relaxed px-4">
-                  Haz clic aquÃ­ o arrastra para adjuntar tus fotos o capturas
+                  Haz clic aquí o arrastra para adjuntar tus fotos o capturas
                   <br />
                   (hasta {MAX_FILES}).
                 </p>
@@ -224,14 +224,14 @@ export function GembaEvidenciasStep({
               <div className="flex flex-col items-center gap-2">
                 <ImageIcon className="size-6 text-muted-foreground" />
                 <p className="text-xs text-muted-foreground">
-                  + Agregar mÃ¡s fotos ({MAX_FILES - images.length} restantes)
+                  + Agregar más fotos ({MAX_FILES - images.length} restantes)
                 </p>
               </div>
             )}
           </div>
         ) : (
           <p className="text-xs text-center text-muted-foreground py-2">
-            LÃ­mite de {MAX_FILES} evidencias alcanzado. Elimina alguna para aÃ±adir otra.
+            Límite de {MAX_FILES} evidencias alcanzado. Elimina alguna para añadir otra.
           </p>
         )}
 

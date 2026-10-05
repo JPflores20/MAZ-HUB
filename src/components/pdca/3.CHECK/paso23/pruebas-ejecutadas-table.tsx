@@ -36,7 +36,7 @@ function compressImage(file: File, maxWidth = 2048, quality = 0.85): Promise<Blo
         canvas.height = img.height * scale;
         canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(
-          (blob) => (blob ? resolve(blob) : reject(new Error("CompresiÃ³n fallida"))),
+          (blob) => (blob ? resolve(blob) : reject(new Error("Compresión fallida"))),
           "image/jpeg",
           quality,
         );
@@ -125,7 +125,7 @@ export const PruebasEjecutadasTable: React.FC<PruebasEjecutadasTableProps> = ({ 
           <Table className="min-w-[600px] text-xs">
             <TableHeader>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-                <TableHead className="font-bold text-white text-center">PRUEBA / ACCIÃ“N</TableHead>
+                <TableHead className="font-bold text-white text-center">PRUEBA / ACCIÓN</TableHead>
                 <TableHead className="font-bold text-white text-center w-36">FECHA</TableHead>
                 <TableHead className="font-bold text-white text-center">RESULTADO ESPERADO VS REAL</TableHead>
                 <TableHead className="font-bold text-white text-center w-32">ESTADO</TableHead>
@@ -146,7 +146,7 @@ export const PruebasEjecutadasTable: React.FC<PruebasEjecutadasTableProps> = ({ 
                     <Input
                       value={item.prueba}
                       onChange={(e) => handleUpdate(item.id, "prueba", e.target.value)}
-                      placeholder="DescripciÃ³n de la prueba..."
+                      placeholder="Descripción de la prueba..."
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -199,7 +199,7 @@ export const PruebasEjecutadasTable: React.FC<PruebasEjecutadasTableProps> = ({ 
 
         {items && items.filter((item) => item.prueba.trim() !== "").length > 0 && (
           <div className="mt-8 border-t pt-6">
-            <h4 className="text-sm font-bold text-slate-700 uppercase mb-4">EVIDENCIAS POR PRUEBA / ACCIÃ“N</h4>
+            <h4 className="text-sm font-bold text-slate-700 uppercase mb-4">EVIDENCIAS POR PRUEBA / ACCIÓN</h4>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {items
                 .filter((item) => item.prueba.trim() !== "")

@@ -54,25 +54,25 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
   const progress_pct = valid_steps.length > 0 ? Math.round((completed_count / valid_steps.length) * 100) : 0;
 
   let deadline_info = null;
-  if (deadline_string && deadline_string !== "Sin lÃ­mite") {
+  if (deadline_string && deadline_string !== "Sin límite") {
     const deadline_date = parse_date_string(deadline_string);
     if (deadline_date) {
       const today = startOfDay(new Date());
       const diff = differenceInDays(deadline_date, today);
       if (diff < 0) {
         deadline_info = (
-          <span className="text-red-500 font-bold ml-2">Vencido por {Math.abs(diff)} dÃ­as</span>
+          <span className="text-red-500 font-bold ml-2">Vencido por {Math.abs(diff)} días</span>
         );
       } else if (diff === 0) {
         deadline_info = <span className="text-amber-500 font-bold ml-2">Vence hoy</span>;
       } else {
         deadline_info = (
-          <span className="text-emerald-500 font-medium ml-2">Quedan {diff} dÃ­as</span>
+          <span className="text-emerald-500 font-medium ml-2">Quedan {diff} días</span>
         );
       }
     }
-  } else if (deadline_string === "Sin lÃ­mite") {
-    deadline_info = <span className="text-muted-foreground ml-2">Sin lÃ­mite de tiempo</span>;
+  } else if (deadline_string === "Sin límite") {
+    deadline_info = <span className="text-muted-foreground ml-2">Sin límite de tiempo</span>;
   }
 
   return (

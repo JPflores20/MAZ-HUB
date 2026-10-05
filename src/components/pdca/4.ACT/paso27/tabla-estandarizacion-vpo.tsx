@@ -69,7 +69,7 @@ export const TablaEstandarizacionVpo: React.FC<TablaEstandarizacionVpoProps> = (
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-slate-700">TABLA DE ESTANDARIZACIÃ“N VPO</h3>
+        <h3 className="text-sm font-bold text-slate-700">TABLA DE ESTANDARIZACIÓN VPO</h3>
         <Button onClick={handleAdd} variant="outline" size="sm">
           <Plus className="size-4 mr-2" /> Agregar Fila
         </Button>
@@ -84,8 +84,8 @@ export const TablaEstandarizacionVpo: React.FC<TablaEstandarizacionVpoProps> = (
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÃ‘O / RESPONSABLE</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">EQUIPO QUE SE COMUNICARÃ / ENTRENARÃ</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">DATOS DE ENTRENAMIENTO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">GOP O LA PRESENTACIÃ“N DE MEJORES PRÃCTICAS?</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÃ“N</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">GOP O LA PRESENTACIÓN DE MEJORES PRÃCTICAS?</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÓN</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">STATUS</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] w-24">EVIDENCIA</TableHead>
               <TableHead className="w-12 border-none"></TableHead>
@@ -95,7 +95,7 @@ export const TablaEstandarizacionVpo: React.FC<TablaEstandarizacionVpoProps> = (
             {(!items || items.length === 0) && (
               <TableRow>
                 <TableCell colSpan={10} className="text-center py-6 text-muted-foreground">
-                  No hay registros de estandarizaciÃ³n. Agrega uno.
+                  No hay registros de estandarización. Agrega uno.
                 </TableCell>
               </TableRow>
             )}

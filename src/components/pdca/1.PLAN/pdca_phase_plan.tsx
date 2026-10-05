@@ -328,7 +328,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
             Subfase 1: Identificación del Problema (Pasos 1-7)
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
-      {/* â”€â”€ PASO 1: DECLARACIÓN DEL PROYECTO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* PASO 1: DECLARACIÓN DEL PROYECTO */}
       <StepCard
         title="PASO 1: DECLARACIÓN DEL PROYECTO"
         isStepCompleted={completed_steps.has("step-1")}
@@ -491,7 +491,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         </div>
       </StepCard>
 
-      {/* â”€â”€ PASO 2: VPO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 2: VPO */}
       <VpoCheckpointTable
         checkpoints={vpo_checkpoints}
         onChange={on_vpo_checkpoints_change}
@@ -502,7 +502,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         onToggleNa={on_toggle_na}
       />
 
-      {/* â”€â”€ PASO 3: SIPOC MAP (Placeholder) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 3: SIPOC MAP */}
       <MultiImageUploadSection
         images={sipoc_map_files || []}
         onChange={(f) => on_sipoc_map_files_change?.(f)}
@@ -516,7 +516,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-3")} onToggleNa={() => on_toggle_na?.("step-3")}
       />
 
-      {/* â”€â”€ PASO 4: Mapeo de procesos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 4: Mapeo de procesos */}
       <MultiImageUploadSection
         images={process_mapping_files || []}
         onChange={(f) => on_process_mapping_files_change?.(f)}
@@ -530,7 +530,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-4")} onToggleNa={() => on_toggle_na?.("step-4")}
       />
 
-      {/* â”€â”€ PASO 5: Voz del Consumidor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 5: Voz del Consumidor */}
       <VozConsumidorTable
         items={voz_consumidor || []}
         onChange={on_voz_consumidor_change!}
@@ -539,7 +539,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-5")} onToggleNa={() => on_toggle_na?.("step-5")}
       />
 
-      {/* â”€â”€ PASO 6: Análisis de Riesgos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 6: Análisis de Riesgos */}
       <AnalisisRiesgosTable
         title="PASO 6: ANÁLISIS DE RIESGOS DEL PROYECTO"
         items={analisis_riesgos_proyecto || []}
@@ -549,7 +549,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-6")} onToggleNa={() => on_toggle_na?.("step-6")}
       />
 
-      {/* â”€â”€ PASO 7: Situación Actual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 7: Situación Actual */}
       <TimeSeriesYTD
         value={target_vs_actual}
         onChange={on_target_vs_actual_change}
@@ -574,7 +574,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
 
-      {/* â”€â”€ PASO 8: Línea base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 8: Línea base */} 
       <ImageUploadSection
         image={baseline_image || null}
         onChange={(img) => on_baseline_image_change?.(img || undefined)}
@@ -585,7 +585,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-7")} onToggleNa={() => on_toggle_na?.("step-7")}
       />
 
-      {/* â”€â”€ PASO 9: Data collection Plan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 9: Data collection Plan */}
       <ColeccionDatosTable 
         items={coleccion_datos || []}
         onChange={(d) => on_coleccion_datos_change?.(d)}
@@ -594,7 +594,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-8")} onToggleNa={() => on_toggle_na?.("step-8")}
       />
 
-      {/* â”€â”€ PASO 10: Pareto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 10: Pareto */}
       <ParetoSection
         drillDowns={pareto_drill_downs || []}
         setDrillDowns={on_pareto_drill_downs_change!}
@@ -666,7 +666,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         )}
       </div>
 
-      {/* â”€â”€ PASO 12: Especificaciones del Proceso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 12: Especificaciones del Proceso */}
       <ImageUploadSection
         image={especificacion_procesos_image || null}
         onChange={(img) => on_especificacion_procesos_image_change?.(img || undefined)}
@@ -677,7 +677,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-10")} onToggleNa={() => on_toggle_na?.("step-10")}
       />
 
-      {/* â”€â”€ PASO 13: PUNTO DE REFERENCIA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 13: PUNTO DE REFERENCIA */}
       <ImageUploadSection
         image={benchmark_image || null}
         onChange={(img) => on_benchmark_image_change?.(img || undefined)}
@@ -688,7 +688,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-11")} onToggleNa={() => on_toggle_na?.("step-11")}
       />
 
-      {/* â”€â”€ PASO 14: Rendimiento Actual del Proceso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 14: Rendimiento Actual del Proceso */}
       <RendimientoActualStep
         items={rendimiento_actual_pis || []}
         onChange={on_rendimiento_actual_pis_change!}
@@ -699,7 +699,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-13")} onToggleNa={() => on_toggle_na?.("step-13")}
       />
 
-      {/* â”€â”€ PASO 15: GOP Themes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 15: GOP Themes */}
       <GopThemesSection
         data={gop_themes_data || []}
         onChange={on_gop_themes_data_change!}
@@ -708,7 +708,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-gops")} onToggleNa={() => on_toggle_na?.("step-gops")}
       />
 
-      {/* â”€â”€ PASO 16: Fishbone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 16: Fishbone */}
       <IshikawaSection
         ishikawas={ishikawas || []}
         onChange={on_ishikawas_change!}
@@ -717,7 +717,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-14")} onToggleNa={() => on_toggle_na?.("step-14")}
       />
 
-      {/* â”€â”€ PASO 17: 5 Why's â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 17: 5 Why's*/}
       <FiveWhysSection
         tables={five_whys_tables || []}
         onChange={on_five_whys_tables_change!}
@@ -725,7 +725,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         onToggleStep={() => on_toggle_step("step-15")}
         isNa={na_steps?.has("step-15")} onToggleNa={() => on_toggle_na?.("step-15")}
       />
-      {/* â”€â”€ PASO 18: Causas Raíz Definidas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â”€â”€ PASO 18: Causas Raíz Definidas*/}
       <ConclusionesCausaRaizTable
         title="PASO 18: CAUSAS RAÍZ DEFINIDAS"
         items={conclusiones_causa_raiz || []}

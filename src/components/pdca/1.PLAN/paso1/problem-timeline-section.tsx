@@ -53,7 +53,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
     <Card className={cn("mt-6", isStepCompleted && "border-green-500 bg-green-50/10")}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold flex items-center gap-2">
-          LÃ­nea de tiempo del problema
+          Línea de tiempo del problema
           {isStepCompleted && <CheckCircle2 className="size-5 text-green-500" />}
         </CardTitle>
         {onToggleStep && (
@@ -74,7 +74,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
       <CardContent className="space-y-6">
         <div className="flex flex-col md:flex-row gap-6 p-4 bg-gray-50 rounded-lg border">
           <div className="flex-1 space-y-3">
-            <Label className="text-sm font-semibold">OPCIÃ“N DE VISUALIZACIÃ“N</Label>
+            <Label className="text-sm font-semibold">OPCIÓN DE VISUALIZACIÓN</Label>
             <RadioGroup
               value={timelineOption}
               onValueChange={(val) => onOptionChange(val as "A" | "B")}
@@ -82,11 +82,11 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="A" id="option-a" />
-                <Label htmlFor="option-a">OPCIÃ“N A (FLUJO VISUAL)</Label>
+                <Label htmlFor="option-a">OPCIÓN A (FLUJO VISUAL)</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="B" id="option-b" />
-                <Label htmlFor="option-b">OPCIÃ“N B (TABLA)</Label>
+                <Label htmlFor="option-b">OPCIÓN B (TABLA)</Label>
               </div>
             </RadioGroup>
           </div>
@@ -98,7 +98,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                 <SelectValue placeholder="Seleccionar filtro..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="day">Por dÃ­a</SelectItem>
+                <SelectItem value="day">Por día</SelectItem>
                 <SelectItem value="week">Por semana</SelectItem>
                 <SelectItem value="month">Por mes</SelectItem>
                 <SelectItem value="3months">Por 3 meses</SelectItem>
@@ -118,7 +118,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                 >
                   {events.length === 0 && (
                     <span className="text-sm text-slate-400 w-full text-center">
-                      Agrega eventos para ver la lÃ­nea de tiempo
+                      Agrega eventos para ver la línea de tiempo
                     </span>
                   )}
                 </div>
@@ -150,7 +150,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                             <AutoResizeTextarea
                               value={event.description}
                               onChange={(val) => handleUpdateEvent(event.id, "description", val)}
-                              placeholder="DescripciÃ³n..."
+                              placeholder="Descripción..."
                               className="bg-blue-300 w-32 min-h-[4rem] p-2 rounded-sm border border-blue-400 text-xs shadow-sm text-center resize-none outline-none focus:ring-2 focus:ring-blue-600 placeholder:text-blue-600/70 text-gray-900 leading-tight block"
                             />
                             <div className={`w-px bg-blue-400 relative ${lineClass}`}>
@@ -167,7 +167,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                             <AutoResizeTextarea
                               value={event.description}
                               onChange={(val) => handleUpdateEvent(event.id, "description", val)}
-                              placeholder="DescripciÃ³n..."
+                              placeholder="Descripción..."
                               className="bg-blue-300 w-32 min-h-[4rem] p-2 rounded-sm border border-blue-400 text-xs shadow-sm text-center resize-none outline-none focus:ring-2 focus:ring-blue-600 placeholder:text-blue-600/70 text-gray-900 leading-tight block"
                             />
                           </div>
@@ -197,7 +197,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                     PERIODO ({timelineFilter})
                   </th>
                   <th className="px-4 py-3 font-semibold border-r border-blue-600 uppercase">
-                    DESCRIPCIÃ“N / EVENTO
+                    DESCRIPCIÓN / EVENTO
                   </th>
                   <th className="px-4 py-3 w-16 text-center uppercase">ACCIONES</th>
                 </tr>
@@ -217,7 +217,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                       <AutoResizeTextarea
                         value={event.description}
                         onChange={(val) => handleUpdateEvent(event.id, "description", val)}
-                        placeholder="DescripciÃ³n del evento..."
+                        placeholder="Descripción del evento..."
                         className="border-none shadow-none focus-visible:ring-1 min-h-[32px] pt-1.5"
                       />
                     </td>
@@ -235,7 +235,7 @@ export const ProblemTimelineSection: React.FC<ProblemTimelineSectionProps> = ({
                 {events.length === 0 && (
                   <tr>
                     <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
-                      No hay eventos en la lÃ­nea de tiempo.
+                      No hay eventos en la línea de tiempo.
                     </td>
                   </tr>
                 )}

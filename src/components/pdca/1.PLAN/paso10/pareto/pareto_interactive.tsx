@@ -1,7 +1,7 @@
 /**
  * pareto_interactive.tsx
- * Componente orquestador de un Ãºnico Pareto interactivo.
- * Responsabilidad Ãºnica: gestionar el estado local y coordinar sub-componentes.
+ * Componente orquestador de un único Pareto interactivo.
+ * Responsabilidad única: gestionar el estado local y coordinar sub-componentes.
  */
 import { useState } from "react";
 import { ArrowRight, Plus, X, FileText } from "lucide-react";
@@ -34,7 +34,7 @@ import {
 import type { ParetoInteractiveProps, ParetoItem } from "./pareto_types";
 
 export function ParetoInteractive({
-  title = "AnÃ¡lisis de Pareto (PASO 5)",
+  title = "Análisis de Pareto (PASO 5)",
   subtitle = "Desglosa el KPI para encontrar el 80/20.",
   level = 0,
   pareto_items = [],
@@ -118,9 +118,9 @@ export function ParetoInteractive({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Â¿Eliminar Pareto?</AlertDialogTitle>
+                  <AlertDialogTitle>¿Eliminar Pareto?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acciÃ³n no se puede deshacer y eliminarÃ¡ tambiÃ©n sus desgloses.
+                    Esta acción no se puede deshacer y eliminará también sus desgloses.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -177,10 +177,10 @@ export function ParetoInteractive({
       {level === 0 && (
         <StepInstructions>
           <p className="mb-2">
-            1. Usa la columna de categorÃ­as para identificar los KPI o IP. Este serÃ¡ tu eje X.
+            1. Usa la columna de categorías para identificar los KPI o IP. Este será tu eje X.
           </p>
           <p className="mb-2">2. Introduce tus datos (Valor / Gap) en las mismas unidades.</p>
-          <p className="mb-2">3. El grÃ¡fico de Pareto se genera automÃ¡ticamente.</p>
+          <p className="mb-2">3. El gráfico de Pareto se genera automáticamente.</p>
           <p>4. Haz clic en una barra para crear un sub-Pareto (Nivel 2).</p>
         </StepInstructions>
       )}

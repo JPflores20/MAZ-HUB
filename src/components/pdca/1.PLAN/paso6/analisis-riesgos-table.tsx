@@ -98,7 +98,7 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
             <TableHeader>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
                 <TableHead rowSpan={2} className="font-bold text-white text-center w-10 border-r border-white/40">NO. DE RIESGO</TableHead>
-                <TableHead rowSpan={2} className="font-bold text-white text-center min-w-[200px] border-r border-white/40">DESCRIPCIÃ“N DEL RIESGO</TableHead>
+                <TableHead rowSpan={2} className="font-bold text-white text-center min-w-[200px] border-r border-white/40">DESCRIPCIÓN DEL RIESGO</TableHead>
                 <TableHead className="font-bold text-white text-center w-28 border-r border-white/40 border-b border-white/40">TIPO DE IMPACTO</TableHead>
                 <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">PROBABILIDAD</TableHead>
                 <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">IMPACTO</TableHead>

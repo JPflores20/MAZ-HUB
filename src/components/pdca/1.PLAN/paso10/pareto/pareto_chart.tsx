@@ -1,8 +1,8 @@
 /**
  * pareto_chart.tsx
- * GrÃ¡fica interactiva de Pareto con Recharts.
- * Features: nombre editable, lÃ­mites Y ajustables, todos los X-labels visibles.
- * Responsabilidad Ãºnica: visualizaciÃ³n del grÃ¡fico.
+ * Gráfica interactiva de Pareto con Recharts.
+ * Features: nombre editable, límites Y ajustables, todos los X-labels visibles.
+ * Responsabilidad única: visualización del gráfico.
  */
 import { Maximize2 } from "lucide-react";
 import {
@@ -47,11 +47,11 @@ export function ParetoChart({
       <Input
         value={chart_title}
         onChange={(e) => on_chart_title_change(e.target.value)}
-        placeholder="Nombre del grÃ¡fico..."
+        placeholder="Nombre del gráfico..."
         className="h-7 text-xs font-semibold border-dashed text-center"
       />
 
-      {/* Controles de lÃ­mites del eje Y */}
+      {/* Controles de límites del eje Y */}
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Label className="text-[10px] uppercase tracking-wide">Y MÃN:</Label>
@@ -86,9 +86,9 @@ export function ParetoChart({
         )}
       </div>
 
-      {/* GrÃ¡fica */}
+      {/* Gráfica */}
       <div className="border rounded-md p-2 bg-card">
-        {/* TÃ­tulo renderizado arriba de la grÃ¡fica, usa el valor del input superior */}
+        {/* Título renderizado arriba de la gráfica, usa el valor del input superior */}
         {chart_title && (
           <h3 className="text-center text-sm font-semibold mb-2 text-foreground">{chart_title}</h3>
         )}
@@ -110,7 +110,7 @@ export function ParetoChart({
               stroke="var(--color-muted-foreground)"
             />
 
-            {/* Eje Y izquierdo ajustado: allowDataOverflow garantiza que se respeten los lÃ­mites */}
+            {/* Eje Y izquierdo ajustado: allowDataOverflow garantiza que se respeten los límites */}
             <YAxis
               yAxisId="left"
               domain={y_domain}

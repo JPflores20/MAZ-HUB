@@ -172,7 +172,7 @@ export function TeamMembersInput({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ej. Ana LÃ³pez (LÃ­der)"
+          placeholder="Ej. Ana López (Líder)"
           className="flex-1"
         />
         <Button type="button" variant="secondary" onClick={addMember}>

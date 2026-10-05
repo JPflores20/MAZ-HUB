@@ -7,16 +7,16 @@ interface PropiedadesSeccionPareto {
   setDrillDowns: (drills: string[]) => void;
   dataMap: Record<string, ParetoItem[]>;
   setDataMap: (mapa: Record<string, ParetoItem[]>) => void;
-  unit?: string;
-  onUnitChange?: (nuevaUnidad: string) => void;
-  paretoTitles?: Record<string, string>;
-  onParetoTitlesChange?: (titulos: Record<string, string>) => void;
-  isStepCompleted?: boolean;
-  isNa?: boolean;
-  onToggleStep?: () => void;
-  onToggleNa?: () => void;
-  mainTitle?: string;
-  secondaryTitlePrefix?: string;
+  unit?: string | undefined;
+  onUnitChange?: ((nuevaUnidad: string) => void) | undefined;
+  paretoTitles?: Record<string, string> | undefined;
+  onParetoTitlesChange?: ((titulos: Record<string, string>) => void) | undefined;
+  isStepCompleted?: boolean | undefined;
+  isNa?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  onToggleNa?: (() => void) | undefined;
+  mainTitle?: string | undefined;
+  secondaryTitlePrefix?: string | undefined;
 }
 
 export function ParetoSection({

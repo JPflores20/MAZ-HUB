@@ -66,7 +66,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
                 <TableHead className="font-bold text-white text-center">INDICADOR / PI / KPI</TableHead>
                 <TableHead className="font-bold text-white text-center">ANTES (BASELINE)</TableHead>
-                <TableHead className="font-bold text-white text-center">DESPUÃ‰S (IMPLEMENTACIÃ“N)</TableHead>
+                <TableHead className="font-bold text-white text-center">DESPUÃ‰S (IMPLEMENTACIÓN)</TableHead>
                 <TableHead className="font-bold text-white text-center">MEJORA (%)</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>

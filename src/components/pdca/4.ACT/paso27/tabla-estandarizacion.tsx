@@ -48,16 +48,16 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
     <div className="space-y-4">
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
-          <li>Definir las acciones que se estandarizarÃ¡n y rellenar el grÃ¡fico.</li>
-          <li>Rellene cada columna con informaciÃ³n detallada sobre la acciÃ³n elegida.</li>
+          <li>Definir las acciones que se estandarizarán y rellenar el gráfico.</li>
+          <li>Rellene cada columna con información detallada sobre la acción elegida.</li>
           <li>
-            La columna "Herramienta VPO" estÃ¡ pensada para ser rellenada con items como SOP, Checklists, planes y rutinas PM, SWIs, Checklist de ATO CIL, actualizaciones PTS, actualizaciones del mapa de procesos, actualizaciones del panel de control KPI/PI, creaciÃ³n/modificaciones de entrenamiento, actualizaciones SKAP, cambios en la rutina de reuniones, etc.
+            La columna "Herramienta VPO" está pensada para ser rellenada con items como SOP, Checklists, planes y rutinas PM, SWIs, Checklist de ATO CIL, actualizaciones PTS, actualizaciones del mapa de procesos, actualizaciones del panel de control KPI/PI, creación/modificaciones de entrenamiento, actualizaciones SKAP, cambios en la rutina de reuniones, etc.
           </li>
           <li>
-            La pestaÃ±a de Mapa de Problemas serÃ¡ Ãºtil como referencia para comprobar todos los pilares de los elementos que deben ser creados o actualizados como parte de la etapa de normalizaciÃ³n, ya que los mencionados aquÃ­ son sÃ³lo ejemplos de las muchas posibilidades.
+            La pestaña de Mapa de Problemas será útil como referencia para comprobar todos los pilares de los elementos que deben ser creados o actualizados como parte de la etapa de normalización, ya que los mencionados aquí son sólo ejemplos de las muchas posibilidades.
           </li>
           <li>
-            Nota: si la respuesta es "SÃ­" a la presentaciÃ³n del GOP/PrÃ¡ctica Ã³ptima, por favor introdÃºzcala en el Eureka! Buenas Ideas en el Portal Global de VPO
+            Nota: si la respuesta es "Sí" a la presentación del GOP/Práctica óptima, por favor introdúzcala en el Eureka! Buenas Ideas en el Portal Global de VPO
           </li>
         </ol>
       </StepInstructions>
@@ -77,8 +77,8 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÃ‘O</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">EQUIPO QUE SE COMUNICARÃ/ENTRENARÃ</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DATOS DE ENTRENAMIENTO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">GOP O LA PRESENTACIÃ“N DE LAS MEJORES PRÃCTICAS?</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÃ“N</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">GOP O LA PRESENTACIÓN DE LAS MEJORES PRÃCTICAS?</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÓN</TableHead>
               <TableHead className="w-12 border-none"></TableHead>
             </TableRow>
           </TableHeader>
@@ -86,7 +86,7 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
             {(!items || items.length === 0) && (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
-                  No hay registros de estandarizaciÃ³n. Agrega uno.
+                  No hay registros de estandarización. Agrega uno.
                 </TableCell>
               </TableRow>
             )}

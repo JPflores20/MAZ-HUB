@@ -12,9 +12,9 @@ interface PropiedadesTablaVpo {
   onChange: (nuevosCheckpoints: VpoCheckpointItem[]) => void;
   problemaTexto: string;
   completedSteps: Set<string>;
-  naSteps?: Set<string>;
+  naSteps?: Set<string> | undefined;
   onToggleStep: (idPaso: string) => void;
-  onToggleNa?: (idPaso: string) => void;
+  onToggleNa?: ((idPaso: string) => void) | undefined;
 }
 
 export function VpoCheckpointTable({

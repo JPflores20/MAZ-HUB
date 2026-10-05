@@ -14,22 +14,22 @@ import { TablaSeries } from "./time-series-table";
 import { GraficaSeries } from "./time-series-chart";
 
 interface PropiedadesSeriesTiempo {
-  value?: { mes: string; target: number; actual: number | null }[];
-  onChange?: (nuevaSerie: { mes: string; target: number; actual: number | null }[]) => void;
-  unit?: string;
-  onUnitChange?: (nuevaUnidad: string) => void;
-  isStepCompleted?: boolean;
-  isNa?: boolean;
-  onToggleStep?: () => void;
-  onToggleNa?: () => void;
-  title?: string;
-  chartTitle?: string;
-  onTitleChange?: (nuevoTitulo: string) => void;
+  value?: { mes: string; target: number; actual: number | null }[] | undefined;
+  onChange?: ((nuevaSerie: { mes: string; target: number; actual: number | null }[]) => void) | undefined;
+  unit?: string | undefined;
+  onUnitChange?: ((nuevaUnidad: string) => void) | undefined;
+  isStepCompleted?: boolean | undefined;
+  isNa?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  onToggleNa?: (() => void) | undefined;
+  title?: string | undefined;
+  chartTitle?: string | undefined;
+  onTitleChange?: ((nuevoTitulo: string) => void) | undefined;
   customBadge?: React.ReactNode;
-  yMin?: number;
-  onYMinChange?: (nuevoMinimo: number) => void;
-  yMax?: string;
-  onYMaxChange?: (nuevoMaximo: string) => void;
+  yMin?: number | undefined;
+  onYMinChange?: ((nuevoMinimo: number) => void) | undefined;
+  yMax?: string | undefined;
+  onYMaxChange?: ((nuevoMaximo: string) => void) | undefined;
 }
 
 export function TimeSeriesYTD({

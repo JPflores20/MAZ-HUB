@@ -27,7 +27,7 @@ import type { ActionItem } from "@/data/pdca";
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STATUS_OPTIONS = ["Pendiente", "En progreso", "Retrasado", "Completada"] as const;
-const SDCA_OPTIONS = ["", "SDCA", "SOP", "OPL", "LecciÃ³n de 1 Punto", "Otra"] as const;
+const SDCA_OPTIONS = ["", "SDCA", "SOP", "OPL", "Lección de 1 Punto", "Otra"] as const;
 
 const STATUS_COLOR: Record<string, string> = {
   Pendiente: "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30",
@@ -144,7 +144,7 @@ export function ActionPlanTable({
 
   return (
     <StepCard
-      title="PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÃ“N"
+      title="PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN"
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
@@ -158,7 +158,7 @@ export function ActionPlanTable({
             addRow();
           }}
         >
-          <Plus className="mr-1.5 size-3.5" /> Agregar AcciÃ³n
+          <Plus className="mr-1.5 size-3.5" /> Agregar Acción
         </Button>
       }
     >
@@ -166,12 +166,12 @@ export function ActionPlanTable({
         <p className="mb-1">
           1. Usa esto como{" "}
           <span className="text-primary underline cursor-default">
-            cualquier otro registro de acciÃ³n en su MCRS
+            cualquier otro registro de acción en su MCRS
           </span>
           .
         </p>
         <p>
-          2. Si una acciÃ³n particular tuvo Ã©xito en la eliminaciÃ³n de un sÃ­ntoma o causa de raÃ­z,
+          2. Si una acción particular tuvo éxito en la eliminación de un síntoma o causa de raíz,
           indique si se necesita una herramienta SDCA o necesita ser actualizada para estandarizar
           el resultado.
         </p>
@@ -188,10 +188,10 @@ export function ActionPlanTable({
                 CAUSA RAÃZ
               </TableHead>
               <TableHead className="text-white font-bold h-8 py-1 px-2 border-r border-white/20 text-center min-w-[250px] leading-tight">
-                ACCIÃ“N
+                ACCIÓN
               </TableHead>
 
-              {/* Factores NumÃ©ricos */}
+              {/* Factores Numéricos */}
               {DEFAULT_FACTOR_LABELS.map((label) => (
                 <TableHead
                   key={label}
@@ -238,7 +238,7 @@ export function ActionPlanTable({
             {items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  No hay acciones. Haz clic en "Agregar AcciÃ³n" para comenzar.
+                  No hay acciones. Haz clic en "Agregar Acción" para comenzar.
                 </TableCell>
               </TableRow>
             )}
@@ -261,24 +261,24 @@ export function ActionPlanTable({
                   <TextareaAutosize
                     value={row.causaRaiz || ""}
                     onChange={(e) => updateRow(row.id, "causaRaiz", e.target.value)}
-                    placeholder="Causa raÃ­z..."
+                    placeholder="Causa raíz..."
                     minRows={1}
                     className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px]"
                   />
                 </TableCell>
 
-                {/* ACCIÃ“N */}
+                {/* ACCIÓN */}
                 <TableCell className="p-0 border-r align-top">
                   <TextareaAutosize
                     value={row.accion || ""}
                     onChange={(e) => updateRow(row.id, "accion", e.target.value)}
-                    placeholder="AcciÃ³n..."
+                    placeholder="Acción..."
                     minRows={1}
                     className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px]"
                   />
                 </TableCell>
 
-                {/* Factores NumÃ©ricos */}
+                {/* Factores Numéricos */}
                 {FACTOR_KEYS.map((key) => {
                   const cellValue = row[key] || "";
                   return (
@@ -349,7 +349,7 @@ export function ActionPlanTable({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="-">-</SelectItem>
-                        <SelectItem value="SI">SÃ</SelectItem>
+                        <SelectItem value="SI">SÍ</SelectItem>
                         <SelectItem value="NO">NO</SelectItem>
                       </SelectContent>
                     </Select>
@@ -377,7 +377,7 @@ export function ActionPlanTable({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="-">-</SelectItem>
-                        <SelectItem value="SI">SÃ</SelectItem>
+                        <SelectItem value="SI">SÍ</SelectItem>
                         <SelectItem value="NO">NO</SelectItem>
                       </SelectContent>
                     </Select>
@@ -407,7 +407,7 @@ export function ActionPlanTable({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="-">-</SelectItem>
-                        <SelectItem value="SI">SÃ</SelectItem>
+                        <SelectItem value="SI">SÍ</SelectItem>
                         <SelectItem value="NO">NO</SelectItem>
                       </SelectContent>
                     </Select>

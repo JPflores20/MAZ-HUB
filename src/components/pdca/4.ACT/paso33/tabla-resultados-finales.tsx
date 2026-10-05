@@ -50,7 +50,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
           <table className="w-full text-xs">
             <tbody>
               <tr>
-                <td className="bg-[#cc0000] text-white font-bold p-2 w-[40%] border-r border-[#cc0000]">Fecha de finalizaciÃ³n:</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 w-[40%] border-r border-[#cc0000]">Fecha de finalización:</td>
                 <td className="p-0 border-b border-[#cc0000]">
                   <Input
                     type="date"
@@ -64,7 +64,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
               </tr>
               <tr>
                 <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000] border-b">
-                  Â¿Este pdca/ITF mejorÃ³ los PI?
+                  ¿Este pdca/ITF mejoró los PI?
                 </td>
                 <td rowSpan={2} className="p-0 border-b border-[#cc0000]">
                   <Select
@@ -72,13 +72,13 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     onValueChange={(v) => updateData({ mejoroPI: v === "-" ? "" : v })}
                   >
                     <SelectTrigger
-                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroPI === 'SÃ­' ? 'text-green-700 font-bold' : data.mejoroPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
+                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroPI === 'Sí' ? 'text-green-700 font-bold' : data.mejoroPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
                     >
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="SÃ­" className="text-green-700 font-bold">SÃ­</SelectItem>
+                      <SelectItem value="Sí" className="text-green-700 font-bold">Sí</SelectItem>
                       <SelectItem value="No" className="text-red-700 font-bold">No</SelectItem>
                     </SelectContent>
                   </Select>
@@ -104,7 +104,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
               </tr>
               <tr>
                 <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000]">
-                  Â¿Este pdca/ITF mejorÃ³ los KPI(s)?
+                  ¿Este pdca/ITF mejoró los KPI(s)?
                 </td>
                 <td rowSpan={2} className="p-0">
                   <Select
@@ -112,13 +112,13 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     onValueChange={(v) => updateData({ mejoroKPI: v === "-" ? "" : v })}
                   >
                     <SelectTrigger
-                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroKPI === 'SÃ­' ? 'text-green-700 font-bold' : data.mejoroKPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
+                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroKPI === 'Sí' ? 'text-green-700 font-bold' : data.mejoroKPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
                     >
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="SÃ­" className="text-green-700 font-bold">SÃ­</SelectItem>
+                      <SelectItem value="Sí" className="text-green-700 font-bold">Sí</SelectItem>
                       <SelectItem value="No" className="text-red-700 font-bold">No</SelectItem>
                     </SelectContent>
                   </Select>
@@ -136,8 +136,8 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="MÃ¡s alto">MÃ¡s alto</SelectItem>
-                      <SelectItem value="Lower">MÃ¡s bajo</SelectItem>
+                      <SelectItem value="Más alto">Más alto</SelectItem>
+                      <SelectItem value="Lower">Más bajo</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
@@ -214,8 +214,8 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="-">-</SelectItem>
-                          <SelectItem value="MÃ¡s alto">MÃ¡s alto</SelectItem>
-                          <SelectItem value="Lower">MÃ¡s bajo</SelectItem>
+                          <SelectItem value="Más alto">Más alto</SelectItem>
+                          <SelectItem value="Lower">Más bajo</SelectItem>
                         </SelectContent>
                       </Select>
                     </td>

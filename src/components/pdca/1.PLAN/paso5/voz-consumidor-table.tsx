@@ -85,7 +85,7 @@ export const VozConsumidorTable: React.FC<VozConsumidorTableProps> = ({ items, o
                     <Input
                       value={item.necesidad}
                       onChange={(e) => handleUpdate(item.id, "necesidad", e.target.value)}
-                      placeholder="Ej. Usuario Final, LogÃ­stica..."
+                      placeholder="Ej. Usuario Final, Logística..."
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -93,7 +93,7 @@ export const VozConsumidorTable: React.FC<VozConsumidorTableProps> = ({ items, o
                     <Input
                       value={item.importancia}
                       onChange={(e) => handleUpdate(item.id, "importancia", e.target.value)}
-                      placeholder="Ej. Entregas mÃ¡s rÃ¡pidas..."
+                      placeholder="Ej. Entregas más rápidas..."
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>

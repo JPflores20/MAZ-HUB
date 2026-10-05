@@ -121,8 +121,8 @@ import { StepCard } from "@/components/ui/step-card";
 
 const PHASE_STEPS_MAP: Record<string, string[]> = {
   Plan: [
-    "step-1", "step-2", "step-3", "step-4", "step-5", 
-    "step-6", "step-12", "step-7", "step-8", "step-9", "step-10", 
+    "step-1", "step-2", "step-3", "step-4", "step-5",
+    "step-6", "step-12", "step-7", "step-8", "step-9", "step-10",
     "step-11", "step-13", "step-gops", "step-14", "step-15",
     "step-16", "step-17"
   ],
@@ -130,6 +130,7 @@ const PHASE_STEPS_MAP: Record<string, string[]> = {
   Check: ["step-21", "step-22", "step-23", "step-24"],
   Act: ["step-25", "step-26", "step-27", "step-28", "step-29", "step-30"],
 };
+
 export const getCustomPhases = (isAdmin: boolean) => {
   const base = [
     { id: "Resumen", label: "Resumen", sub: "" },
@@ -138,15 +139,16 @@ export const getCustomPhases = (isAdmin: boolean) => {
     { id: "Check", label: "3. CHECK", sub: "" },
     { id: "Act", label: "4. ACT", sub: "" },
   ] as const;
-  
+
   if (isAdmin) {
     return [
       ...base,
-      { id: "Evaluacion", label: "EVALUACIÃ“N R2D2", sub: "Solo Administradores" }
+      { id: "Evaluacion", label: "EVALUACIÓN R2D2", sub: "Solo Administradores" }
     ] as const;
   }
   return base;
 };
+
 export const isPhaseStepsCompleted = (phaseId: string, completedSteps: Set<string>, naSteps?: Set<string>) => {
   const steps = PHASE_STEPS_MAP[phaseId as Phase] || [];
   return steps.length > 0 && steps.every((s) => completedSteps.has(s) || (naSteps && naSteps.has(s)));
@@ -160,7 +162,7 @@ const getPhaseTabColors = (id: string, isCurrent: boolean) => {
       case "Do": return "bg-yellow-400 text-black shadow-sm";
       case "Check": return "bg-emerald-500 text-white shadow-sm";
       case "Act": return "bg-blue-600 text-white shadow-sm";
-      case "Evaluacion": return "bg-indigo-900 text-white shadow-sm"; // Dark blue from image
+      case "Evaluacion": return "bg-indigo-900 text-white shadow-sm";
       default: return "bg-primary text-primary-foreground shadow-sm";
     }
   }
@@ -207,7 +209,7 @@ const getPhaseSubText = (id: string, isCurrent: boolean) => {
 const getPhaseToggleBorder = (id: string, isCurrent: boolean, isCompleted: boolean) => {
   if (isCompleted) return "border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600";
   if (isCurrent) {
-    return id === "Do" ? "border-black/30 text-black/40 hover:border-black hover:text-black" 
+    return id === "Do" ? "border-black/30 text-black/40 hover:border-black hover:text-black"
                        : "border-white/40 text-white/50 hover:border-white hover:text-white";
   }
   switch (id) {
@@ -234,8 +236,8 @@ export function CustomStepper({
   completedPhases: Set<string>;
   onToggleComplete: (p: Phase) => void;
   completedSteps: Set<string>;
-  naSteps?: Set<string>;
-  isAdmin?: boolean;
+  naSteps?: Set<string> | undefined;
+  isAdmin?: boolean | undefined;
 }) {
   const customPhases = getCustomPhases(!!isAdmin);
   const currentIndex = customPhases.findIndex(p => p.id === current);
@@ -248,21 +250,24 @@ export function CustomStepper({
         return (
           <div
             key={phase.id}
-            onClick={() => onSelect(phase.id)}
+            onClick={() => onSelect(phase.id as Phase)}
             className={cn(
               "flex flex-1 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors relative group cursor-pointer select-none",
               getPhaseTabColors(phase.id, isCurrent)
             )}
           >
-            <div className="flex flex-1 items-center gap-2.5 min-w-0">
-              <span
-                className={cn(
-                  "grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold",
-                  getPhaseCircleColors(phase.id, isCurrent, isCompleted)
-                )}
-              >
-                {i + 1}
-              </span>
+            <div className={cn("flex flex-1 items-center min-w-0", (phase.id === "Resumen" || phase.id === "Evaluacion") ? "justify-center text-center" : "gap-2.5")}>
+              {phase.id !== "Resumen" && phase.id !== "Evaluacion" && (
+                <span
+                  className={cn(
+                    "grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold",
+                    getPhaseCircleColors(phase.id, isCurrent, isCompleted)
+                  )}
+                >
+                  {/* Since Resumen is hidden (index 0), subtract 1 so Plan is 1, Do is 2, etc. */}
+                  {i}
+                </span>
+              )}
               <span className="min-w-0">
                 <span className="block font-display text-sm font-semibold uppercase tracking-wide">
                   {phase.label}
@@ -280,20 +285,22 @@ export function CustomStepper({
               </span>
             </div>
             {/* Toggle complete button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleComplete(phase.id as Phase);
-              }}
-              title={isCompleted ? "Desmarcar fase como completada" : "Marcar fase como completada"}
-              className={cn(
-                "shrink-0 size-7 grid place-items-center rounded-full border-2 transition-all cursor-pointer",
-                getPhaseToggleBorder(phase.id, isCurrent, isCompleted)
-              )}
-            >
-              <Check className="size-3.5" />
-            </button>
+            {phase.id !== "Resumen" && phase.id !== "Evaluacion" && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleComplete(phase.id as Phase);
+                }}
+                title={isCompleted ? "Desmarcar fase como completada" : "Marcar fase como completada"}
+                className={cn(
+                  "shrink-0 size-7 grid place-items-center rounded-full border-2 transition-all cursor-pointer",
+                  getPhaseToggleBorder(phase.id, isCurrent, isCompleted)
+                )}
+              >
+                <Check className="size-3.5" />
+              </button>
+            )}
           </div>
         );
       })}
@@ -335,17 +342,17 @@ const PILAR_STYLE_MAP: Record<string, { bg: string; text: string; border: string
     text: "text-blue-700 dark:text-blue-300",
     border: "border-blue-500/40",
   },
-  "CreaciÃƒÂ³n & ejecuciÃƒÂ³n de estÃƒÂ¡ndares": {
+  "Creación & ejecución de estándares": {
     bg: "bg-indigo-500/15 dark:bg-indigo-500/25",
     text: "text-indigo-700 dark:text-indigo-300",
     border: "border-indigo-500/40",
   },
-  "Proceso de revisiÃƒÂ³n de rutina": {
+  "Proceso de revisión de rutina": {
     bg: "bg-cyan-500/15 dark:bg-cyan-500/25",
     text: "text-cyan-700 dark:text-cyan-300",
     border: "border-cyan-500/40",
   },
-  "GestiÃƒÂ³n del conocimiento": {
+  "Gestión del conocimiento": {
     bg: "bg-purple-500/15 dark:bg-purple-500/25",
     text: "text-purple-700 dark:text-purple-300",
     border: "border-purple-500/40",
@@ -360,17 +367,17 @@ const PILAR_STYLE_MAP: Record<string, { bg: string; text: string; border: string
     text: "text-amber-700 dark:text-amber-300",
     border: "border-amber-500/40",
   },
-  "SoluciÃƒÂ³n de problemas": {
+  "Solución de problemas": {
     bg: "bg-rose-500/15 dark:bg-rose-500/25",
     text: "text-rose-700 dark:text-rose-300",
     border: "border-rose-500/40",
   },
-  "DescripciÃƒÂ³n del negocio": {
+  "Descripción del negocio": {
     bg: "bg-teal-500/15 dark:bg-teal-500/25",
     text: "text-teal-700 dark:text-teal-300",
     border: "border-teal-500/40",
   },
-  "Proceso de revisiÃƒÂ³n del rendimiento": {
+  "Proceso de revisión del rendimiento": {
     bg: "bg-violet-500/15 dark:bg-violet-500/25",
     text: "text-violet-700 dark:text-violet-300",
     border: "border-violet-500/40",
