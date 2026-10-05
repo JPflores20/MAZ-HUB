@@ -15,16 +15,16 @@ import { Badge } from "@/components/ui/badge";
 
 const PDCA_STEPS = [
   "General",
-  "Paso 1: Definición del problema",
+  "Paso 1: DefiniciÃ³n del problema",
   "Paso 2: Meta",
-  "Paso 3: Análisis y desdoblamiento",
+  "Paso 3: AnÃ¡lisis y desdoblamiento",
   "Paso 4: Mapeo de Proceso",
   "Paso 5: VPO Checkpoints",
   "Paso 6: Ishikawa",
-  "Paso 7: 5 Por Qués",
+  "Paso 7: 5 Por QuÃ©s",
   "Paso 8.1: Matriz de impacto",
-  "Paso 8.2: Plan de acción",
-  "Paso 9: Implementación de soluciones",
+  "Paso 8.2: Plan de acciÃ³n",
+  "Paso 9: ImplementaciÃ³n de soluciones",
   "Paso 10: KPI Final",
   "Paso 11: Gemba Final",
 ];
@@ -56,7 +56,7 @@ export function PdcaComments({ comments, onAddComment, onDeleteComment }: PdcaCo
       <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
         {comments.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4 italic">
-            No hay comentarios aún. ¡Sé el primero en participar!
+            No hay comentarios aÃºn. Â¡SÃ© el primero en participar!
           </p>
         ) : (
           comments.map((c) => (

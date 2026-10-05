@@ -17,28 +17,28 @@ vi.mock("@/services/pdca-service", () => ({
 
 const sample_pdca: Pdca = {
   id: "PDCA-2026-UNIT",
-  titulo: "Proyecto de Reducción de Pérdidas",
+  titulo: "Proyecto de ReducciÃ³n de PÃ©rdidas",
   area: "cocimientos",
   fase: "Plan",
   actualizado: "01/01/2026",
   progreso: 10,
-  problema: "Variación térmica",
+  problema: "VariaciÃ³n tÃ©rmica",
   causaRaiz: "",
   acciones: [],
   verificacion: "",
   evidencias: [],
   estandarizacion: "",
-  indicador: { etiqueta: "Temperatura", antes: 80, despues: 70, unidad: "°C" },
+  indicador: { etiqueta: "Temperatura", antes: 80, despues: 70, unidad: "Â°C" },
   serie: [],
   equipo: [],
 };
 
 describe("PdcaDialog (Componente Refactorizado)", () => {
-  it("debe renderizar el diálogo con el título del proyecto y los campos de metadatos", () => {
+  it("debe renderizar el diÃ¡logo con el tÃ­tulo del proyecto y los campos de metadatos", () => {
     render(<PdcaDialog pdca={sample_pdca} open={true} onOpenChange={vi.fn()} />);
 
     expect(screen.getByText("PDCA-2026-UNIT")).toBeDefined();
-    expect(screen.getByDisplayValue("Proyecto de Reducción de Pérdidas")).toBeDefined();
+    expect(screen.getByDisplayValue("Proyecto de ReducciÃ³n de PÃ©rdidas")).toBeDefined();
     expect(screen.getByText("Guardar PDCA")).toBeDefined();
   });
 });

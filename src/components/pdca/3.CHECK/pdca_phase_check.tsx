@@ -1,11 +1,11 @@
 import React from "react";
 import { StepCard } from "@/components/ui/step-card";
-import { TimeSeriesYTD } from "../1.PLAN/time-series-ytd";
+import { TimeSeriesYTD } from "../1.PLAN/paso7/time-series-ytd";
 import { ImageUploadSection } from "../image-upload-section";
-import { ParetoSection } from "@/components/pdca/1.PLAN/pareto-section";
-import { FlavorCorrelationSection } from "@/components/pdca/1.PLAN/flavor-correlation-section";
-import { PruebasEjecutadasTable } from "../2.DO/pruebas-ejecutadas-table";
-import { NuevoPerformanceTable } from "./nuevo-performance-table";
+import { ParetoSection } from "@/components/pdca/1.PLAN/paso10/pareto-section";
+import { FlavorCorrelationSection } from "@/components/pdca/1.PLAN/paso11/flavor-correlation-section";
+import { PruebasEjecutadasTable } from "../3.CHECK/paso23/pruebas-ejecutadas-table";
+import { NuevoPerformanceTable } from "./paso24/nuevo-performance-table";
 
 interface PhaseCheckProps {
   final_time_series_data: { mes: string; target: number; actual: number | null }[];
@@ -108,7 +108,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         isNa={na_steps?.has("step-23")} onToggleNa={() => on_toggle_na?.("step-23")}
       />
 
-      {/* ── PASO 23: Pruebas ejecutadas ───────────────────────── */}
+      {/* ── PASO 23: Pruebas ejecutadas ─────────────────────────── */}
       <PruebasEjecutadasTable
         items={pruebas_ejecutadas || []}
         onChange={on_pruebas_ejecutadas_change!}
@@ -117,7 +117,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         isNa={na_steps?.has("step-24")} onToggleNa={() => on_toggle_na?.("step-24")}
       />
 
-      {/* ── PASO 24: Nuevo Pareto ────────────────────────────── */}
+      {/* ── PASO 24: Nuevo Pareto ───────────────────────────────── */}
       <ParetoSection
         drillDowns={nuevo_pareto_drill_downs || []}
         setDrillDowns={on_nuevo_pareto_drill_downs_change!}
@@ -134,7 +134,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         secondaryTitlePrefix="PASO 24: NUEVO PARETO INDEPENDIENTE"
       />
 
-      {/* ── PASO 25: Nueva Correlaciones ─────────────────────── */}
+      {/* ── PASO 25: Nueva Correlaciones ────────────────────────── */}
       <FlavorCorrelationSection
         title="PASO 25: NUEVAS CORRELACIONES"
         isStepCompleted={completed_steps.has("step-26")}
@@ -142,7 +142,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         isNa={na_steps?.has("step-26")} onToggleNa={() => on_toggle_na?.("step-26")}
       />
 
-      {/* ── PASO 26: Evolución de KPIs ───────────────────────── */}
+      {/* ── PASO 26: Evolución de KPIs ──────────────────────────── */}
       <TimeSeriesYTD
         value={final_time_series_data}
         onChange={on_final_time_series_data_change}
@@ -162,3 +162,5 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
     </div>
   );
 };
+
+// force vite reload

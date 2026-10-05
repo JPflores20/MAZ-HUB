@@ -1,6 +1,6 @@
 import React from "react";
-import { TablaEstandarizacion } from "./tabla-estandarizacion";
-import { AnalisisRiesgosProcesoTable } from "../1.PLAN/analisis-riesgos-proceso-table";
+import { TablaEstandarizacion } from "./paso27/tabla-estandarizacion";
+import { AnalisisRiesgosProcesoTable } from "../1.PLAN/paso6/analisis-riesgos-proceso-table";
 import { StepCard } from "@/components/ui/step-card";
 import { ImageUploadSection } from "../image-upload-section";
 import { RichTextEditor } from "../rich-text-editor";
@@ -163,3 +163,5 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
     </div>
   );
 };
+
+// force vite reload

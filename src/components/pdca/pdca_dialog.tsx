@@ -163,8 +163,8 @@ export const PdcaDialog: React.FC<{
       progreso: computed_progress,
       fechaFinalizacion: state.deadline_date
         ? format_date_to_string(state.deadline_date)
-        : current_pdca.fechaFinalizacion === "Sin lÃƒÆ’Ã‚Â­mite"
-          ? "Sin lÃƒÆ’Ã‚Â­mite"
+        : current_pdca.fechaFinalizacion === "Sin lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­mite"
+          ? "Sin lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­mite"
           : current_pdca.fechaFinalizacion && !parse_date_string(current_pdca.fechaFinalizacion)
             ? current_pdca.fechaFinalizacion
             : "",
@@ -243,7 +243,7 @@ export const PdcaDialog: React.FC<{
     
     if ((state.active_tab === "Act" && !is_admin) || state.active_tab === "Evaluacion") {
       await autosave.handle_save_to_firestore();
-      toast.success("Ãƒâ€šÃ‚Â¡PDCA finalizado!");
+      toast.success("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡PDCA finalizado!");
       onOpenChange(false);
     } else if (current_idx >= 0 && current_idx < phase_order.length - 1) {
       const next_phase = phase_order[current_idx + 1]!;

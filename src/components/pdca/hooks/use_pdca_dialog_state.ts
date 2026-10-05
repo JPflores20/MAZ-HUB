@@ -20,7 +20,7 @@ import {  DEFAULT_VPO_CHECKPOINTS,
   DEFAULT_PARETO_DATA_MAP,
   DEFAULT_PARTICIPANTES,
 } from "@/data/pdca";
-import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/pdca-goal-definition";
+import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 
 import { parse_date_string } from "../utils/date_helpers";
 

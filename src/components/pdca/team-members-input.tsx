@@ -100,14 +100,13 @@ import {
 } from "@/data/pdca";
 import {
   PdcaGoalDefinition,
-  PdcaParticipants,
-  DEFAULT_DEFINICION_META,
-} from "@/components/pdca/1.PLAN/pdca-goal-definition";
+  DEFAULT_DEFINICION_META} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
+import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { KpiTreeInteractive } from "../kpi-tree";
 import { ActionKanban } from "../action-kanban";
 // Removed firestore imports
 import { db } from "@/lib/firebase";
-import { GopThemesSection } from "./1.PLAN/GopThemesSection";
+import { GopThemesSection } from "./1.PLAN/paso15/GopThemesSection";
 import { ImageUploadSection, MultiImageUploadSection } from "./image-upload-section";
 import { DatePicker } from "@/components/ui/date-picker";
 import { savePdcaToFirestore } from "@/services/pdca-service";
@@ -173,7 +172,7 @@ export function TeamMembersInput({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ej. Ana López (Líder)"
+          placeholder="Ej. Ana LÃ³pez (LÃ­der)"
           className="flex-1"
         />
         <Button type="button" variant="secondary" onClick={addMember}>

@@ -49,21 +49,21 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-xl border border-border/80 bg-card/60">
       <div className="space-y-1.5 sm:col-span-2">
-        <Label className="text-xs font-semibold">TÍTULO DEL PROYECTO</Label>
+        <Label className="text-xs font-semibold">TÃTULO DEL PROYECTO</Label>
         <Input
           value={title_value}
           onChange={(e) => on_title_change(e.target.value)}
           disabled={!is_editable}
-          placeholder="Ej: Reducción de mermas en cocimientos"
+          placeholder="Ej: ReducciÃ³n de mermas en cocimientos"
           className="h-9 text-xs"
         />
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">ÁREA OPERATIVA</Label>
+        <Label className="text-xs font-semibold">ÃREA OPERATIVA</Label>
         <Select value={area_value} onValueChange={on_area_change} disabled={!is_editable}>
           <SelectTrigger className="h-9 text-xs">
-            <SelectValue placeholder="Seleccionar área" />
+            <SelectValue placeholder="Seleccionar Ã¡rea" />
           </SelectTrigger>
           <SelectContent>
             {AREAS.map((a) => (
@@ -76,7 +76,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">FECHA LÍMITE</Label>
+        <Label className="text-xs font-semibold">FECHA LÃMITE</Label>
         <DatePicker
           date={deadline_date}
           setDate={on_deadline_change}

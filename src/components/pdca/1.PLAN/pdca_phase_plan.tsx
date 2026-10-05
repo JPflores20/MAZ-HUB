@@ -1,22 +1,23 @@
 import React, { useRef } from "react";
 import { Bold, Italic, List, ListOrdered, Plus, X } from "lucide-react";
-import { PdcaGoalDefinition, PdcaParticipants } from "@/components/pdca/1.PLAN/pdca-goal-definition";
+import { PdcaGoalDefinition} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
+import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../step-instructions";
 import { TeamMembersInput } from "../team-members-input";
-import { VpoCheckpointTable } from "./vpo-checkpoint-table";
-import { TimeSeriesYTD } from "./time-series-ytd";
+import { VpoCheckpointTable } from "./paso2/vpo-checkpoint-table";
+import { TimeSeriesYTD } from "./paso7/time-series-ytd";
 import { ImageUploadSection, MultiImageUploadSection, ALL_ACCEPT_STRING } from "../image-upload-section";
-import { ParetoSection } from "@/components/pdca/1.PLAN/pareto-section";
-import { IshikawaSection } from "./ishikawa-section";
-import { FiveWhysSection } from "./five-whys-section";
-import { FlavorCorrelationSection } from "./flavor-correlation-section";
-import { GopThemesSection } from "./GopThemesSection";
-import { ColeccionDatosTable } from "./coleccion-datos-table";
-import { VozConsumidorTable } from "./voz-consumidor-table";
-import { AnalisisRiesgosTable } from "./analisis-riesgos-table";
-import { RendimientoActualStep } from "./rendimiento-actual-step";
-import { ConclusionesCausaRaizTable } from "./conclusiones-causa-raiz-table";
+import { ParetoSection } from "@/components/pdca/1.PLAN/paso10/pareto-section";
+import { IshikawaSection } from "./paso16/ishikawa-section";
+import { FiveWhysSection } from "./paso17/five-whys-section";
+import { FlavorCorrelationSection } from "./paso11/flavor-correlation-section";
+import { GopThemesSection } from "./paso15/GopThemesSection";
+import { ColeccionDatosTable } from "./paso9/coleccion-datos-table";
+import { VozConsumidorTable } from "./paso5/voz-consumidor-table";
+import { AnalisisRiesgosTable } from "./paso6/analisis-riesgos-table";
+import { RendimientoActualStep } from "./paso14/rendimiento-actual-step";
+import { ConclusionesCausaRaizTable } from "./paso18/conclusiones-causa-raiz-table";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -44,7 +45,7 @@ import type {
   RendimientoActualPiItem,
 } from "@/data/pdca";
 
-// ─── Editor de texto enriquecido mínimo ──────────────────────────────────────
+// â”€â”€â”€ Editor de texto enriquecido mínimo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function RichTextEditor({
   value,
   onChange,
@@ -136,7 +137,7 @@ function RichTextEditor({
           <ListOrdered className="size-3.5" />
         </button>
       </div>
-      {/* Área editable */}
+      {/* Ãrea editable */}
       <div
         ref={editorRef}
         contentEditable={!disabled}
@@ -150,7 +151,7 @@ function RichTextEditor({
   );
 }
 
-// ─── Props del componente ─────────────────────────────────────────────────────
+// â”€â”€â”€ Props del componente â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface PhasePlanProps {
   // Meta fields
   title_value: string;
@@ -240,7 +241,7 @@ interface PhasePlanProps {
   on_rendimiento_actual_image_change?: ((image: string | undefined) => void) | undefined;
 }
 
-// ─── Componente principal ─────────────────────────────────────────────────────
+// â”€â”€â”€ Componente principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
   title_value,
   on_title_change,
@@ -327,7 +328,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
             Subfase 1: Identificación del Problema (Pasos 1-7)
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
-      {/* ── PASO 1: DECLARACIÓN DEL PROYECTO ─────────────────────────────────── */}
+      {/* â”€â”€ PASO 1: DECLARACIÓN DEL PROYECTO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <StepCard
         title="PASO 1: DECLARACIÓN DEL PROYECTO"
         isStepCompleted={completed_steps.has("step-1")}
@@ -341,7 +342,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         </StepInstructions>
 
         <div className="space-y-5 mt-4">
-          {/* Fila: Título, Área, Fecha Límite, Autor */}
+          {/* Fila: Título, Ãrea, Fecha Límite, Autor */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1.5 lg:col-span-1">
               <Label className="text-xs font-semibold">TÍTULO DEL PROYECTO</Label>
@@ -469,7 +470,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
             <div className="flex items-center justify-between">
               <Label className="text-xs font-semibold">DEFINICIÓN DE LA META (VPO STANDARD)</Label>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                ⏱ Formato oficial A3 / A8 InBev
+                â± Formato oficial A3 / A8 InBev
               </span>
             </div>
             <PdcaGoalDefinition
@@ -490,7 +491,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         </div>
       </StepCard>
 
-      {/* ── PASO 2: VPO ───────────────────────────────── */}
+      {/* â”€â”€ PASO 2: VPO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <VpoCheckpointTable
         checkpoints={vpo_checkpoints}
         onChange={on_vpo_checkpoints_change}
@@ -501,7 +502,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         onToggleNa={on_toggle_na}
       />
 
-      {/* ── PASO 3: SIPOC MAP (Placeholder) ─────────────────────────── */}
+      {/* â”€â”€ PASO 3: SIPOC MAP (Placeholder) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <MultiImageUploadSection
         images={sipoc_map_files || []}
         onChange={(f) => on_sipoc_map_files_change?.(f)}
@@ -515,7 +516,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-3")} onToggleNa={() => on_toggle_na?.("step-3")}
       />
 
-      {/* ── PASO 4: Mapeo de procesos ───────────────────────────────── */}
+      {/* â”€â”€ PASO 4: Mapeo de procesos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <MultiImageUploadSection
         images={process_mapping_files || []}
         onChange={(f) => on_process_mapping_files_change?.(f)}
@@ -529,7 +530,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-4")} onToggleNa={() => on_toggle_na?.("step-4")}
       />
 
-      {/* ── PASO 5: Voz del Consumidor ────────────────── */}
+      {/* â”€â”€ PASO 5: Voz del Consumidor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <VozConsumidorTable
         items={voz_consumidor || []}
         onChange={on_voz_consumidor_change!}
@@ -538,7 +539,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-5")} onToggleNa={() => on_toggle_na?.("step-5")}
       />
 
-      {/* ── PASO 6: Análisis de Riesgos ───────────────── */}
+      {/* â”€â”€ PASO 6: Análisis de Riesgos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <AnalisisRiesgosTable
         title="PASO 6: ANÁLISIS DE RIESGOS DEL PROYECTO"
         items={analisis_riesgos_proyecto || []}
@@ -548,7 +549,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-6")} onToggleNa={() => on_toggle_na?.("step-6")}
       />
 
-      {/* ── PASO 7: Situación Actual ─────────────── */}
+      {/* â”€â”€ PASO 7: Situación Actual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <TimeSeriesYTD
         value={target_vs_actual}
         onChange={on_target_vs_actual_change}
@@ -573,7 +574,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
           </AccordionTrigger>
           <AccordionContent className="p-4 space-y-6 bg-slate-50">
 
-      {/* ── PASO 8: Línea base ──────────────────────────────────────── */}
+      {/* â”€â”€ PASO 8: Línea base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ImageUploadSection
         image={baseline_image || null}
         onChange={(img) => on_baseline_image_change?.(img || undefined)}
@@ -584,7 +585,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-7")} onToggleNa={() => on_toggle_na?.("step-7")}
       />
 
-      {/* ── PASO 9: Data collection Plan ────────────────────────────── */}
+      {/* â”€â”€ PASO 9: Data collection Plan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ColeccionDatosTable 
         items={coleccion_datos || []}
         onChange={(d) => on_coleccion_datos_change?.(d)}
@@ -593,7 +594,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-8")} onToggleNa={() => on_toggle_na?.("step-8")}
       />
 
-      {/* ── PASO 10: Pareto ──────────────────────────────────────────── */}
+      {/* â”€â”€ PASO 10: Pareto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ParetoSection
         drillDowns={pareto_drill_downs || []}
         setDrillDowns={on_pareto_drill_downs_change!}
@@ -630,7 +631,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>¿Quitar Análisis de Correlación?</AlertDialogTitle>
+                          <AlertDialogTitle>Â¿Quitar Análisis de Correlación?</AlertDialogTitle>
                           <AlertDialogDescription>
                             Esta acción ocultará la sección de correlación de flavors.
                           </AlertDialogDescription>
@@ -665,7 +666,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         )}
       </div>
 
-      {/* ── PASO 12: Especificaciones del Proceso ─────────────────────────── */}
+      {/* â”€â”€ PASO 12: Especificaciones del Proceso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ImageUploadSection
         image={especificacion_procesos_image || null}
         onChange={(img) => on_especificacion_procesos_image_change?.(img || undefined)}
@@ -676,7 +677,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-10")} onToggleNa={() => on_toggle_na?.("step-10")}
       />
 
-      {/* ── PASO 13: PUNTO DE REFERENCIA ───────────────────────── */}
+      {/* â”€â”€ PASO 13: PUNTO DE REFERENCIA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ImageUploadSection
         image={benchmark_image || null}
         onChange={(img) => on_benchmark_image_change?.(img || undefined)}
@@ -687,7 +688,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-11")} onToggleNa={() => on_toggle_na?.("step-11")}
       />
 
-      {/* ── PASO 14: Rendimiento Actual del Proceso ────────────── */}
+      {/* â”€â”€ PASO 14: Rendimiento Actual del Proceso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <RendimientoActualStep
         items={rendimiento_actual_pis || []}
         onChange={on_rendimiento_actual_pis_change!}
@@ -698,7 +699,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-13")} onToggleNa={() => on_toggle_na?.("step-13")}
       />
 
-      {/* ── PASO 15: GOP Themes ───────────────────────────────────────── */}
+      {/* â”€â”€ PASO 15: GOP Themes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <GopThemesSection
         data={gop_themes_data || []}
         onChange={on_gop_themes_data_change!}
@@ -707,7 +708,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-gops")} onToggleNa={() => on_toggle_na?.("step-gops")}
       />
 
-      {/* ── PASO 16: Fishbone ───────────────────────────────────────── */}
+      {/* â”€â”€ PASO 16: Fishbone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <IshikawaSection
         ishikawas={ishikawas || []}
         onChange={on_ishikawas_change!}
@@ -716,7 +717,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         isNa={na_steps?.has("step-14")} onToggleNa={() => on_toggle_na?.("step-14")}
       />
 
-      {/* ── PASO 17: 5 Why's ────────────────────────────────────────── */}
+      {/* â”€â”€ PASO 17: 5 Why's â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <FiveWhysSection
         tables={five_whys_tables || []}
         onChange={on_five_whys_tables_change!}
@@ -724,7 +725,7 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
         onToggleStep={() => on_toggle_step("step-15")}
         isNa={na_steps?.has("step-15")} onToggleNa={() => on_toggle_na?.("step-15")}
       />
-      {/* ── PASO 18: Causas Raíz Definidas ──────────── */}
+      {/* â”€â”€ PASO 18: Causas Raíz Definidas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <ConclusionesCausaRaizTable
         title="PASO 18: CAUSAS RAÍZ DEFINIDAS"
         items={conclusiones_causa_raiz || []}
@@ -739,3 +740,5 @@ export const PdcaPhasePlan: React.FC<PhasePlanProps> = ({
     </div>
   );
 };
+
+// force vite reload

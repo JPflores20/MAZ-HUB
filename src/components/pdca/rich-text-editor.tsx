@@ -23,7 +23,7 @@ export function RichTextEditor({
   value,
   onChange,
   disabled,
-  placeholder = "Escribe aquí...",
+  placeholder = "Escribe aquÃ­...",
   minHeight = "140px",
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -73,7 +73,7 @@ export function RichTextEditor({
           type="button"
           onMouseDown={(e) => { e.preventDefault(); execCmd("italic"); }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          title="Itálica"
+          title="ItÃ¡lica"
         >
           <Italic className="size-3.5" />
         </button>
@@ -85,7 +85,7 @@ export function RichTextEditor({
           type="button"
           onMouseDown={(e) => { e.preventDefault(); execCmd("insertUnorderedList"); }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          title="Lista de viñetas"
+          title="Lista de viÃ±etas"
         >
           <List className="size-3.5" />
         </button>
@@ -103,7 +103,7 @@ export function RichTextEditor({
 
         {/* Font size */}
         <label className="flex items-center gap-1 text-xs text-muted-foreground">
-          <span className="font-medium">Tamaño:</span>
+          <span className="font-medium">TamaÃ±o:</span>
           <select
             className="h-6 rounded border border-border bg-background text-xs px-1 focus:outline-none cursor-pointer"
             defaultValue="3"

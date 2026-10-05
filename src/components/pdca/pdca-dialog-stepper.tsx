@@ -100,14 +100,13 @@ import {
 } from "@/data/pdca";
 import {
   PdcaGoalDefinition,
-  PdcaParticipants,
-  DEFAULT_DEFINICION_META,
-} from "@/components/pdca/1.PLAN/pdca-goal-definition";
+  DEFAULT_DEFINICION_META} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
+import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { KpiTreeInteractive } from "../kpi-tree";
 import { ActionKanban } from "../action-kanban";
 // Removed firestore imports
 import { db } from "@/lib/firebase";
-import { GopThemesSection } from "./1.PLAN/GopThemesSection";
+import { GopThemesSection } from "./1.PLAN/paso15/GopThemesSection";
 import { ImageUploadSection, MultiImageUploadSection } from "./image-upload-section";
 import { DatePicker } from "@/components/ui/date-picker";
 import { savePdcaToFirestore } from "@/services/pdca-service";
@@ -143,7 +142,7 @@ export const getCustomPhases = (isAdmin: boolean) => {
   if (isAdmin) {
     return [
       ...base,
-      { id: "Evaluacion", label: "EVALUACIÓN R2D2", sub: "Solo Administradores" }
+      { id: "Evaluacion", label: "EVALUACIÃ“N R2D2", sub: "Solo Administradores" }
     ] as const;
   }
   return base;
@@ -336,17 +335,17 @@ const PILAR_STYLE_MAP: Record<string, { bg: string; text: string; border: string
     text: "text-blue-700 dark:text-blue-300",
     border: "border-blue-500/40",
   },
-  "CreaciÃ³n & ejecuciÃ³n de estÃ¡ndares": {
+  "CreaciÃƒÂ³n & ejecuciÃƒÂ³n de estÃƒÂ¡ndares": {
     bg: "bg-indigo-500/15 dark:bg-indigo-500/25",
     text: "text-indigo-700 dark:text-indigo-300",
     border: "border-indigo-500/40",
   },
-  "Proceso de revisiÃ³n de rutina": {
+  "Proceso de revisiÃƒÂ³n de rutina": {
     bg: "bg-cyan-500/15 dark:bg-cyan-500/25",
     text: "text-cyan-700 dark:text-cyan-300",
     border: "border-cyan-500/40",
   },
-  "GestiÃ³n del conocimiento": {
+  "GestiÃƒÂ³n del conocimiento": {
     bg: "bg-purple-500/15 dark:bg-purple-500/25",
     text: "text-purple-700 dark:text-purple-300",
     border: "border-purple-500/40",
@@ -361,17 +360,17 @@ const PILAR_STYLE_MAP: Record<string, { bg: string; text: string; border: string
     text: "text-amber-700 dark:text-amber-300",
     border: "border-amber-500/40",
   },
-  "SoluciÃ³n de problemas": {
+  "SoluciÃƒÂ³n de problemas": {
     bg: "bg-rose-500/15 dark:bg-rose-500/25",
     text: "text-rose-700 dark:text-rose-300",
     border: "border-rose-500/40",
   },
-  "DescripciÃ³n del negocio": {
+  "DescripciÃƒÂ³n del negocio": {
     bg: "bg-teal-500/15 dark:bg-teal-500/25",
     text: "text-teal-700 dark:text-teal-300",
     border: "border-teal-500/40",
   },
-  "Proceso de revisiÃ³n del rendimiento": {
+  "Proceso de revisiÃƒÂ³n del rendimiento": {
     bg: "bg-violet-500/15 dark:bg-violet-500/25",
     text: "text-violet-700 dark:text-violet-300",
     border: "border-violet-500/40",

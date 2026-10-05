@@ -2,15 +2,15 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PdcaPhasePlan } from "../1.PLAN/pdca_phase_plan";
-import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/pdca-goal-definition";
+import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 import { DEFAULT_PARTICIPANTES, DEFAULT_VPO_CHECKPOINTS } from "@/data/pdca";
 
 describe("PdcaPhasePlan", () => {
-  it("debe renderizar la secci�n de meta y participantes", () => {
+  it("debe renderizar la secciï¿½n de meta y participantes", () => {
     render(
       <PdcaPhasePlan
         title_value="" on_title_change={vi.fn()} area_value="" on_area_change={vi.fn()} on_deadline_change={vi.fn()}
-        problem_description="Descripci�n de prueba" on_problem_description_change={vi.fn()}
+        problem_description="Descripciï¿½n de prueba" on_problem_description_change={vi.fn()}
         goal_definition={DEFAULT_DEFINICION_META} on_goal_definition_change={vi.fn()}
         participants_info={DEFAULT_PARTICIPANTES} on_participants_info_change={vi.fn()}
         team_members_list={["Miembro A", "Miembro B"]} on_team_members_change={vi.fn()}
@@ -20,7 +20,7 @@ describe("PdcaPhasePlan", () => {
         is_editable={true}
       /> as any
     );
-    expect(screen.getByText(/PASO 1: DEFINICI�N DE LA META Y PARTICIPANTES/i)).toBeDefined();
+    expect(screen.getByText(/PASO 1: DEFINICIï¿½N DE LA META Y PARTICIPANTES/i)).toBeDefined();
     expect(screen.getByText(/PASO 2: PHASE SDCA CHECKLIST/i)).toBeDefined();
   });
 });

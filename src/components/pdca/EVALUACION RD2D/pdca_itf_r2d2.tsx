@@ -20,7 +20,7 @@ interface PdcaItfR2d2Props {
 const EVALUATION_OPTIONS = [
   { value: "0", label: "0 (No cumple)" },
   { value: "1", label: "1 (Necesita mejorar)" },
-  { value: "2", label: "2 (Cumplimiento mínimo)" },
+  { value: "2", label: "2 (Cumplimiento mÃ­nimo)" },
   { value: "3", label: "3 (Excelente)" },
   { value: "4", label: "4 (Benchmark)" },
 ];
@@ -93,7 +93,7 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
         </div>
         <div className="w-full md:w-64 space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <Label className="text-xs font-semibold">¿CUMPLE?</Label>
+            <Label className="text-xs font-semibold">Â¿CUMPLE?</Label>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -106,7 +106,7 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
           </div>
           <div>
             <Label className="text-[10px] uppercase text-muted-foreground mb-1 block">
-              PUNTUACIÓN
+              PUNTUACIÃ“N
             </Label>
             <Select
               disabled={!!disabled}
@@ -127,14 +127,14 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
           </div>
           <div>
             <Label className="text-[10px] uppercase text-muted-foreground mb-1 block">
-              ¿CÓMO LO ESTAMOS HACIENDO?
+              Â¿CÃ“MO LO ESTAMOS HACIENDO?
             </Label>
             <Textarea
               disabled={!!disabled}
               value={data.comment}
               onChange={(e) => updateField(key, "comment", e.target.value)}
               className="min-h-[60px] text-xs resize-y"
-              placeholder="Escribe comentarios aquí..."
+              placeholder="Escribe comentarios aquÃ­..."
             />
           </div>
         </div>
@@ -152,25 +152,25 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
       <div className="bg-blue-900 text-white p-3 flex justify-between items-center">
         <h3 className="font-bold text-lg tracking-wide">PDCA / ITF R2D2 + 1</h3>
         <div className="bg-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-          Puntuación Total: {totalScore} / 100
+          PuntuaciÃ³n Total: {totalScore} / 100
         </div>
       </div>
       <div className="p-4 bg-muted/20">
         {renderRow("rightPeople", "R", "Gente Correcta", "", [
           "Evite demasiados chefs y no suficientes cocineros",
           "Los ojos externos pueden ser muy perspicaces",
-          "¡La primera línea es tu amiga!",
-          "El rol de consultor es una opción",
+          "Â¡La primera lÃ­nea es tu amiga!",
+          "El rol de consultor es una opciÃ³n",
         ])}
         {renderRow("rightProblem", "R", "Problema Correcto", "", [
           "Alinee con un objetivo y un cronograma realistas, pero adecuadamente extendidos para lograrlo",
-          "Acuerde cómo medirá el éxito; puede que no sea a través del KPI principal al principio",
-          "Los buenos equipos de ITF y PDCA no dudan en volver a escribir la definición de su problema",
+          "Acuerde cÃ³mo medirÃ¡ el Ã©xito; puede que no sea a travÃ©s del KPI principal al principio",
+          "Los buenos equipos de ITF y PDCA no dudan en volver a escribir la definiciÃ³n de su problema",
         ])}
-        {renderRow("dataWillSetYouFree", "D", "Los datos te liberarán", "", [
-          "¿Tienes datos? Córtalos y córtalos / ¿No tienes datos? Ve a buscarlos",
-          "Manténgalo simple... los paretos para reducir el enfoque del equipo rápidamente",
-          "Comience a usar el Plan de acción del PDCA inmediatamente",
+        {renderRow("dataWillSetYouFree", "D", "Los datos te liberarÃ¡n", "", [
+          "Â¿Tienes datos? CÃ³rtalos y cÃ³rtalos / Â¿No tienes datos? Ve a buscarlos",
+          "MantÃ©ngalo simple... los paretos para reducir el enfoque del equipo rÃ¡pidamente",
+          "Comience a usar el Plan de acciÃ³n del PDCA inmediatamente",
         ])}
         {renderRow(
           "dontReinventTheWheel",
@@ -178,18 +178,18 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
           "No reinventes la rueda",
           "",
           [
-            "Buenas prácticas operativas (GOP)",
+            "Buenas prÃ¡cticas operativas (GOP)",
             "Recomendaciones de proveedores",
             "Amigos en todo el mundo",
-            "Lista de Verificación SDCA",
+            "Lista de VerificaciÃ³n SDCA",
           ],
         )}
-        {renderRow("noHippos", "+1", "Sin hipopótamos", "No te quedes atascado en el barro", [
-          "La lista de verificación SDCA debe ser rápida",
-          "Múltiples PDCAs como ramificaciones",
+        {renderRow("noHippos", "+1", "Sin hipopÃ³tamos", "No te quedes atascado en el barro", [
+          "La lista de verificaciÃ³n SDCA debe ser rÃ¡pida",
+          "MÃºltiples PDCAs como ramificaciones",
           "Zona involucrada",
           "Nuevos miembros al equipo",
-          "Redefinir objetivos. Obtener más datos",
+          "Redefinir objetivos. Obtener mÃ¡s datos",
         ])}
       </div>
       <div className="bg-muted/50 border-t border-border p-3 text-xs text-muted-foreground flex items-center gap-2">
@@ -221,7 +221,7 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
                   </span>
                 );
               })
-            : "Nadie ha evaluado aún"}
+            : "Nadie ha evaluado aÃºn"}
         </span>
       </div>
     </div>

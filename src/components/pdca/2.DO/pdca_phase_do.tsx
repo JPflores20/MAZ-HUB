@@ -1,6 +1,6 @@
 import React from "react";
-import { ActionPlanTable } from "./action-plan-table";
-import { EvidenciasSolucionStep } from "./evidencias-solucion-step";
+import { ActionPlanTable } from "./paso18/action-plan-table";
+import { EvidenciasSolucionStep } from "./paso19/evidencias-solucion-step";
 import { ImageUploadSection } from "../image-upload-section";
 import type { ActionItem } from "@/data/pdca";
 
@@ -37,7 +37,7 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
         isNa={na_steps?.has("step-18")} onToggleNa={() => on_toggle_na?.("step-18")}
       />
 
-      {/* ── PASO 19: Evidencia de soluciones ──────────────────────────── */}
+      {/* ── PASO 19: Evidencia de soluciones ────────────────────────── */}
       <EvidenciasSolucionStep
         actions={action_items || []}
         evidencias={evidencias_solucion || []}
@@ -47,7 +47,7 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
         isNa={na_steps?.has("step-19")} onToggleNa={() => on_toggle_na?.("step-19")}
       />
 
-      {/* ── PASO 20: Árbol del KPI con PIS foco ─────────────────────── */}
+      {/* ── PASO 20: Árbol del KPI con PIS foco ──────────────────────── */}
       <ImageUploadSection
         image={kpi_tree_foco_image || null}
         onChange={(img) => on_kpi_tree_foco_image_change(img || undefined)}
@@ -60,3 +60,5 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
     </div>
   );
 };
+
+// force vite reload
