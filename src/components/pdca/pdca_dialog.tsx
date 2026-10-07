@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useEffect } from "react";
+import React, { useMemo, useCallback, useState, useEffect, startTransition } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
@@ -102,7 +102,9 @@ export const PdcaDialog: React.FC<{
     } else if (current_idx >= 0 && current_idx < phase_order.length - 1) {
       const next_phase = phase_order[current_idx + 1]!;
       await autosave.handle_save_to_firestore(next_phase);
-      state.set_active_tab(next_phase);
+      startTransition(() => {
+        state.set_active_tab(next_phase);
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -129,7 +131,11 @@ export const PdcaDialog: React.FC<{
       <CustomStepper
         current={state.active_tab}
         completedPhases={state.completed_phases}
-        onSelect={(p: Phase) => state.set_active_tab(p)}
+        onSelect={(p: Phase) => {
+          startTransition(() => {
+            state.set_active_tab(p);
+          });
+        }}
         onToggleComplete={(p: Phase) => {
           if (!is_admin) return;
           state.set_completed_phases((prev) => {

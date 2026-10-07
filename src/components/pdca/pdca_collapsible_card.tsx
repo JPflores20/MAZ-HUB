@@ -20,9 +20,14 @@ export const PdcaCollapsibleCard: React.FC<CollapsibleCardProps> = ({
   // ESTADO LOCAL: Aísla la tarjeta de los autoguardados del padre.
   // Solo usa 'is_collapsed' para el valor inicial de la primera vez que carga.
   const [internalCollapsed, setInternalCollapsed] = useState(is_collapsed);
+  const [hasMounted, setHasMounted] = useState(!is_collapsed);
 
   const handleToggle = () => {
-    setInternalCollapsed(!internalCollapsed);
+    const nextState = !internalCollapsed;
+    setInternalCollapsed(nextState);
+    if (!nextState && !hasMounted) {
+      setHasMounted(true);
+    }
     if (on_toggle_collapse) {
       on_toggle_collapse();
     }
@@ -54,7 +59,9 @@ export const PdcaCollapsibleCard: React.FC<CollapsibleCardProps> = ({
         </button>
       </div>
 
-      <div className={cn("p-5 transition-all", internalCollapsed && "hidden")}>{children}</div>
+      <div className={cn("p-5 transition-all", internalCollapsed && "hidden")}>
+        {hasMounted ? children : null}
+      </div>
     </div>
   );
 };

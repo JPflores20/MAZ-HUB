@@ -48,6 +48,13 @@ export function StepCard({
   });
 
   const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [hasMounted, setHasMounted] = React.useState(isExpanded);
+
+  React.useEffect(() => {
+    if (isExpanded && !hasMounted) {
+      setHasMounted(true);
+    }
+  }, [isExpanded, hasMounted]);
 
   // Prevenir scroll en body cuando está en pantalla completa
   React.useEffect(() => {
@@ -193,7 +200,9 @@ export function StepCard({
         <div
           className={cn("overflow-hidden", isFullscreen && "overflow-visible h-full flex flex-col")}
         >
-          <div className={cn("space-y-4", isFullscreen && "flex-1")}>{children}</div>
+          <div className={cn("space-y-4", isFullscreen && "flex-1")}>
+            {hasMounted ? children : null}
+          </div>
         </div>
       </div>
     </div>
