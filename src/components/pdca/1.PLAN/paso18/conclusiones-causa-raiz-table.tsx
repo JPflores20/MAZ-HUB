@@ -1,7 +1,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 import {
   Table,
   TableBody,
@@ -49,7 +49,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
 
   return (
     <StepCard
-      title={title ?? "PASO 18: CAUSAS RAÃZ DEFINIDAS"}
+      title={title ?? "PASO 18: CAUSAS RAÍZ DEFINIDAS"}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
@@ -85,43 +85,53 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
               {items?.map((item) => (
                 <TableRow key={item.id} className="border-b border-border">
                   <TableCell className="p-1.5 border-r border-border align-top">
-                    <Textarea
+                    <TextareaAutosize
                       value={item.problema}
                       onChange={(e) => handleUpdate(item.id, "problema", e.target.value)}
                       placeholder="Problema o desviación..."
-                      className="min-h-[80px] text-xs shadow-none resize-y"
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none text-justify overflow-hidden"
+                      style={{ overflow: "hidden" }}
                     />
                   </TableCell>
                   <TableCell className="p-1.5 border-r border-border align-top">
-                    <Textarea
+                    <TextareaAutosize
                       value={item.causaRaiz}
                       onChange={(e) => handleUpdate(item.id, "causaRaiz", e.target.value)}
                       placeholder="Ej. Presencia de Smokey en arroz..."
-                      className="min-h-[80px] text-xs shadow-none resize-y"
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none text-justify overflow-hidden"
+                      style={{ overflow: "hidden" }}
                     />
                   </TableCell>
                   <TableCell className="p-1.5 border-r border-border align-top">
-                    <Textarea
+                    <TextareaAutosize
                       value={item.validacion}
                       onChange={(e) => handleUpdate(item.id, "validacion", e.target.value)}
-                      placeholder="Ej. Validación estadística o prueba de hipótesis XÂ²"
-                      className="min-h-[80px] text-xs shadow-none resize-y text-center"
+                      placeholder="Ej. Validación estadística o prueba de hipótesis X²"
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none text-justify overflow-hidden"
+                      style={{ overflow: "hidden" }}
                     />
                   </TableCell>
                   <TableCell className="p-1.5 border-r border-border align-top">
-                    <Textarea
+                    <TextareaAutosize
                       value={item.valorP}
                       onChange={(e) => handleUpdate(item.id, "valorP", e.target.value)}
                       placeholder="Ej. Valor-P = 1.50 X 10^-5"
-                      className="min-h-[80px] text-xs shadow-none resize-y text-center font-semibold text-red-600"
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none text-center font-semibold text-red-600 overflow-hidden"
+                      style={{ overflow: "hidden" }}
                     />
                   </TableCell>
                   <TableCell className="p-1.5 align-top">
-                    <Textarea
+                    <TextareaAutosize
                       value={item.conclusion}
                       onChange={(e) => handleUpdate(item.id, "conclusion", e.target.value)}
                       placeholder="Conclusión..."
-                      className="min-h-[80px] text-xs shadow-none resize-y"
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none text-justify overflow-hidden"
+                      style={{ overflow: "hidden" }}
                     />
                   </TableCell>
                   <TableCell className="p-1.5 text-center align-middle">

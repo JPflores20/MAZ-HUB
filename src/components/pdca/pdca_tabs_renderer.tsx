@@ -236,6 +236,17 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
         </TabContainer>
       )}
 
+      {esAdministrador && pestañasMontadas.has("Evaluacion") && (
+        <TabContainer isActive={estadoDialogo.active_tab === "Evaluacion"}>
+          <PdcaItfR2d2
+            evaluation={estadoDialogo.itf_r2d2_evaluation}
+            onChange={(ev) => { estadoDialogo.set_itf_r2d2_evaluation(ev); autoGuardado.mark_as_modified(); }}
+            disabled={!esEditable}
+            currentUser={usuarioAutenticado}
+          />
+        </TabContainer>
+      )}
+
       <div className="rounded-xl border border-border bg-card p-4 space-y-4">
         <div className="flex gap-2 border-b border-border pb-2">
           <button
@@ -277,17 +288,6 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
           <PdcaHistory history={estadoDialogo.history_events} />
         )}
       </div>
-
-      {esAdministrador && pestañasMontadas.has("Evaluacion") && (
-        <TabContainer isActive={estadoDialogo.active_tab === "Evaluacion"}>
-          <PdcaItfR2d2
-            evaluation={estadoDialogo.itf_r2d2_evaluation}
-            onChange={(ev) => { estadoDialogo.set_itf_r2d2_evaluation(ev); autoGuardado.mark_as_modified(); }}
-            disabled={!esEditable}
-            currentUser={usuarioAutenticado}
-          />
-        </TabContainer>
-      )}
     </>
   );
 };

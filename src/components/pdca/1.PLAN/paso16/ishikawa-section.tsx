@@ -107,38 +107,7 @@ export function IshikawaSection({
 
       <div className="space-y-12">
         {listaIshikawas.map((diagramaActualItem, indiceIteracion) => (
-          <div key={diagramaActualItem.id} className="relative group/ishikawa pt-4">
-            {listaIshikawas.length > 1 && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -right-2 top-0 z-20 h-6 px-2 text-[10px] uppercase font-bold transition-opacity rounded-full shadow-md"
-                  >
-                    <X className="size-3 mr-1" /> Eliminar Ishikawa
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>¿Eliminar diagrama de Ishikawa?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta acción no se puede deshacer. Se eliminarán permanentemente las causas y
-                      priorizaciones registradas en este diagrama.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => manejarEliminacionIshikawa(diagramaActualItem.id)}
-                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                    >
-                      Eliminar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+          <div key={diagramaActualItem.id} className="relative group/ishikawa">
             <IshikawaInteractivo
               causasRegistradas={diagramaActualItem.causes}
               alCambiarCausas={(causasState) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "causes", typeof causasState === "function" ? causasState(diagramaActualItem.causes) : causasState)}
@@ -151,6 +120,7 @@ export function IshikawaSection({
               sufijoTitulo={listaIshikawas.length > 1 ? ` ${indiceIteracion + 1}` : ""}
               tituloPersonalizado={diagramaActualItem.title}
               alCambiarTitulo={(tituloModificado) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "title", tituloModificado)}
+              alEliminarIshikawa={listaIshikawas.length > 1 ? () => manejarEliminacionIshikawa(diagramaActualItem.id) : undefined}
             />
           </div>
         ))}

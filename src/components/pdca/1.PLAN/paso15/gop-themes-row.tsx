@@ -35,8 +35,34 @@ export function FilaTemaGop({
   listaMeses,
   mapaColoresEstado,
 }: PropiedadesFilaGop) {
-  const fechaSeleccionada = registroGop.fechaCompromiso || "";
-  const porcentajeAvance = registroGop.porcentajeAvance || "";
+  const fechaSeleccionada =
+    registroGop.fechaCompromiso ||
+    (registroGop as any).fecha_compromiso ||
+    (registroGop as any).fecha ||
+    "";
+  const porcentajeAvance =
+    registroGop.porcentajeAvance !== undefined && registroGop.porcentajeAvance !== null
+      ? String(registroGop.porcentajeAvance)
+      : (registroGop as any).porcentaje_avance !== undefined && (registroGop as any).porcentaje_avance !== null
+        ? String((registroGop as any).porcentaje_avance)
+        : (registroGop as any).avance !== undefined && (registroGop as any).avance !== null
+          ? String((registroGop as any).avance)
+          : "";
+  const focusItems =
+    registroGop.focusItems !== undefined && registroGop.focusItems !== null
+      ? String(registroGop.focusItems)
+      : (registroGop as any).focus_items !== undefined && (registroGop as any).focus_items !== null
+        ? String((registroGop as any).focus_items)
+        : "";
+  const focusType = registroGop.focusType || (registroGop as any).focus_type || "#";
+  const status = registroGop.status || (registroGop as any).estado || (registroGop as any).estatus || "";
+
+  const mesesArray = Array.isArray(registroGop.meses)
+    ? registroGop.meses
+    : (registroGop.meses && typeof registroGop.meses === "object"
+        ? Object.values(registroGop.meses)
+        : Array(12).fill(false));
+
   const estaRetrasado =
     fechaSeleccionada &&
     porcentajeAvance !== undefined &&
@@ -53,14 +79,21 @@ export function FilaTemaGop({
         <Textarea
           value={registroGop.tema}
           onChange={(eventoCajaTexto) => alActualizarCampo(registroGop.id, "tema", eventoCajaTexto.target.value)}
-          className="border-0 focus-visible:ring-0 resize-none min-h-[60px] rounded-none bg-transparent"
+          className="border-0 focus-visible:ring-0 resize-none min-h-[60px] rounded-none bg-transparent text-justify overflow-hidden"
+          style={{ overflow: "hidden" }}
           placeholder="Describe el tema..."
         />
       </td>
 
-      {registroGop.meses.map((mesActivo, indiceMesActual) => {
-        const valorPorcentajeMes = registroGop.mesesValues?.[indiceMesActual] ?? "100%";
-        const colorFondoMes = registroGop.mesesColors?.[indiceMesActual] ?? "red";
+      {mesesArray.map((mesActivo, indiceMesActual) => {
+        const valorPorcentajeMes =
+          registroGop.mesesValues?.[indiceMesActual] ??
+          (registroGop as any).meses_values?.[indiceMesActual] ??
+          "100%";
+        const colorFondoMes =
+          registroGop.mesesColors?.[indiceMesActual] ??
+          (registroGop as any).meses_colors?.[indiceMesActual] ??
+          "red";
         
         let claseFondoMes = "bg-transparent hover:bg-secondary";
         if (mesActivo) {
@@ -119,7 +152,7 @@ export function FilaTemaGop({
       <td className="border border-border p-0 align-top">
         <div className="flex h-full min-h-[60px] items-center">
           <select
-            value={registroGop.focusType || "#"}
+            value={focusType}
             onChange={(eventoSelector) => alActualizarCampo(registroGop.id, "focusType", eventoSelector.target.value)}
             className="border-0 bg-transparent text-xs w-10 text-center focus-visible:ring-0 cursor-pointer outline-none font-bold"
           >
@@ -127,7 +160,7 @@ export function FilaTemaGop({
             <option value="%">%</option>
           </select>
           <Input
-            value={registroGop.focusItems}
+            value={focusItems}
             onChange={(eventoInput) => alActualizarCampo(registroGop.id, "focusItems", eventoInput.target.value)}
             className="border-0 focus-visible:ring-0 text-left rounded-none bg-transparent h-full flex-1 px-1"
             placeholder="Valor..."
@@ -137,11 +170,11 @@ export function FilaTemaGop({
 
       <td className="border border-border p-1">
         <select
-          value={registroGop.status}
+          value={status}
           onChange={(eventoSelectorEstado) => alActualizarCampo(registroGop.id, "status", eventoSelectorEstado.target.value)}
           className={cn(
             "w-full h-full min-h-[52px] text-xs font-semibold text-center border-0 outline-none cursor-pointer rounded",
-            mapaColoresEstado[registroGop.status] || "bg-transparent",
+            mapaColoresEstado[status] || "bg-transparent",
           )}
         >
           <option value="" className="bg-background text-foreground">Seleccionar...</option>

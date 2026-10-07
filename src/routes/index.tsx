@@ -261,13 +261,12 @@ function MisPdcas() {
       </header>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {phases.filter((phase) => phase !== "Resumen").map((phase) => {
+        {phases.filter((phase) => phase !== "Resumen" && phase !== "Evaluacion").map((phase) => {
           const borderColor: Record<string, string> = {
             Plan: "border-t-phase-plan",
             Do: "border-t-phase-do",
             Check: "border-t-phase-check",
             Act: "border-t-phase-act",
-            Evaluacion: "border-t-gray-500",
           };
           const color = borderColor[phase] || "border-t-gray-500";
 

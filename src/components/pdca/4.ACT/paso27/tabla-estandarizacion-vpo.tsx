@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Plus, Trash2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 import {
   Table,
   TableBody,
@@ -79,12 +79,12 @@ export const TablaEstandarizacionVpo: React.FC<TablaEstandarizacionVpoProps> = (
         <Table className="min-w-[1200px] text-xs">
           <TableHeader>
             <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">NOMBRE DEL ESTANDAR</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">NOMBRE DEL ESTÁNDAR</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">HERRAMIENTA VPO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÃ‘O / RESPONSABLE</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">EQUIPO QUE SE COMUNICARÃ / ENTRENARÃ</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÑO / RESPONSABLE</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">¿A QUÉ EQUIPO SE COMUNICARÁ / ENTRENARÁ?</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">DATOS DE ENTRENAMIENTO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">GOP O LA PRESENTACIÓN DE MEJORES PRÃCTICAS?</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] min-w-[150px]">¿GOP O PRESENTACIÓN DE MEJORES PRÁCTICAS?</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÓN</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">STATUS</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px] w-24">EVIDENCIA</TableHead>
@@ -102,50 +102,62 @@ export const TablaEstandarizacionVpo: React.FC<TablaEstandarizacionVpoProps> = (
             {items?.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.nombreEstandar}
                     onChange={(e) => handleUpdate(item.id, "nombreEstandar", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.herramientaVpo}
                     onChange={(e) => handleUpdate(item.id, "herramientaVpo", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.dueno}
                     onChange={(e) => handleUpdate(item.id, "dueno", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.equipoComunicara}
                     onChange={(e) => handleUpdate(item.id, "equipoComunicara", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.datosEntrenamiento}
                     onChange={(e) => handleUpdate(item.id, "datosEntrenamiento", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 align-top">
-                  <Textarea
+                  <TextareaAutosize
                     value={item.gopPresentacion}
                     onChange={(e) => handleUpdate(item.id, "gopPresentacion", e.target.value)}
-                    className="min-h-[60px] h-full text-xs shadow-none resize-none"
+                    minRows={2}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                     placeholder="..."
                   />
                 </TableCell>

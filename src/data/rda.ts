@@ -1,20 +1,16 @@
+import type { DefinicionMeta, ParticipantesData } from "./pdca";
+
 export type RdaStatus = 'Abierto' | 'En Progreso' | 'Cerrado';
 
-export interface RdaAnomalyContext {
-  planta: string;
-  fecha: string;
-  turno: string;
-  iniciadoPor: string;
-  responsable: string;
-  etapa: string;
-  departamento: string;
+export interface RdaPortada {
+  titulo: string;
   area: string;
-  disparador: string;
-  equiposAfectados: string;
-  folio: string;
-  tiempoParo: string;
-  unidades: string;
-  perdidas: string;
+  fechaLimite: string;
+  autorOriginal: string;
+  usuariosAsignados: string[];
+  descripcionProblema: string;
+  definicionMeta?: DefinicionMeta;
+  participantes?: ParticipantesData;
 }
 
 export interface RdaValidationAction {
@@ -55,6 +51,51 @@ export interface RdaClosure {
   fechaFinalizacion: string;
 }
 
+export interface RdaAnomalyContext {
+  planta: string;
+  fecha: string;
+  turno: string;
+  iniciadoPor: string;
+  responsable: string;
+  etapa: string;
+  departamento: string;
+  area: string;
+  disparador: string;
+  equiposAfectados: string;
+  folio: string;
+  tiempoParo: string;
+  unidades: string;
+  perdidas: string;
+}
+
+export interface RdaProblemDescription {
+  que: string;
+  como: string;
+  cuando: string;
+  donde: string;
+  quien: string;
+  cual: string;
+}
+
+export interface RdaTimelineEvent {
+  id: string;
+  time: string;
+  description: string;
+  images: string[];
+}
+
+export interface RdaAnalysis {
+  data: string;
+  images: string[];
+}
+
+export interface RdaEvidenceItem {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+}
+
 export interface Rda {
   id: string;
   title: string;
@@ -62,13 +103,23 @@ export interface Rda {
   createdAt: string;
   updatedAt: string;
   
+  completedPhases?: string[];
+  portada?: RdaPortada;
   context: RdaAnomalyContext;
-  ishikawa: any[];
+  problemDescription?: RdaProblemDescription;
+  timeline?: RdaTimelineEvent[];
+  analysis?: RdaAnalysis;
+  evidences?: RdaEvidenceItem[];
+  evidence1?: RdaEvidenceItem[]; // Legacy
+  evidence2?: RdaEvidenceItem[]; // Legacy
+
+  // Legacy fields (kept for backward compatibility)
+  ishikawa?: any[];
   five_whys_tables?: any[];
-  validationActions: RdaValidationAction[];
-  preventionActions: RdaPreventionAction[];
-  standardization: RdaStandardization;
-  closure: RdaClosure;
+  validationActions?: RdaValidationAction[];
+  preventionActions?: RdaPreventionAction[];
+  standardization?: RdaStandardization;
+  closure?: RdaClosure;
 }
 
 export const defaultRda: Rda = {
@@ -77,11 +128,28 @@ export const defaultRda: Rda = {
   status: 'Abierto',
   createdAt: '',
   updatedAt: '',
+  completedPhases: [],
+  portada: {
+    titulo: 'Nuevo RDA',
+    area: '',
+    fechaLimite: '',
+    autorOriginal: '',
+    usuariosAsignados: [],
+    descripcionProblema: '',
+  },
   context: {
     planta: 'ZACATECAS', fecha: '', turno: '', iniciadoPor: '', responsable: '',
     etapa: '', departamento: '', area: '', disparador: '', equiposAfectados: '',
     folio: '', tiempoParo: '', unidades: '', perdidas: ''
   },
+  problemDescription: {
+    que: '', como: '', cuando: '', donde: '', quien: '', cual: ''
+  },
+  timeline: [],
+  analysis: { data: '', images: [] },
+  evidences: [],
+  evidence1: [],
+  evidence2: [],
   ishikawa: [],
   five_whys_tables: [],
   validationActions: [],

@@ -1,10 +1,21 @@
 import React from "react";
-import { Maximize2 } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CajaCategoriaIshikawa } from "./ishikawa-category-box";
 import { MatrizPriorizacionIshikawa } from "./ishikawa-prioritization-matrix";
 
@@ -20,6 +31,7 @@ interface PropiedadesIshikawaInteractivo {
   sufijoTitulo?: string | undefined;
   tituloPersonalizado?: string | undefined;
   alCambiarTitulo?: ((nuevoTitulo: string) => void) | undefined;
+  alEliminarIshikawa?: (() => void) | undefined;
 }
 
 export function IshikawaInteractivo({
@@ -34,6 +46,7 @@ export function IshikawaInteractivo({
   sufijoTitulo = "",
   tituloPersonalizado,
   alCambiarTitulo,
+  alEliminarIshikawa,
 }: PropiedadesIshikawaInteractivo) {
   const arregloCategorias = [
     { id: "machine", label: etiquetasPersonalizadas["machine"] ?? "Concepto de: Máquina", position: "top" as const },
@@ -130,17 +143,51 @@ export function IshikawaInteractivo({
         />
       }
       headerRight={
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2">
-              <Maximize2 className="size-3.5" /> Expandir Diagrama
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[95vw] w-full p-6">
-            <h3 className="text-lg font-bold uppercase mb-4">{tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}</h3>
-            {renderizarDiagramaPescado}
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          {alEliminarIshikawa && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="h-8 px-2.5 text-[11px] font-bold uppercase shadow-sm gap-1"
+                >
+                  <X className="size-3.5" /> Eliminar Ishikawa
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar diagrama de Ishikawa?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción no se puede deshacer. Se eliminarán permanentemente las causas y
+                    priorizaciones registradas en este diagrama.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={alEliminarIshikawa}
+                    className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                  >
+                    Eliminar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-2">
+                <Maximize2 className="size-3.5" /> Expandir Diagrama
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[95vw] w-full p-6">
+              <h3 className="text-lg font-bold uppercase mb-4">{tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}</h3>
+              {renderizarDiagramaPescado}
+            </DialogContent>
+          </Dialog>
+        </div>
       }
     >
       <div className="space-y-6">

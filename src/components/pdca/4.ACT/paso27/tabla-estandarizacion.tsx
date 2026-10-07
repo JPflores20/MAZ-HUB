@@ -1,7 +1,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import TextareaAutosize from "react-textarea-autosize";
 import {
   Table,
   TableBody,
@@ -57,7 +57,7 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
             La pestaña de Mapa de Problemas será útil como referencia para comprobar todos los pilares de los elementos que deben ser creados o actualizados como parte de la etapa de normalización, ya que los mencionados aquí son sólo ejemplos de las muchas posibilidades.
           </li>
           <li>
-            Nota: si la respuesta es "Sí" a la presentación del GOP/Práctica óptima, por favor introdúzcala en el Eureka! Buenas Ideas en el Portal Global de VPO
+            Nota: si la respuesta es "Sí" a la presentación del GOP/Práctica óptima, por favor introdúzcala en el Eureka! Buenas Ideas en el Portal Global de VPO.
           </li>
         </ol>
       </StepInstructions>
@@ -72,12 +72,12 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
         <Table className="min-w-[1000px] text-xs">
           <TableHeader>
             <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">ACCIONES PARA MITIGAR EL RIESGO o MANTENER LA GANANCIA</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">ACCIONES PARA MITIGAR EL RIESGO O MANTENER LA GANANCIA</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">HERRAMIENTA VPO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÃ‘O</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">EQUIPO QUE SE COMUNICARÃ/ENTRENARÃ</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÑO</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">¿A QUÉ EQUIPO SE COMUNICARÁ / ENTRENARÁ?</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DATOS DE ENTRENAMIENTO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">GOP O LA PRESENTACIÓN DE LAS MEJORES PRÃCTICAS?</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">¿GOP O PRESENTACIÓN DE LAS MEJORES PRÁCTICAS?</TableHead>
               <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÓN</TableHead>
               <TableHead className="w-12 border-none"></TableHead>
             </TableRow>
@@ -93,59 +93,73 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
             {items?.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.accionesMitigar || ""}
                     onChange={(e) => handleUpdate(item.id, "accionesMitigar", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.herramientaVpo || ""}
                     onChange={(e) => handleUpdate(item.id, "herramientaVpo", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.dueno || ""}
                     onChange={(e) => handleUpdate(item.id, "dueno", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.equipoComunicara || ""}
                     onChange={(e) => handleUpdate(item.id, "equipoComunicara", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.datosEntrenamiento || ""}
                     onChange={(e) => handleUpdate(item.id, "datosEntrenamiento", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 border-r border-border">
-                  <Input
+                  <TextareaAutosize
                     value={item.gopPresentacion || ""}
                     onChange={(e) => handleUpdate(item.id, "gopPresentacion", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5">
-                  <Input
+                  <TextareaAutosize
                     value={item.fechaFinalizacion || ""}
                     onChange={(e) => handleUpdate(item.id, "fechaFinalizacion", e.target.value)}
                     placeholder="..."
-                    className="h-8 text-xs shadow-none text-center"
+                    minRows={1}
+                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-center overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 text-center">

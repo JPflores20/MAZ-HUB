@@ -252,18 +252,20 @@ export function ActionPlanTable({
                     onChange={(e) => updateRow(row.id, "tema", e.target.value)}
                     placeholder="Tema..."
                     minRows={1}
-                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px]"
+                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px] text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
 
-                {/* CAUSA RAÃZ */}
+                {/* CAUSA RAÍZ */}
                 <TableCell className="p-0 border-r align-top">
                   <TextareaAutosize
                     value={row.causaRaiz || ""}
                     onChange={(e) => updateRow(row.id, "causaRaiz", e.target.value)}
                     placeholder="Causa raíz..."
                     minRows={1}
-                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px]"
+                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px] text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
 
@@ -274,7 +276,8 @@ export function ActionPlanTable({
                     onChange={(e) => updateRow(row.id, "accion", e.target.value)}
                     placeholder="Acción..."
                     minRows={1}
-                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px]"
+                    className="w-full resize-none border-0 shadow-none focus-visible:ring-0 bg-transparent text-xs p-2.5 outline-none min-h-[40px] text-justify overflow-hidden"
+                    style={{ overflow: "hidden" }}
                   />
                 </TableCell>
 

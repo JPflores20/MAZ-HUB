@@ -1,578 +1,211 @@
-import { useState, useCallback } from "react";
-import type { RendimientoActualPiItem,
-  Phase,
-  ActionItem,
-  Pdca,
-  ConclusionesKpiData,
-  ConclusionesPiItem,
-  ParetoItem,
-  VpoCheckpointItem,
-  DefinicionMeta,
-  ParticipantesData,
-  ImpactMatrixRow,
-  FiveWhysTableData,
-  IshikawaItem,
-  PdcaComment,
-  PdcaHistoryEvent,
-} from "@/data/pdca";
-import {  DEFAULT_VPO_CHECKPOINTS,
-  DEFAULT_TARGET_VS_ACTUAL,
-  DEFAULT_PARETO_DATA_MAP,
-  DEFAULT_PARTICIPANTES,
-} from "@/data/pdca";
-import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
-
-import { parse_date_string } from "../utils/date_helpers";
+import { use_estado_pdca_general } from "./use_estado_pdca_general";
+import { use_estado_pdca_plan_graficas } from "./use_estado_pdca_plan_graficas";
+import { use_estado_pdca_herramientas } from "./use_estado_pdca_herramientas";
+import { use_estado_pdca_resultados } from "./use_estado_pdca_resultados";
+import type { Pdca } from "@/data/pdca";
 
 export const use_pdca_dialog_state = (
   initial_pdca: Pdca,
   current_user: { name?: string; email?: string } | null,
 ) => {
-  const [active_tab, set_active_tab] = useState<Phase>("Resumen");
-  const [title_value, set_title_value] = useState<string>(initial_pdca.titulo || "");
-  const [area_value, set_area_value] = useState<string>(initial_pdca.area || "cocimientos");
-  const [problem_value, set_problem_value] = useState<string>(initial_pdca.problema || "");
-  const [root_cause_value, set_root_cause_value] = useState<string>(initial_pdca.causaRaiz || "");
-  const [action_items, set_action_items] = useState<ActionItem[]>(initial_pdca.acciones || []);
-  const [comments_list, set_comments_list] = useState<PdcaComment[]>(
-    initial_pdca.comentarios || [],
-  );
-  const [history_events, set_history_events] = useState<PdcaHistoryEvent[]>(
-    initial_pdca.historial || [],
-  );
-  const [bottom_tab, set_bottom_tab] = useState<"comments" | "history">("comments");
-
-  const [deadline_date, set_deadline_date] = useState<Date | undefined>(() =>
-    parse_date_string(initial_pdca.fechaFinalizacion),
-  );
-  const [author_name, set_author_name] = useState<string>(
-    initial_pdca.autor || current_user?.name || "Usuario",
-  );
-  const [author_email, set_author_email] = useState<string>(
-    initial_pdca.autorEmail || current_user?.email || "",
-  );
-  const [assigned_users, set_assigned_users] = useState<{ name: string; email: string }[]>(
-    initial_pdca.asignados || [],
-  );
-
-  const [vpo_checkpoints, set_vpo_checkpoints] = useState<VpoCheckpointItem[]>(
-    initial_pdca.vpoCheckpoints || DEFAULT_VPO_CHECKPOINTS,
-  );
-  const [pareto_drill_downs, set_pareto_drill_downs] = useState<string[]>(
-    initial_pdca.paretoDrillDowns || [],
-  );
-  const [pareto_data_map, set_pareto_data_map] = useState<Record<string, ParetoItem[]>>(
-    initial_pdca.paretoDataMap || DEFAULT_PARETO_DATA_MAP,
-  );
-  const [pareto_unit, set_pareto_unit] = useState<string>(initial_pdca.paretoUnit || initial_pdca.pareto_unit || "");
-  const [pareto_titles, set_pareto_titles] = useState<Record<string, string>>(
-    initial_pdca.paretoTitles || initial_pdca.pareto_titles || {},
-  );
-
-  const [target_vs_actual, set_target_vs_actual] = useState<
-    { mes: string; target: number; actual: number | null }[]
-  >(initial_pdca.targetVsActual || initial_pdca.target_vs_actual || DEFAULT_TARGET_VS_ACTUAL);
-  const [target_vs_actual_unit, set_target_vs_actual_unit] = useState<string>(
-    initial_pdca.targetVsActualUnit || initial_pdca.target_vs_actual_unit || "",
-  );
-  const [target_vs_actual_title, set_target_vs_actual_title] = useState<string>(
-    initial_pdca.targetVsActualTitle || initial_pdca.target_vs_actual_title || "SITUACIÓN ACTUAL",
-  );
-  const [target_vs_actual_ymin, set_target_vs_actual_ymin] = useState<number>(initial_pdca.targetVsActualYmin ?? initial_pdca.target_vs_actual_ymin ?? 0);
-  const [target_vs_actual_ymax, set_target_vs_actual_ymax] = useState<string>(initial_pdca.targetVsActualYmax || initial_pdca.target_vs_actual_ymax || "auto");
-
-  const [kpi_final_result_data, set_kpi_final_result_data] = useState<
-    { mes: string; target: number; actual: number | null }[]
-  >(initial_pdca.kpiFinalResultData || initial_pdca.kpi_final_result_data || DEFAULT_TARGET_VS_ACTUAL);
-  const [kpi_final_result_unit, set_kpi_final_result_unit] = useState<string>(
-    initial_pdca.kpiFinalResultUnit || initial_pdca.kpi_final_result_unit || "",
-  );
-  const [gemba_final_image, set_gemba_final_image] = useState<string | null>(
-    initial_pdca.gembaFinalImage || initial_pdca.gemba_final_image || null,
-  );
-  const [gemba_final_images, set_gemba_final_images] = useState<string[]>(
-    initial_pdca.gembaFinalImages || initial_pdca.gemba_final_images ||
-      (initial_pdca.gembaFinalImage ? [initial_pdca.gembaFinalImage] : []),
-  );
-  const [evidence_files, set_evidence_files] = useState<string[]>(initial_pdca.evidencias || []);
-  const [kpi_document_files, set_kpi_document_files] = useState<string[]>(
-    initial_pdca.kpiDocuments || initial_pdca.kpi_documents || [],
-  );
-
-  const [has_flavor_correlation, set_has_flavor_correlation] = useState<boolean>(
-    initial_pdca.hasFlavorCorrelation || false,
-  );
-  const [flavor_correlation_data, set_flavor_correlation_data] = useState<any>(
-    initial_pdca.flavorCorrelationData || null,
-  );
-
-  const [has_gop_themes, set_has_gop_themes] = useState<boolean>(
-    initial_pdca.hasGopThemes || false,
-  );
-  const [gop_themes_data, set_gop_themes_data] = useState<any[]>(initial_pdca.gopThemesData || []);
-  const [process_mapping_files, set_process_mapping_files] = useState<string[]>(
-    initial_pdca.processMappingFiles ||
-      (initial_pdca.processMappingImage ? [initial_pdca.processMappingImage] : []),
-  );
-  const [sipoc_map_files, set_sipoc_map_files] = useState<string[]>(
-    initial_pdca.sipocMapFiles || initial_pdca.sipoc_map_files || [],
-  );
-
-  // --- NUEVOS ESTADOS ---
-  const [baseline_image, set_baseline_image] = useState<string | undefined>(
-    initial_pdca.baselineImage || initial_pdca.baseline_image,
-  );
-  
-  const [tabla_estandarizacion, set_tabla_estandarizacion] = useState<any[]>(
-    initial_pdca.tablaEstandarizacion || initial_pdca.tabla_estandarizacion || [],
-  );
-
-  const [tabla_estandarizacion_vpo, set_tabla_estandarizacion_vpo] = useState<any[]>(
-    initial_pdca.tablaEstandarizacionVpo || initial_pdca.tabla_estandarizacion_vpo || [],
-  );
-
-  const [resultados_finales, set_resultados_finales] = useState<any>(
-    initial_pdca.resultadosFinales || initial_pdca.resultados_finales || {},
-  );
-
-  const [kpi_tree_foco_image, set_kpi_tree_foco_image] = useState<string | undefined>(
-    initial_pdca.kpiTreeFocoImage || initial_pdca.kpi_tree_foco_image,
-  );
-  
-  const [evidencias_solucion, set_evidencias_solucion] = useState<any[]>(
-    initial_pdca.evidenciasSolucion || initial_pdca.evidencias_solucion || [],
-  );
-
-  const [has_mapeo_proceso, set_has_mapeo_proceso] = useState<boolean>(
-    initial_pdca.hasMapeoProceso ?? initial_pdca.has_mapeo_proceso ?? false,
-  );
-  
-  const [mapeo_proceso_image, set_mapeo_proceso_image] = useState<string | undefined>(
-    initial_pdca.mapeoProcesoImage || initial_pdca.mapeo_proceso_image,
-  );
-
-  const [mapeo_proceso_desc, set_mapeo_proceso_desc] = useState<string | undefined>(
-    initial_pdca.mapeoProcesoDesc || initial_pdca.mapeo_proceso_desc,
-  );
-
-  const [rendimiento_actual_pis, set_rendimiento_actual_pis] = useState<any[]>(initial_pdca.rendimientoActualPis || initial_pdca.rendimiento_actual_pis || []);
-  const [rendimiento_actual_image, set_rendimiento_actual_image] = useState<string | undefined>(initial_pdca.rendimientoActualImage || initial_pdca.rendimiento_actual_image);
-
-  const [coleccion_datos, set_coleccion_datos] = useState<any[]>(
-    initial_pdca.coleccionDatos || initial_pdca.coleccion_datos || [],
-  );
-
-  const [especificacion_procesos_text, set_especificacion_procesos_text] = useState<string | undefined>(
-    initial_pdca.especificacionProcesosText || initial_pdca.especificacion_procesos_text,
-  );
-  
-  const [especificacion_procesos_image, set_especificacion_procesos_image] = useState<string | undefined>(
-    initial_pdca.especificacionProcesosImage || initial_pdca.especificacion_procesos_image,
-  );
-
-  const [final_time_series_title, set_final_time_series_title] = useState<string>(
-    initial_pdca.finalTimeSeriesTitle || initial_pdca.final_time_series_title || "RESULTADO FINAL",
-  );
-  
-  const [final_time_series_data, set_final_time_series_data] = useState<any[]>(
-    initial_pdca.finalTimeSeriesData || initial_pdca.final_time_series_data || DEFAULT_TARGET_VS_ACTUAL,
-  );
-  
-  const [final_time_series_unit, set_final_time_series_unit] = useState<string>(
-    initial_pdca.finalTimeSeriesUnit || initial_pdca.final_time_series_unit || "",
-  );
-  const [final_time_series_ymin, set_final_time_series_ymin] = useState<number>(initial_pdca.finalTimeSeriesYmin ?? initial_pdca.final_time_series_ymin ?? 0);
-  const [final_time_series_ymax, set_final_time_series_ymax] = useState<string>(initial_pdca.finalTimeSeriesYmax || initial_pdca.final_time_series_ymax || "auto");
-
-  const [current_times_title, set_current_times_title] = useState<string>(
-    initial_pdca.currentTimesTitle || initial_pdca.current_times_title || "SITUACIÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“N ACTUAL",
-  );
-
-  const [ishikawa_conceptos, set_ishikawa_conceptos] = useState<Record<string, string>>(
-    initial_pdca.ishikawaConceptos || initial_pdca.ishikawa_conceptos || {},
-  );
-
-  const [informacion_adicional_files, set_informacion_adicional_files] = useState<string[]>(
-    initial_pdca.informacionAdicionalFiles || initial_pdca.informacion_adicional_files || [],
-  );
-
-  const [voz_consumidor, set_voz_consumidor] = useState<any[]>(
-    initial_pdca.vozConsumidor || initial_pdca.voz_consumidor || [],
-  );
-
-  const [analisis_riesgos_proyecto, set_analisis_riesgos_proyecto] = useState<any[]>(
-    initial_pdca.analisisRiesgosProyecto || initial_pdca.analisis_riesgos_proyecto || [],
-  );
-
-  const [conclusiones_causa_raiz, set_conclusiones_causa_raiz] = useState<any[]>(
-    initial_pdca.conclusionesCausaRaiz || initial_pdca.conclusiones_causa_raiz || [],
-  );
-
-  const [pruebas_ejecutadas, set_pruebas_ejecutadas] = useState<any[]>(
-    initial_pdca.pruebasEjecutadas || initial_pdca.pruebas_ejecutadas || [],
-  );
-
-  const [nuevo_performance, set_nuevo_performance] = useState<any[]>(
-    initial_pdca.nuevoPerformance || initial_pdca.nuevo_performance || [],
-  );
-  const [nuevo_performance_image, set_nuevo_performance_image] = useState<string | undefined>(
-    initial_pdca.nuevo_performance_image,
-  );
-  const [nuevo_pareto_image, set_nuevo_pareto_image] = useState<string | undefined>(
-    initial_pdca.nuevo_pareto_image,
-  );
-  const [nuevo_pareto_drill_downs, set_nuevo_pareto_drill_downs] = useState<string[]>(
-    initial_pdca.nuevo_pareto_drill_downs || [],
-  );
-  const [nuevo_pareto_data_map, set_nuevo_pareto_data_map] = useState<Record<string, any[]>>(
-    initial_pdca.nuevo_pareto_data_map || {},
-  );
-  const [nuevo_pareto_unit, set_nuevo_pareto_unit] = useState<string>(
-    initial_pdca.nuevo_pareto_unit || "",
-  );
-  const [nuevo_pareto_titles, set_nuevo_pareto_titles] = useState<Record<string, string>>(
-    initial_pdca.nuevo_pareto_titles || {},
-  );
-
-  const [nueva_correlacion_image, set_nueva_correlacion_image] = useState<string | undefined>(
-    initial_pdca.nueva_correlacion_image,
-  );
-  const [has_nueva_correlacion, set_has_nueva_correlacion] = useState<boolean>(
-    initial_pdca.has_nueva_correlacion || false,
-  );
-  const [nueva_correlacion_data, set_nueva_correlacion_data] = useState<any[]>(
-    initial_pdca.nueva_correlacion_data || [],
-  );
-
-  const [analisis_riesgos_estandarizacion, set_analisis_riesgos_estandarizacion] = useState<any[]>(
-    initial_pdca.analisisRiesgosEstandarizacion || initial_pdca.analisis_riesgos_estandarizacion || [],
-  );
-
-  const [conclusiones_finales, set_conclusiones_finales] = useState<string>(
-    initial_pdca.conclusionesFinales || initial_pdca.conclusiones_finales || "",
-  );
-  const [conclusiones_storyboard_image, set_conclusiones_storyboard_image] = useState<string | undefined>(
-    initial_pdca.conclusionesStoryboardImage || initial_pdca.conclusiones_storyboard_image
-  );
-  const [conclusiones_kpi_data, set_conclusiones_kpi_data] = useState<ConclusionesKpiData | undefined>(
-    initial_pdca.conclusionesKpiData || initial_pdca.conclusiones_kpi_data
-  );
-  const [conclusiones_pi_items, set_conclusiones_pi_items] = useState<ConclusionesPiItem[]>(
-    initial_pdca.conclusionesPiItems || initial_pdca.conclusiones_pi_items || []
-  );
-
-  const [sops_documentos_image, set_sops_documentos_image] = useState<string | undefined>(
-    (initial_pdca as any).sopsDocumentosImage || (initial_pdca as any).sops_documentos_image,
-  );
-
-  const [plan_entrenamiento_image, set_plan_entrenamiento_image] = useState<string | undefined>(
-    (initial_pdca as any).planEntrenamientoImage || (initial_pdca as any).plan_entrenamiento_image,
-  );
-
-  const [plan_control_image, set_plan_control_image] = useState<string | undefined>(
-    (initial_pdca as any).planControlImage || (initial_pdca as any).plan_control_image,
-  );
-
-  const [lecciones_aprendidas, set_lecciones_aprendidas] = useState<string>(
-    (initial_pdca as any).leccionesAprendidas || (initial_pdca as any).lecciones_aprendidas || "",
-  );
-
-  const [benchmark_image, set_benchmark_image] = useState<string | undefined>(
-    (initial_pdca as any).benchmarkImage || (initial_pdca as any).benchmark_image,
-  );
-
-  const [problem_timeline_option, set_problem_timeline_option] = useState<"A" | "B">(
-    initial_pdca.problemTimelineOption || "A",
-  );
-  const [problem_timeline_filter, set_problem_timeline_filter] = useState<
-    "day" | "week" | "month" | "3months"
-  >(initial_pdca.problemTimelineFilter || "day");
-  const [problem_timeline_events, set_problem_timeline_events] = useState<
-    { id: string; time: string; description: string }[]
-  >(initial_pdca.problemTimelineEvents || []);
-
-  const [itf_r2d2_evaluation, set_itf_r2d2_evaluation] = useState<any>(
-    initial_pdca.itfR2d2Evaluation ||
-      initial_pdca.itf_r2d2_evaluation || {
-        rightPeople: { check: false, score: 0, comment: "" },
-        rightProblem: { check: false, score: 0, comment: "" },
-        dataWillSetYouFree: { check: false, score: 0, comment: "" },
-        dontReinventTheWheel: { check: false, score: 0, comment: "" },
-        noHippos: { check: false, score: 0, comment: "" },
-      },
-  );
-
-  const [five_whys_tables, set_five_whys_tables] = useState<FiveWhysTableData[]>(() => {
-    if (initial_pdca.fiveWhysTables && initial_pdca.fiveWhysTables.length > 0)
-      return initial_pdca.fiveWhysTables;
-    return [
-      {
-        id: "fivewhys-1",
-        title: "MÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â°TODO",
-        rows: [
-          {
-            id: Date.now(),
-            q1: "",
-            q2: "",
-            q3: "",
-            q4: "",
-            q5: "",
-            w1: "",
-            w2: "",
-            w3: "",
-            w4: "",
-            w5: "",
-            accion: "",
-          },
-        ],
-      },
-    ];
-  });
-
-  const [impact_matrix, set_impact_matrix] = useState<ImpactMatrixRow[]>(
-    initial_pdca.impactMatrix || [],
-  );
-
-  const [ishikawas, set_ishikawas] = useState<IshikawaItem[]>(() => {
-    if (initial_pdca.ishikawas && initial_pdca.ishikawas.length > 0) return initial_pdca.ishikawas;
-    return [
-      {
-        id: "ishikawa-1",
-        effect: initial_pdca.ishikawaEffect || "Efecto / Problema",
-        causes: initial_pdca.ishikawaCauses || {
-          machine: [],
-          method: [],
-          material: [],
-          manpower: [],
-          measurement: [],
-          environment: [],
-        },
-        prioritization: initial_pdca.prioritizationCauses || [],
-      },
-    ];
-  });
-
-  const [kpi_nodes, set_kpi_nodes] = useState<any[]>(initial_pdca.kpiNodes || []);
-  const [kpi_edges, set_kpi_edges] = useState<any[]>(initial_pdca.kpiEdges || []);
-  const handle_kpi_change = useCallback((nodes: any[], edges: any[]) => {
-    set_kpi_nodes(nodes);
-    set_kpi_edges(edges);
-  }, []);
-
-  const [completed_phases, set_completed_phases] = useState<Set<string>>(
-    new Set(initial_pdca.completedPhases || []),
-  );
-  const [completed_steps, set_completed_steps] = useState<Set<string>>(
-    new Set(initial_pdca.completedSteps || initial_pdca.completed_steps || []),
-  );
-  const [na_steps, set_na_steps] = useState<Set<string>>(
-    new Set(initial_pdca.naSteps || initial_pdca.na_steps || []),
-  );
-  const [definition_goal, set_definition_goal] = useState<DefinicionMeta>(
-    initial_pdca.definicionMeta || DEFAULT_DEFINICION_META,
-  );
-  const [team_members, set_team_members] = useState<string[]>(initial_pdca.equipo || []);
-  const [participants_data, set_participants_data] = useState<ParticipantesData>(
-    initial_pdca.participantes || DEFAULT_PARTICIPANTES,
-  );
-  const [statistical_analysis_files, set_statistical_analysis_files] = useState<string[]>(
-    initial_pdca.statisticalAnalysisFiles || [],
-  );
+  const general = use_estado_pdca_general(initial_pdca, current_user);
+  const graficas = use_estado_pdca_plan_graficas(initial_pdca);
+  const herramientas = use_estado_pdca_herramientas(initial_pdca);
+  const resultados = use_estado_pdca_resultados(initial_pdca);
 
   return {
-    active_tab,
-    set_active_tab,
-    title_value,
-    set_title_value,
-    area_value,
-    set_area_value,
-    problem_value,
-    set_problem_value,
-    root_cause_value,
-    set_root_cause_value,
-    action_items,
-    set_action_items,
-    comments_list,
-    set_comments_list,
-    history_events,
-    set_history_events,
-    bottom_tab,
-    set_bottom_tab,
-    deadline_date,
-    set_deadline_date,
-    author_name,
-    set_author_name,
-    author_email,
-    set_author_email,
-    assigned_users,
-    set_assigned_users,
-    vpo_checkpoints,
-    set_vpo_checkpoints,
-    pareto_drill_downs,
-    set_pareto_drill_downs,
-    pareto_data_map,
-    set_pareto_data_map,
-    pareto_unit,
-    set_pareto_unit,
-    pareto_titles,
-    set_pareto_titles,
-    target_vs_actual,
-    set_target_vs_actual,
-    target_vs_actual_unit,
-    set_target_vs_actual_unit,
-    target_vs_actual_title,
-    set_target_vs_actual_title,
-    target_vs_actual_ymin,
-    set_target_vs_actual_ymin,
-    target_vs_actual_ymax,
-    set_target_vs_actual_ymax,
-    kpi_final_result_data,
-    set_kpi_final_result_data,
-    kpi_final_result_unit,
-    set_kpi_final_result_unit,
-    gemba_final_image,
-    set_gemba_final_image,
-    gemba_final_images,
-    set_gemba_final_images,
-    evidence_files,
-    set_evidence_files,
-    kpi_document_files,
-    set_kpi_document_files,
-    has_flavor_correlation,
-    set_has_flavor_correlation,
-    flavor_correlation_data,
-    set_flavor_correlation_data,
-    has_gop_themes,
-    set_has_gop_themes,
-    gop_themes_data,
-    set_gop_themes_data,
-    process_mapping_files,
-    set_process_mapping_files,
-    sipoc_map_files,
-    set_sipoc_map_files,
-    problem_timeline_option,
-    set_problem_timeline_option,
-    problem_timeline_filter,
-    set_problem_timeline_filter,
-    problem_timeline_events,
-    set_problem_timeline_events,
-    five_whys_tables,
-    set_five_whys_tables,
-    impact_matrix,
-    set_impact_matrix,
-    ishikawas,
-    set_ishikawas,
-    kpi_nodes,
-    kpi_edges,
-    handle_kpi_change,
-    completed_phases,
-    set_completed_phases,
-    completed_steps,
-    set_completed_steps,
-    na_steps,
-    set_na_steps,
-    definition_goal,
-    set_definition_goal,
-    team_members,
-    set_team_members,
-    participants_data,
-    set_participants_data,
-    statistical_analysis_files,
-    set_statistical_analysis_files,
-    itf_r2d2_evaluation,
-    set_itf_r2d2_evaluation,
-    // --- NUEVOS CAMPOS ---
-    baseline_image,
-    set_baseline_image,
-    tabla_estandarizacion,
-    set_tabla_estandarizacion,
-    tabla_estandarizacion_vpo,
-    set_tabla_estandarizacion_vpo,
-    resultados_finales,
-    set_resultados_finales,
-    kpi_tree_foco_image,
-    set_kpi_tree_foco_image,
-    evidencias_solucion,
-    set_evidencias_solucion,
-    has_mapeo_proceso,
-    set_has_mapeo_proceso,
-    mapeo_proceso_image,
-    set_mapeo_proceso_image,
-    mapeo_proceso_desc,
-    set_mapeo_proceso_desc,
-    coleccion_datos,
-    rendimiento_actual_pis,
-    set_rendimiento_actual_pis,
-    rendimiento_actual_image,
-    set_rendimiento_actual_image,
-    set_coleccion_datos,
-    especificacion_procesos_text,
-    set_especificacion_procesos_text,
-    especificacion_procesos_image,
-    set_especificacion_procesos_image,
-    final_time_series_title,
-    set_final_time_series_title,
-    final_time_series_data,
-    set_final_time_series_data,
-    final_time_series_unit,
-    set_final_time_series_unit,
-    final_time_series_ymin,
-    set_final_time_series_ymin,
-    final_time_series_ymax,
-    set_final_time_series_ymax,
-    current_times_title,
-    set_current_times_title,
-    ishikawa_conceptos,
-    set_ishikawa_conceptos,
-    informacion_adicional_files,
-    set_informacion_adicional_files,
-    voz_consumidor,
-    set_voz_consumidor,
-    analisis_riesgos_proyecto,
-    set_analisis_riesgos_proyecto,
-    conclusiones_causa_raiz,
-    set_conclusiones_causa_raiz,
-    pruebas_ejecutadas,
-    set_pruebas_ejecutadas,
-    nuevo_performance,
-    set_nuevo_performance,
-    nuevo_performance_image,
-    set_nuevo_performance_image,
-    nuevo_pareto_image,
-    set_nuevo_pareto_image,
-    nuevo_pareto_drill_downs,
-    set_nuevo_pareto_drill_downs,
-    nuevo_pareto_data_map,
-    set_nuevo_pareto_data_map,
-    nuevo_pareto_unit,
-    set_nuevo_pareto_unit,
-    nuevo_pareto_titles,
-    set_nuevo_pareto_titles,
-    nueva_correlacion_image,
-    set_nueva_correlacion_image,
-    has_nueva_correlacion,
-    set_has_nueva_correlacion,
-    nueva_correlacion_data,
-    set_nueva_correlacion_data,
-    analisis_riesgos_estandarizacion,
-    set_analisis_riesgos_estandarizacion,
-    conclusiones_finales,
-    set_conclusiones_finales,
-    conclusiones_storyboard_image,
-    set_conclusiones_storyboard_image,
-    conclusiones_kpi_data,
-    set_conclusiones_kpi_data,
-    conclusiones_pi_items,
-    set_conclusiones_pi_items,
-    sops_documentos_image,
-    set_sops_documentos_image,
-    plan_entrenamiento_image,
-    set_plan_entrenamiento_image,
-    plan_control_image,
-    set_plan_control_image,
-    lecciones_aprendidas,
-    set_lecciones_aprendidas,
-    benchmark_image,
-    set_benchmark_image,
+    active_tab: general.pestañaActiva,
+    set_active_tab: general.setPestañaActiva,
+    title_value: general.tituloProyecto,
+    set_title_value: general.setTituloProyecto,
+    area_value: general.areaProyecto,
+    set_area_value: general.setAreaProyecto,
+    problem_value: general.problemaDeclarado,
+    set_problem_value: general.setProblemaDeclarado,
+    root_cause_value: general.causaRaizIdentificada,
+    set_root_cause_value: general.setCausaRaizIdentificada,
+    action_items: herramientas.elementosAccion,
+    set_action_items: herramientas.setElementosAccion,
+    comments_list: general.listaComentarios,
+    set_comments_list: general.setListaComentarios,
+    history_events: general.historialEventos,
+    set_history_events: general.setHistorialEventos,
+    bottom_tab: general.pestañaInferiorActiva,
+    set_bottom_tab: general.setPestañaInferiorActiva,
+    deadline_date: general.fechaLimite,
+    set_deadline_date: general.setFechaLimite,
+    author_name: general.nombreAutor,
+    set_author_name: general.setNombreAutor,
+    author_email: general.correoAutor,
+    set_author_email: general.setCorreoAutor,
+    assigned_users: general.usuariosAsignados,
+    set_assigned_users: general.setUsuariosAsignados,
+    vpo_checkpoints: graficas.puntosControlVpo,
+    set_vpo_checkpoints: graficas.setPuntosControlVpo,
+    pareto_drill_downs: graficas.desglosePareto,
+    set_pareto_drill_downs: graficas.setDesglosePareto,
+    pareto_data_map: graficas.mapaDatosPareto,
+    set_pareto_data_map: graficas.setMapaDatosPareto,
+    pareto_unit: graficas.unidadPareto,
+    set_pareto_unit: graficas.setUnidadPareto,
+    pareto_titles: graficas.titulosPareto,
+    set_pareto_titles: graficas.setTitulosPareto,
+    target_vs_actual: graficas.metaContraReal,
+    set_target_vs_actual: graficas.setMetaContraReal,
+    target_vs_actual_unit: graficas.unidadMetaContraReal,
+    set_target_vs_actual_unit: graficas.setUnidadMetaContraReal,
+    target_vs_actual_title: graficas.tituloMetaContraReal,
+    set_target_vs_actual_title: graficas.setTituloMetaContraReal,
+    target_vs_actual_ymin: graficas.ejeYMinMetaContraReal,
+    set_target_vs_actual_ymin: graficas.setEjeYMinMetaContraReal,
+    target_vs_actual_ymax: graficas.ejeYMaxMetaContraReal,
+    set_target_vs_actual_ymax: graficas.setEjeYMaxMetaContraReal,
+    kpi_final_result_data: resultados.datosResultadoFinalKpi,
+    set_kpi_final_result_data: resultados.setDatosResultadoFinalKpi,
+    kpi_final_result_unit: resultados.unidadResultadoFinalKpi,
+    set_kpi_final_result_unit: resultados.setUnidadResultadoFinalKpi,
+    gemba_final_image: resultados.imagenFinalGemba,
+    set_gemba_final_image: resultados.setImagenFinalGemba,
+    gemba_final_images: resultados.imagenesFinalesGemba,
+    set_gemba_final_images: resultados.setImagenesFinalesGemba,
+    evidence_files: resultados.archivosEvidencia,
+    set_evidence_files: resultados.setArchivosEvidencia,
+    kpi_document_files: resultados.archivosDocumentosKpi,
+    set_kpi_document_files: resultados.setArchivosDocumentosKpi,
+    has_flavor_correlation: herramientas.tieneCorrelacionSabor,
+    set_has_flavor_correlation: herramientas.setTieneCorrelacionSabor,
+    flavor_correlation_data: herramientas.datosCorrelacionSabor,
+    set_flavor_correlation_data: herramientas.setDatosCorrelacionSabor,
+    has_gop_themes: herramientas.tieneTemasGop,
+    set_has_gop_themes: herramientas.setTieneTemasGop,
+    gop_themes_data: herramientas.datosTemasGop,
+    set_gop_themes_data: herramientas.setDatosTemasGop,
+    process_mapping_files: herramientas.archivosMapeoProcesos,
+    set_process_mapping_files: herramientas.setArchivosMapeoProcesos,
+    sipoc_map_files: herramientas.archivosMapaSipoc,
+    set_sipoc_map_files: herramientas.setArchivosMapaSipoc,
+    problem_timeline_option: graficas.opcionLineaTiempoProblema,
+    set_problem_timeline_option: graficas.setOpcionLineaTiempoProblema,
+    problem_timeline_filter: graficas.filtroLineaTiempoProblema,
+    set_problem_timeline_filter: graficas.setFiltroLineaTiempoProblema,
+    problem_timeline_events: graficas.eventosLineaTiempoProblema,
+    set_problem_timeline_events: graficas.setEventosLineaTiempoProblema,
+    five_whys_tables: herramientas.tablasCincoPorques,
+    set_five_whys_tables: herramientas.setTablasCincoPorques,
+    impact_matrix: herramientas.matrizImpacto,
+    set_impact_matrix: herramientas.setMatrizImpacto,
+    ishikawas: herramientas.ishikawasGenerales,
+    set_ishikawas: herramientas.setIshikawasGenerales,
+    kpi_nodes: graficas.nodosKpi,
+    kpi_edges: graficas.enlacesKpi,
+    handle_kpi_change: graficas.alCambiarKpi,
+    completed_phases: general.fasesCompletadas,
+    set_completed_phases: general.setFasesCompletadas,
+    completed_steps: general.pasosCompletados,
+    set_completed_steps: general.setPasosCompletados,
+    na_steps: general.pasosNoAplica,
+    set_na_steps: general.setPasosNoAplica,
+    definition_goal: graficas.definicionDeMeta,
+    set_definition_goal: graficas.setDefinicionDeMeta,
+    team_members: general.miembrosEquipo,
+    set_team_members: general.setMiembrosEquipo,
+    participants_data: general.datosParticipantes,
+    set_participants_data: general.setDatosParticipantes,
+    statistical_analysis_files: herramientas.archivosAnalisisEstadistico,
+    set_statistical_analysis_files: herramientas.setArchivosAnalisisEstadistico,
+    itf_r2d2_evaluation: resultados.evaluacionItfR2d2,
+    set_itf_r2d2_evaluation: resultados.setEvaluacionItfR2d2,
+    baseline_image: resultados.imagenLineaBase,
+    set_baseline_image: resultados.setImagenLineaBase,
+    tabla_estandarizacion: resultados.datosTablaEstandarizacion,
+    set_tabla_estandarizacion: resultados.setDatosTablaEstandarizacion,
+    tabla_estandarizacion_vpo: resultados.datosTablaEstandarizacionVpo,
+    set_tabla_estandarizacion_vpo: resultados.setDatosTablaEstandarizacionVpo,
+    resultados_finales: resultados.datosResultadosFinales,
+    set_resultados_finales: resultados.setDatosResultadosFinales,
+    kpi_tree_foco_image: graficas.imagenFocoKpiTree,
+    set_kpi_tree_foco_image: graficas.setImagenFocoKpiTree,
+    evidencias_solucion: herramientas.evidenciasSolucionImplementada,
+    set_evidencias_solucion: herramientas.setEvidenciasSolucionImplementada,
+    has_mapeo_proceso: herramientas.tieneMapeoProcesos,
+    set_has_mapeo_proceso: herramientas.setTieneMapeoProcesos,
+    mapeo_proceso_image: herramientas.imagenMapeoProceso,
+    set_mapeo_proceso_image: herramientas.setImagenMapeoProceso,
+    mapeo_proceso_desc: herramientas.descripcionMapeoProceso,
+    set_mapeo_proceso_desc: herramientas.setDescripcionMapeoProceso,
+    coleccion_datos: herramientas.datosColeccion,
+    set_coleccion_datos: herramientas.setDatosColeccion,
+    rendimiento_actual_pis: graficas.pisRendimientoActual,
+    set_rendimiento_actual_pis: graficas.setPisRendimientoActual,
+    rendimiento_actual_image: graficas.imagenRendimientoActual,
+    set_rendimiento_actual_image: graficas.setImagenRendimientoActual,
+    especificacion_procesos_text: herramientas.textoEspecificacionProcesos,
+    set_especificacion_procesos_text: herramientas.setTextoEspecificacionProcesos,
+    especificacion_procesos_image: herramientas.imagenEspecificacionProcesos,
+    set_especificacion_procesos_image: herramientas.setImagenEspecificacionProcesos,
+    final_time_series_title: resultados.tituloSeriesTiempoFinal,
+    set_final_time_series_title: resultados.setTituloSeriesTiempoFinal,
+    final_time_series_data: resultados.datosSeriesTiempoFinal,
+    set_final_time_series_data: resultados.setDatosSeriesTiempoFinal,
+    final_time_series_unit: resultados.unidadSeriesTiempoFinal,
+    set_final_time_series_unit: resultados.setUnidadSeriesTiempoFinal,
+    final_time_series_ymin: resultados.ejeYMinSeriesTiempoFinal,
+    set_final_time_series_ymin: resultados.setEjeYMinSeriesTiempoFinal,
+    final_time_series_ymax: resultados.ejeYMaxSeriesTiempoFinal,
+    set_final_time_series_ymax: resultados.setEjeYMaxSeriesTiempoFinal,
+    current_times_title: resultados.tituloTiemposActuales,
+    set_current_times_title: resultados.setTituloTiemposActuales,
+    ishikawa_conceptos: herramientas.conceptosIshikawa,
+    set_ishikawa_conceptos: herramientas.setConceptosIshikawa,
+    informacion_adicional_files: herramientas.archivosInformacionAdicional,
+    set_informacion_adicional_files: herramientas.setArchivosInformacionAdicional,
+    voz_consumidor: herramientas.datosVozConsumidor,
+    set_voz_consumidor: herramientas.setDatosVozConsumidor,
+    analisis_riesgos_proyecto: herramientas.riesgosProyectoAnalizados,
+    set_analisis_riesgos_proyecto: herramientas.setRiesgosProyectoAnalizados,
+    conclusiones_causa_raiz: herramientas.conclusionesCausaRaizEncontradas,
+    set_conclusiones_causa_raiz: herramientas.setConclusionesCausaRaizEncontradas,
+    pruebas_ejecutadas: herramientas.pruebasEjecutadasFaseCheck,
+    set_pruebas_ejecutadas: herramientas.setPruebasEjecutadasFaseCheck,
+    nuevo_performance: resultados.datosNuevoRendimiento,
+    set_nuevo_performance: resultados.setDatosNuevoRendimiento,
+    nuevo_performance_image: resultados.imagenNuevoRendimiento,
+    set_nuevo_performance_image: resultados.setImagenNuevoRendimiento,
+    nuevo_pareto_image: resultados.imagenNuevoPareto,
+    set_nuevo_pareto_image: resultados.setImagenNuevoPareto,
+    nuevo_pareto_drill_downs: resultados.desgloseNuevoPareto,
+    set_nuevo_pareto_drill_downs: resultados.setDesgloseNuevoPareto,
+    nuevo_pareto_data_map: resultados.mapaDatosNuevoPareto,
+    set_nuevo_pareto_data_map: resultados.setMapaDatosNuevoPareto,
+    nuevo_pareto_unit: resultados.unidadNuevoPareto,
+    set_nuevo_pareto_unit: resultados.setUnidadNuevoPareto,
+    nuevo_pareto_titles: resultados.titulosNuevoPareto,
+    set_nuevo_pareto_titles: resultados.setTitulosNuevoPareto,
+    nueva_correlacion_image: resultados.imagenNuevaCorrelacion,
+    set_nueva_correlacion_image: resultados.setImagenNuevaCorrelacion,
+    has_nueva_correlacion: resultados.tieneNuevaCorrelacion,
+    set_has_nueva_correlacion: resultados.setTieneNuevaCorrelacion,
+    nueva_correlacion_data: resultados.datosNuevaCorrelacion,
+    set_nueva_correlacion_data: resultados.setDatosNuevaCorrelacion,
+    analisis_riesgos_estandarizacion: herramientas.riesgosEstandarizacionAnalizados,
+    set_analisis_riesgos_estandarizacion: herramientas.setRiesgosEstandarizacionAnalizados,
+    conclusiones_finales: resultados.textoConclusionesFinales,
+    set_conclusiones_finales: resultados.setTextoConclusionesFinales,
+    conclusiones_storyboard_image: resultados.imagenConclusionesStoryboard,
+    set_conclusiones_storyboard_image: resultados.setImagenConclusionesStoryboard,
+    conclusiones_kpi_data: resultados.datosConclusionesKpi,
+    set_conclusiones_kpi_data: resultados.setDatosConclusionesKpi,
+    conclusiones_pi_items: resultados.itemsConclusionesPi,
+    set_conclusiones_pi_items: resultados.setItemsConclusionesPi,
+    sops_documentos_image: resultados.imagenSopsDocumentos,
+    set_sops_documentos_image: resultados.setImagenSopsDocumentos,
+    plan_entrenamiento_image: resultados.imagenPlanEntrenamiento,
+    set_plan_entrenamiento_image: resultados.setImagenPlanEntrenamiento,
+    plan_control_image: resultados.imagenPlanControl,
+    set_plan_control_image: resultados.setImagenPlanControl,
+    lecciones_aprendidas: resultados.textoLeccionesAprendidas,
+    set_lecciones_aprendidas: resultados.setTextoLeccionesAprendidas,
+    benchmark_image: resultados.imagenBenchmark,
+    set_benchmark_image: resultados.setImagenBenchmark,
   };
 };
