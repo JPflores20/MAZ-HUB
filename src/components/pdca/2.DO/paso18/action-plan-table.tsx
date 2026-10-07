@@ -28,10 +28,10 @@ const COLUMNAS_FINALES = [
 interface PropiedadesActionPlanTable {
   items: ActionItem[];
   onChange: (items: ActionItem[]) => void;
-  isStepCompleted?: boolean;
-  isNa?: boolean;
-  onToggleStep?: () => void;
-  onToggleNa?: () => void;
+  isStepCompleted?: boolean | undefined;
+  isNa?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  onToggleNa?: (() => void) | undefined;
 }
 
 /**

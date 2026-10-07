@@ -20,15 +20,15 @@ import { subirArchivoAFirebase } from "./utils/upload-utils";
 
 export interface PropiedadesImageUploadSection {
   image: string | null;
-  onChange: (base64: string | null) => void;
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  isStepCompleted?: boolean;
-  isNa?: boolean;
-  onToggleStep?: () => void;
-  onToggleNa?: () => void;
-  hideCard?: boolean;
+  onChange?: ((base64: string | null) => void) | undefined;
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  description?: string | undefined;
+  isStepCompleted?: boolean | undefined;
+  isNa?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  onToggleNa?: (() => void) | undefined;
+  hideCard?: boolean | undefined;
   customBadge?: React.ReactNode;
 }
 
@@ -57,7 +57,7 @@ export function ImageUploadSection({
     try {
       setEstaSubiendo(true);
       const urlDescarga = await subirArchivoAFirebase(archivo);
-      onChange(urlDescarga);
+      onChange?.(urlDescarga);
     } catch (error) {
       console.error("Error procesando imagen:", error);
     } finally {
@@ -125,7 +125,7 @@ export function ImageUploadSection({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onChange(null)}>Eliminar</AlertDialogAction>
+                <AlertDialogAction onClick={() => onChange?.(null)}>Eliminar</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -141,7 +141,7 @@ export function ImageUploadSection({
           alSalirArrastre={manejarSalidaArrastre}
           alSoltar={manejarSoltar}
           alSeleccionarArchivo={() => referenciaInput.current?.click()}
-          alConfirmarEnlace={(url) => onChange(url)}
+          alConfirmarEnlace={(url) => onChange?.(url)}
         />
       )}
 

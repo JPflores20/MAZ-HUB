@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export interface PropiedadesBarraHerramientas {
-  titulo?: string;
-  alCambiarTitulo?: (t: string) => void;
+  titulo?: string | undefined;
+  alCambiarTitulo?: ((t: string) => void) | undefined;
   indice: number;
   esPantallaCompleta: boolean;
   alExpandir: () => void;
@@ -23,7 +23,7 @@ export interface PropiedadesBarraHerramientas {
   alAgregarPorque: () => void;
   alQuitarPorque: () => void;
   alAgregarCausa: () => void;
-  alEliminarTabla?: () => void;
+  alEliminarTabla?: (() => void) | undefined;
 }
 
 export function BarraHerramientasTabla({

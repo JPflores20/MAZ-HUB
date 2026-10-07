@@ -16,8 +16,8 @@ export interface PropiedadesFasePlan {
   on_title_change: (v: string) => void;
   area_value: string;
   on_area_change: (v: string) => void;
-  deadline_date?: Date;
-  on_deadline_change: (d?: Date) => void;
+  deadline_date?: Date | undefined;
+  on_deadline_change?: ((d?: Date) => void) | undefined;
   author_name: string;
   author_email: string;
   on_author_change: (email: string, name: string) => void;
@@ -46,9 +46,9 @@ export interface PropiedadesFasePlan {
 
   // Control de pasos completados
   completed_steps: Set<string>;
-  na_steps?: Set<string>;
+  na_steps?: Set<string> | undefined;
   on_toggle_step: (step_id: string) => void;
-  on_toggle_na?: (step_id: string) => void;
+  on_toggle_na?: ((step_id: string) => void) | undefined;
   is_editable: boolean;
 
   // Archivos de mapeo de procesos y SIPOC

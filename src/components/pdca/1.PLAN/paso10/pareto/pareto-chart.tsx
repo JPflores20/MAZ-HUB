@@ -13,12 +13,12 @@ import { formatearValorPareto, type FilaPareto } from "./pareto-utils";
 
 interface PropiedadesGraficaPareto {
   filasPareto: FilaPareto[];
-  alHacerClicEnBarra?: (area: string) => void;
-  unidadMedida?: string;
+  alHacerClicEnBarra?: ((area: string) => void) | undefined;
+  unidadMedida?: string | undefined;
   minimoEjeY: number;
   maximoEjeY: number | "auto";
   tituloGrafica: string;
-  tamanoMaximoBarra?: number;
+  tamanoMaximoBarra?: number | undefined;
 }
 
 export function GraficaPareto({

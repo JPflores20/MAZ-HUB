@@ -5,17 +5,17 @@ import { GrillaMultiUpload, ZonaVaciaMultiUpload } from "./components/multi-uplo
 
 export interface PropiedadesMultiImageUploadSection {
   images: string[];
-  onChange: (images: string[]) => void;
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  maxImages?: number;
-  isStepCompleted?: boolean;
-  isNa?: boolean;
-  onToggleStep?: () => void;
-  onToggleNa?: () => void;
+  onChange?: ((images: string[]) => void) | undefined;
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  description?: string | undefined;
+  maxImages?: number | undefined;
+  isStepCompleted?: boolean | undefined;
+  isNa?: boolean | undefined;
+  onToggleStep?: (() => void) | undefined;
+  onToggleNa?: (() => void) | undefined;
   /** String de tipos aceptados para el input de archivo */
-  acceptTypes?: string;
+  acceptTypes?: string | undefined;
   customBadge?: React.ReactNode;
 }
 
@@ -59,7 +59,7 @@ export function MultiImageUploadSection({
         urlsNuevas.push(urlDescarga);
       }
 
-      onChange([...images, ...urlsNuevas]);
+      onChange?.([...images, ...urlsNuevas]);
     } catch (error) {
       console.error("Error procesando imágenes:", error);
     } finally {
@@ -108,7 +108,7 @@ export function MultiImageUploadSection({
   };
 
   const eliminarImagen = (indice: number) => {
-    onChange(images.filter((_, i) => i !== indice));
+    onChange?.(images.filter((_, i) => i !== indice));
   };
 
   const propiedadesInteraccion = {
@@ -119,7 +119,7 @@ export function MultiImageUploadSection({
     alSalirArrastre: manejarSalidaArrastre,
     alSoltar: manejarSoltar,
     alPegar: manejarPegar,
-    alConfirmarEnlace: (url: string) => onChange([...images, url]),
+    alConfirmarEnlace: (url: string) => onChange?.([...images, url]),
   };
 
   return (

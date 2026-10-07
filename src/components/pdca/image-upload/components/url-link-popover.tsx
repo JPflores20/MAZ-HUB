@@ -41,7 +41,7 @@ export const PopoverPegarEnlace: React.FC<PropiedadesPopoverEnlace> = ({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          size={tamano}
+          size="sm"
           className={`gap-2 ${tamano === "xs" ? "h-6 text-[10px] bg-background/50 hover:bg-background" : "bg-background shadow-sm"}`}
           disabled={deshabilitado}
           onClick={(e) => e.stopPropagation()}

@@ -123,7 +123,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
             <Label className="text-xs font-semibold">FECHA LÍMITE</Label>
             <DatePicker
               date={deadline_date}
-              setDate={on_deadline_change}
+              setDate={(d) => on_deadline_change?.(d)}
               placeholder="Seleccionar fecha límite"
               disabled={!is_admin_user}
               className="h-9 text-xs w-full"
