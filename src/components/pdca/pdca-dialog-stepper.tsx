@@ -26,7 +26,7 @@ export function CustomStepper({
   const currentIndex = customPhases.findIndex((p) => p.id === current);
 
   return (
-    <div className="flex items-stretch gap-1 rounded-xl border border-border bg-secondary/60 p-1.5">
+    <div className="flex items-stretch gap-1 rounded-xl border border-border bg-secondary/60 p-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {customPhases.map((phase, i) => {
         const isCurrent = i === currentIndex;
         const isCompleted =

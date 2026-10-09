@@ -76,15 +76,7 @@ export const LayoutHeader: React.FC<Props> = ({
       </div>
 
       <div className="flex items-center gap-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => window.print()}
-          className="hidden md:flex gap-2 h-9 border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-        >
-          <Printer className="size-4" />
-          <span>Imprimir / PDF</span>
-        </Button>
+
 
         <ThemeToggle className="text-blue-200/80 hover:bg-white/10 hover:text-white" />
 

@@ -32,13 +32,13 @@ export function TablaPareto({
   return (
     <div className="overflow-x-auto border rounded-md">
       <Table className="text-xs">
-        <TableHeader className="bg-secondary/40">
-          <TableRow>
-            <TableHead className="py-2 px-3">AREA / CATEGORIA</TableHead>
-            <TableHead className="py-2 px-3 w-24">VALOR (GAP)</TableHead>
-            <TableHead className="py-2 px-3 w-20">% IND.</TableHead>
-            <TableHead className="py-2 px-3 w-20">% ACUM.</TableHead>
-            <TableHead className="w-10" />
+        <TableHeader className="bg-[#0078D7] [&_th]:text-white">
+          <TableRow className="hover:bg-[#0078D7]">
+            <TableHead className="py-2 px-3 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">ÁREA / CATEGORÍA</TableHead>
+            <TableHead className="py-2 px-3 w-24 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">VALOR (GAP)</TableHead>
+            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">% IND.</TableHead>
+            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white">% ACUM.</TableHead>
+            <TableHead className="w-10 text-white" />
           </TableRow>
         </TableHeader>
         <TableBody>

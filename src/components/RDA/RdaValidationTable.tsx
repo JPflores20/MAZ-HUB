@@ -1,6 +1,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -24,6 +25,17 @@ interface RdaValidationTableProps {
   items: RdaValidationAction[];
   onChange: (items: RdaValidationAction[]) => void;
 }
+
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "En progreso": return "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200";
+    case "Completa": return "bg-green-100 text-green-800 border-green-200 hover:bg-green-200";
+    case "Retrasado": return "bg-red-100 text-red-800 border-red-200 hover:bg-red-200";
+    case "Pendiente": 
+    default: return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
+  }
+};
 
 export function RdaValidationTable({ items, onChange }: RdaValidationTableProps) {
   const addRow = () => {
@@ -55,16 +67,16 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
       <div className="rounded-md border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-secondary/50">
-              <TableRow>
-                <TableHead className="w-[150px]">Categoría M</TableHead>
-                <TableHead className="w-[200px]">Causa Potencial</TableHead>
-                <TableHead className="w-[250px]">Acción de Validación</TableHead>
-                <TableHead className="w-[120px]">¿Es Causa Raíz?</TableHead>
-                <TableHead className="w-[150px]">Responsable</TableHead>
-                <TableHead className="w-[130px]">Fecha Límite</TableHead>
-                <TableHead className="w-[130px]">Eestatus</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+            <TableHeader className="bg-[#0078D7] [&_th]:text-white">
+              <TableRow className="hover:bg-[#0078D7]">
+                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Categoría M</TableHead>
+                <TableHead className="w-[200px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Causa Potencial</TableHead>
+                <TableHead className="w-[250px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Acción de Validación</TableHead>
+                <TableHead className="w-[120px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">¿Es Causa Raíz?</TableHead>
+                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Responsable</TableHead>
+                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Fecha Límite</TableHead>
+                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white">Estatus</TableHead>
+                <TableHead className="w-[50px] text-white"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,7 +87,7 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                       value={row.categoria}
                       onValueChange={(val) => updateRow(row.id, "categoria", val)}
                     >
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className={`h-9 ${getStatusColor(row.estatus)}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -125,11 +137,10 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
-                    <Input
-                      type="date"
-                      className="h-9"
-                      value={row.fechaLimite}
-                      onChange={(e) => updateRow(row.id, "fechaLimite", e.target.value)}
+                    <DatePicker
+                      date={row.fechaLimite ? new Date(row.fechaLimite) : undefined}
+                      setDate={(date) => updateRow(row.id, "fechaLimite", date ? date.toISOString() : "")}
+                      className="h-9 w-full"
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
@@ -137,7 +148,7 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                       value={row.estatus}
                       onValueChange={(val) => updateRow(row.id, "estatus", val)}
                     >
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className={`h-9 ${getStatusColor(row.estatus)}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

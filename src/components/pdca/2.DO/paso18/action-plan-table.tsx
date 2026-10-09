@@ -32,6 +32,7 @@ interface PropiedadesActionPlanTable {
   isNa?: boolean | undefined;
   onToggleStep?: (() => void) | undefined;
   onToggleNa?: (() => void) | undefined;
+  title?: string | undefined;
 }
 
 /**
@@ -45,6 +46,7 @@ export function ActionPlanTable({
   isNa,
   onToggleStep,
   onToggleNa,
+  title,
 }: PropiedadesActionPlanTable) {
   const agregarFila = () => onChange([...items, crearFilaAccionVacia()]);
 
@@ -56,7 +58,7 @@ export function ActionPlanTable({
 
   return (
     <StepCard
-      title="PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN"
+      title={title ?? "PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN"}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}

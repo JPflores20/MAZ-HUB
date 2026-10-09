@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import type { Rda, RdaEvidenceItem } from "@/data/rda";
-import { RdaPortadaTab } from "./RdaPortadaTab";
-import { RdaProblemDescriptionTab } from "./RdaProblemDescriptionTab";
-import { RdaTimelineTab } from "./RdaTimelineTab";
-import { RdaAnalysisTab } from "./RdaAnalysisTab";
-import { RdaEvidenceTab } from "./RdaEvidenceTab";
 import { ArrowLeft, Save, UploadCloud, Check } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import type { Rda } from "@/data/rda";
 import { cn } from "@/lib/utils";
-import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
-import { DEFAULT_PARTICIPANTES } from "@/data/pdca-defaults";
+
+import { RdaPhase1Resumen } from "./RdaPhase1Resumen";
+import { RdaPhase2Problem } from "./RdaPhase2Problem";
+import { RdaPhase3Analysis } from "./RdaPhase3Analysis";
+import { RdaPhase6QualityEval } from "./RdaPhase6QualityEval";
+import { RdaPhase7EffectivenessEval } from "./RdaPhase7EffectivenessEval";
 
 interface RdaDialogProps {
   open: boolean;
@@ -18,31 +19,30 @@ interface RdaDialogProps {
   onSave?: (rda: Rda) => void;
 }
 
-type RdaPhase = "A. Portada" | "B. Descripción" | "C. Línea de Tiempo" | "D. Análisis" | "E. Evidencias Causa Raíz";
+type RdaPhase =
+  | "1. Resumen"
+  | "2. Descripción del Problema"
+  | "3. Análisis de Causas Raíz"
+  | "4. Evaluación de Calidad RDA"
+  | "5. Evaluación de Efectividad de RDA";
 
 const RDA_PHASES: { id: RdaPhase; label: string }[] = [
-  { id: "A. Portada", label: "A. Portada" },
-  { id: "B. Descripción", label: "B. Descripción" },
-  { id: "C. Línea de Tiempo", label: "C. Línea de Tiempo" },
-  { id: "D. Análisis", label: "D. Análisis" },
-  { id: "E. Evidencias Causa Raíz", label: "E. Evidencias Causa Raíz" },
+  { id: "1. Resumen", label: "1. Resumen" },
+  { id: "2. Descripción del Problema", label: "2. Descripción del Problema" },
+  { id: "3. Análisis de Causas Raíz", label: "3. Análisis de Causas Raíz" },
+  { id: "4. Evaluación de Calidad RDA", label: "4. Evaluación de Calidad RDA" },
+  { id: "5. Evaluación de Efectividad de RDA", label: "5. Evaluación de Efectividad de RDA" },
 ];
-
-const parseEvidenceData = (ev: any): RdaEvidenceItem[] => {
-  if (!ev) return [];
-  if (Array.isArray(ev)) return ev;
-  return [{ id: crypto.randomUUID(), title: "Evidencia Causa Raíz 1", description: ev.description || "", images: ev.images || [] }];
-};
 
 export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
   const [localRda, setLocalRda] = useState<Rda | null>(null);
-  const [activeTab, setActiveTab] = useState<RdaPhase>("A. Portada");
+  const [activeTab, setActiveTab] = useState<RdaPhase>("1. Resumen");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (rda && open) {
       setLocalRda({ ...rda });
-      setActiveTab("A. Portada");
+      setActiveTab("1. Resumen");
     }
   }, [rda, open]);
 
@@ -58,11 +58,11 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
   const togglePhaseComplete = (e: React.MouseEvent, phaseId: RdaPhase) => {
     e.stopPropagation();
-    setLocalRda(prev => {
+    setLocalRda((prev) => {
       if (!prev) return prev;
       const completed = prev.completedPhases || [];
       if (completed.includes(phaseId)) {
-        return { ...prev, completedPhases: completed.filter(id => id !== phaseId) };
+        return { ...prev, completedPhases: completed.filter((id) => id !== phaseId) };
       } else {
         return { ...prev, completedPhases: [...completed, phaseId] };
       }
@@ -72,40 +72,35 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
   const getPhaseTabColors = (id: RdaPhase, isCurrent: boolean, isCompleted: boolean) => {
     if (isCurrent) {
       switch (id) {
-        case "A. Portada": return "bg-purple-600 text-white shadow-sm";
-        case "B. Descripción": return "bg-blue-600 text-white shadow-sm";
-        case "C. Línea de Tiempo": return "bg-red-600 text-white shadow-sm";
-        case "D. Análisis": return "bg-yellow-400 text-black shadow-sm";
-        case "E. Evidencias Causa Raíz": return "bg-emerald-500 text-white shadow-sm";
+        case "1. Resumen": return "bg-purple-600 text-white shadow-sm";
+        case "2. Descripción del Problema": return "bg-blue-600 text-white shadow-sm";
+        case "3. Análisis de Causas Raíz": return "bg-orange-500 text-white shadow-sm";
+        case "4. Evaluación de Calidad RDA": return "bg-teal-600 text-white shadow-sm";
+        case "5. Evaluación de Efectividad de RDA": return "bg-indigo-600 text-white shadow-sm";
       }
     }
-    
-    // For completed non-active tabs, give them a subtle tint or keep their soft color
     switch (id) {
-      case "A. Portada": return "bg-purple-500/10 text-purple-700 hover:bg-purple-500/20";
-      case "B. Descripción": return "bg-blue-500/10 text-blue-700 hover:bg-blue-500/20";
-      case "C. Línea de Tiempo": return "bg-red-500/10 text-red-700 hover:bg-red-500/20";
-      case "D. Análisis": return "bg-yellow-500/20 text-yellow-800 hover:bg-yellow-500/30";
-      case "E. Evidencias Causa Raíz": return "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20";
+      case "1. Resumen": return "bg-purple-500/10 text-purple-700 hover:bg-purple-500/20";
+      case "2. Descripción del Problema": return "bg-blue-500/10 text-blue-700 hover:bg-blue-500/20";
+      case "3. Análisis de Causas Raíz": return "bg-orange-500/10 text-orange-700 hover:bg-orange-500/20";
+      case "4. Evaluación de Calidad RDA": return "bg-teal-600/10 text-teal-700 hover:bg-teal-600/20";
+      case "5. Evaluación de Efectividad de RDA": return "bg-indigo-600/10 text-indigo-700 hover:bg-indigo-600/20";
     }
   };
 
   const currentIndex = RDA_PHASES.findIndex((p) => p.id === activeTab);
-  const completedPhasesCount = localRda.completedPhases?.length || 0;
-  const progressPct = Math.round((completedPhasesCount / RDA_PHASES.length) * 100);
-
-  // Consolidate legacy evidence data if evidences array is empty
-  const getEvidences = (): RdaEvidenceItem[] => {
-    if (localRda.evidences && localRda.evidences.length > 0) return localRda.evidences;
-    const merged: RdaEvidenceItem[] = [];
-    if (localRda.evidence1 && localRda.evidence1.length > 0) merged.push(...parseEvidenceData(localRda.evidence1));
-    if (localRda.evidence2 && localRda.evidence2.length > 0) merged.push(...parseEvidenceData(localRda.evidence2));
-    return merged;
-  };
-
-  const handleEvidencesChange = (items: RdaEvidenceItem[]) => {
-    setLocalRda(prev => prev ? { ...prev, evidences: items } : prev);
-  };
+  const isCompletable = (pid: string) => !pid.startsWith("1.") && !pid.startsWith("4.") && !pid.startsWith("5.");
+  
+  // Progreso: pasos que cuentan (fases 2 y 3)
+  const RDA_PROGRESS_STEP_IDS = [
+    "rda-step-1", "rda-step-2", "rda-step-3", "rda-step-4",
+    "rda-step-5", "rda-step-6", "rda-step-7", "rda-step-8",
+    "rda-step-9", "rda-step-10", "rda-step-11", "rda-step-12",
+  ];
+  const TOTAL_RDA_STEPS = RDA_PROGRESS_STEP_IDS.length;
+  const doneOrNa = new Set([...(localRda.completedSteps || []), ...(localRda.naSteps || [])]);
+  const uniqueCompletedSteps = RDA_PROGRESS_STEP_IDS.filter((id) => doneOrNa.has(id)).length;
+  const progressPct = Math.round((uniqueCompletedSteps / TOTAL_RDA_STEPS) * 100) || 0;
 
   return (
     <div id="rda-content" className="space-y-6">
@@ -159,18 +154,33 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
             {localRda.title || "Nuevo RDA"}
           </h1>
 
-          <div className="flex-shrink-0 text-right">
+          <div className="flex-shrink-0 text-right min-w-[180px]">
             <div className="text-sm font-semibold text-foreground whitespace-nowrap">
               Progreso del RDA: <span className="text-primary">{progressPct}%</span>
               <span className="text-xs text-muted-foreground ml-1 font-normal">
-                ({completedPhasesCount}/{RDA_PHASES.length} pasos)
+                ({uniqueCompletedSteps}/{TOTAL_RDA_STEPS} pasos)
               </span>
             </div>
+            <Progress value={progressPct} className="h-2 mt-1.5" />
           </div>
         </div>
       </div>
 
-      <div className="flex items-stretch gap-1 rounded-xl border border-border bg-secondary/60 p-1.5 overflow-x-auto">
+      <div className="relative flex items-center gap-2">
+        {/* Left arrow */}
+        <button
+          type="button"
+          onClick={() => {
+            const el = document.getElementById('rda-stepper-scroll');
+            if (el) el.scrollBy({ left: -200, behavior: 'smooth' });
+          }}
+          className="flex-shrink-0 flex items-center justify-center size-8 rounded-lg border border-border bg-background hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+          aria-label="Anterior"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+
+        <div id="rda-stepper-scroll" className="flex flex-1 items-stretch gap-1 rounded-xl border border-border bg-secondary/60 p-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {RDA_PHASES.map((phase, i) => {
           const isCurrent = i === currentIndex;
           const isCompleted = localRda.completedPhases?.includes(phase.id) || false;
@@ -179,11 +189,11 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
             if (isCompleted) return "bg-emerald-500 text-white border-transparent hover:bg-emerald-600";
             if (isCurrent) return "border-white/40 text-white/50 hover:border-white hover:text-white";
             switch (phase.id) {
-              case "A. Portada": return "border-purple-500/30 text-purple-500/30 hover:border-purple-500 hover:text-purple-500";
-              case "B. Descripción": return "border-blue-500/30 text-blue-500/30 hover:border-blue-500 hover:text-blue-500";
-              case "C. Línea de Tiempo": return "border-red-500/30 text-red-500/30 hover:border-red-500 hover:text-red-500";
-              case "D. Análisis": return "border-yellow-600/30 text-yellow-600/30 hover:border-yellow-600 hover:text-yellow-600";
-              case "E. Evidencias Causa Raíz": return "border-emerald-500/30 text-emerald-500/30 hover:border-emerald-500 hover:text-emerald-500";
+              case "1. Resumen": return "border-purple-500/30 text-purple-500/30 hover:border-purple-500 hover:text-purple-500";
+              case "2. Descripción del Problema": return "border-blue-500/30 text-blue-500/30 hover:border-blue-500 hover:text-blue-500";
+              case "3. Análisis de Causas Raíz": return "border-orange-500/30 text-orange-500/30 hover:border-orange-500 hover:text-orange-500";
+              case "4. Evaluación de Calidad RDA": return "border-teal-600/30 text-teal-600/30 hover:border-teal-600 hover:text-teal-600";
+              case "5. Evaluación de Efectividad de RDA": return "border-indigo-600/30 text-indigo-600/30 hover:border-indigo-600 hover:text-indigo-600";
               default: return "border-muted-foreground/30 text-muted-foreground/30 hover:border-muted-foreground hover:text-muted-foreground";
             }
           };
@@ -207,108 +217,59 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
                   {i + 1}
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-display text-sm font-semibold uppercase tracking-wide truncate">
-                    {phase.label}
+                  <span className="block font-display text-xs font-semibold uppercase tracking-wide truncate">
+                    {phase.label.substring(3)}
                   </span>
                 </span>
               </div>
               
-              <button
-                type="button"
-                onClick={(e) => togglePhaseComplete(e, phase.id)}
-                className={cn(
-                  "shrink-0 size-6 grid place-items-center rounded-full border-2 transition-all",
-                  getPhaseCheckColors()
-                )}
-              >
-                <Check className="size-3" strokeWidth={3} />
-              </button>
+              {isCompletable(phase.id) && (
+                <button
+                  type="button"
+                  onClick={(e) => togglePhaseComplete(e, phase.id)}
+                  className={cn(
+                    "shrink-0 size-6 grid place-items-center rounded-full border-2 transition-all",
+                    getPhaseCheckColors()
+                  )}
+                >
+                  <Check className="size-3" strokeWidth={3} />
+                </button>
+              )}
             </div>
           );
         })}
+        </div>
+
+        {/* Right arrow */}
+        <button
+          type="button"
+          onClick={() => {
+            const el = document.getElementById('rda-stepper-scroll');
+            if (el) el.scrollBy({ left: 200, behavior: 'smooth' });
+          }}
+          className="flex-shrink-0 flex items-center justify-center size-8 rounded-lg border border-border bg-background hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+          aria-label="Siguiente"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
 
+
       <div className="mt-8">
-        {activeTab === "A. Portada" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-6">Declaración del Proyecto</h3>
-              <RdaPortadaTab 
-                data={localRda.portada || {
-                  titulo: localRda.title || "",
-                  area: localRda.context?.area || "",
-                  fechaLimite: "",
-                  autorOriginal: localRda.context?.responsable || "",
-                  usuariosAsignados: [],
-                  descripcionProblema: "",
-                  definicionMeta: DEFAULT_DEFINICION_META,
-                  participantes: DEFAULT_PARTICIPANTES,
-                }}
-                onChange={(data) => {
-                  setLocalRda(prev => {
-                    if (!prev) return prev;
-                    return { 
-                      ...prev, 
-                      title: data.titulo || prev.title,
-                      context: { ...prev.context, area: data.area || prev.context.area },
-                      portada: data 
-                    };
-                  });
-                }}
-              />
-            </div>
-          </div>
+        {activeTab === "1. Resumen" && (
+          <RdaPhase1Resumen rda={localRda} onChange={setLocalRda} />
         )}
-
-        {activeTab === "B. Descripción" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-6">1. Descripción del Problema (5W + 1H)</h3>
-              <RdaProblemDescriptionTab 
-                data={localRda.problemDescription || { que: "", como: "", cuando: "", donde: "", quien: "", cual: "" }}
-                onChange={(data) => setLocalRda(prev => prev ? { ...prev, problemDescription: data } : prev)}
-              />
-            </div>
-          </div>
+        {activeTab === "2. Descripción del Problema" && (
+          <RdaPhase2Problem rda={localRda} onChange={setLocalRda} />
         )}
-
-        {activeTab === "C. Línea de Tiempo" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-6">2. Línea de Tiempo del Problema</h3>
-              <RdaTimelineTab 
-                events={localRda.timeline || []}
-                onChange={(events) => setLocalRda(prev => prev ? { ...prev, timeline: events } : prev)}
-              />
-            </div>
-          </div>
+        {activeTab === "3. Análisis de Causas Raíz" && (
+          <RdaPhase3Analysis rda={localRda} onChange={setLocalRda} />
         )}
-
-        {activeTab === "D. Análisis" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-6">3. Análisis de Datos y Variables</h3>
-              <RdaAnalysisTab 
-                data={localRda.analysis || { data: "", images: [] }}
-                onChange={(data) => setLocalRda(prev => prev ? { ...prev, analysis: data } : prev)}
-              />
-            </div>
-          </div>
+        {activeTab === "4. Evaluación de Calidad RDA" && (
+          <RdaPhase6QualityEval rda={localRda} onChange={setLocalRda} />
         )}
-
-        {activeTab === "E. Evidencias Causa Raíz" && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-6">4. Evidencias de Causa Raíz</h3>
-              <RdaEvidenceTab 
-                items={getEvidences()}
-                onChange={handleEvidencesChange}
-                title="Evaluación de Evidencias"
-                description="Añade las diferentes evidencias de causa raíz. Puedes evaluar parámetros operativos clave o variables de los tanques según sea necesario."
-                placeholder="Ej. Evidencia de concentración de PVPP, análisis de variables en tanque..."
-              />
-            </div>
-          </div>
+        {activeTab === "5. Evaluación de Efectividad de RDA" && (
+          <RdaPhase7EffectivenessEval rda={localRda} onChange={setLocalRda} />
         )}
       </div>
     </div>

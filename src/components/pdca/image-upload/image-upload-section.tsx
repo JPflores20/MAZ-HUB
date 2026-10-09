@@ -92,43 +92,44 @@ export function ImageUploadSection({
   const contenidoInterno = (
     <>
       {image ? (
-        <div className="relative w-full flex justify-center group mt-2">
-          <VisorImagenConZoom urlImagen={image} textoAlternativo={title}>
-            <DialogTrigger asChild>
-              <img
-                src={image}
-                alt={title}
-                className="max-h-[500px] object-contain rounded-md border shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-                title="Clic para ver imagen completa"
-              />
-            </DialogTrigger>
-          </VisorImagenConZoom>
+        <div className="w-full flex justify-center mt-2">
+          <div className="relative inline-block group">
+            <VisorImagenConZoom urlImagen={image} textoAlternativo={title}>
+              <DialogTrigger asChild>
+                <img
+                  src={image}
+                  alt={title}
+                  className="max-h-[500px] object-contain rounded-md border shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                  title="Clic para ver imagen completa"
+                />
+              </DialogTrigger>
+            </VisorImagenConZoom>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-8 w-8 shadow-md"
-                title="Eliminar imagen"
-              >
-                <X className="size-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede
-                  deshacer.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onChange?.(null)}>Eliminar</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-8 w-8 shadow-md"
+                  title="Eliminar imagen"
+                >
+                  <X className="size-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onChange?.(null)}>Eliminar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       ) : (
         <ZonaCargaImagenSimple

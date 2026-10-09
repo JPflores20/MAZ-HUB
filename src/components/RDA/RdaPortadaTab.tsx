@@ -42,7 +42,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
   return (
     <div className="space-y-8">
       {/* Información principal */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="space-y-2">
           <Label className="text-xs font-semibold text-muted-foreground uppercase">Título del Proyecto</Label>
           <Input 
@@ -82,6 +82,15 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
             value={data.autorOriginal || ""}
             onChange={(e) => handleChange("autorOriginal", e.target.value)}
             placeholder="Ej. AXEL GUILLEN RAMIREZ"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold text-muted-foreground uppercase">Correo del Autor</Label>
+          <Input 
+            value={data.autorEmail || ""}
+            onChange={(e) => handleChange("autorEmail", e.target.value)}
+            placeholder="Ej. axel@ab-inbev.com"
           />
         </div>
       </div>

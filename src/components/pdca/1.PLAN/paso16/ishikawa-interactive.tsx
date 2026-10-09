@@ -32,6 +32,10 @@ interface PropiedadesIshikawaInteractivo {
   tituloPersonalizado?: string | undefined;
   alCambiarTitulo?: ((nuevoTitulo: string) => void) | undefined;
   alEliminarIshikawa?: (() => void) | undefined;
+  isStepCompleted?: boolean;
+  isNa?: boolean;
+  onToggleStep?: () => void;
+  onToggleNa?: () => void;
 }
 
 export function IshikawaInteractivo({
@@ -47,6 +51,10 @@ export function IshikawaInteractivo({
   tituloPersonalizado,
   alCambiarTitulo,
   alEliminarIshikawa,
+  isStepCompleted,
+  isNa,
+  onToggleStep,
+  onToggleNa,
 }: PropiedadesIshikawaInteractivo) {
   const arregloCategorias = [
     { id: "machine", label: etiquetasPersonalizadas["machine"] ?? "Concepto de: Máquina", position: "top" as const },
@@ -134,6 +142,10 @@ export function IshikawaInteractivo({
   return (
     <StepCard
       className="overflow-hidden"
+      isStepCompleted={isStepCompleted}
+      isNa={isNa}
+      onToggleStep={onToggleStep}
+      onToggleNa={onToggleNa}
       title={
         <Input
           value={tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}

@@ -89,7 +89,7 @@ export const GrillaMultiUpload: React.FC<PropiedadesGrillaMultiUpload> = ({
                 <Button
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all rounded-full h-7 w-7 shadow-md scale-90 hover:scale-100"
+                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all rounded-full h-7 w-7 shadow-md scale-90 hover:scale-100 z-10"
                   title="Eliminar imagen"
                 >
                   <X className="size-3.5" />

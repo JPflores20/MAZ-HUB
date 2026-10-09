@@ -106,6 +106,18 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
           </div>
           <div>
             <Label className="text-[10px] uppercase text-muted-foreground mb-1 block">
+              ¿CÓMO LO ESTAMOS HACIENDO?
+            </Label>
+            <Textarea
+              disabled={!!disabled}
+              value={data.comment}
+              onChange={(e) => updateField(key, "comment", e.target.value)}
+              className="min-h-[60px] text-xs resize-y"
+              placeholder="Escribe comentarios aquí..."
+            />
+          </div>
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground mb-1 block">
               PUNTUACIÓN
             </Label>
             <Select
@@ -124,18 +136,6 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            <Label className="text-[10px] uppercase text-muted-foreground mb-1 block">
-              ¿CÓMO LO ESTAMOS HACIENDO?
-            </Label>
-            <Textarea
-              disabled={!!disabled}
-              value={data.comment}
-              onChange={(e) => updateField(key, "comment", e.target.value)}
-              className="min-h-[60px] text-xs resize-y"
-              placeholder="Escribe comentarios aquí..."
-            />
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import TextareaAutosize from "react-textarea-autosize";
 import {
   Table,
@@ -153,13 +154,11 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
                   />
                 </TableCell>
                 <TableCell className="p-1.5">
-                  <TextareaAutosize
-                    value={item.fechaFinalizacion || ""}
-                    onChange={(e) => handleUpdate(item.id, "fechaFinalizacion", e.target.value)}
-                    placeholder="..."
-                    minRows={1}
-                    className="w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-none resize-none text-center overflow-hidden"
-                    style={{ overflow: "hidden" }}
+                  <DatePicker
+                    date={item.fechaFinalizacion ? new Date(item.fechaFinalizacion) : undefined}
+                    setDate={(date) => handleUpdate(item.id, "fechaFinalizacion", date ? date.toISOString() : "")}
+                    className="w-full h-7 text-xs border-0 bg-transparent px-2 shadow-none"
+                    placeholder="Seleccionar..."
                   />
                 </TableCell>
                 <TableCell className="p-1.5 text-center">

@@ -14,6 +14,16 @@ import {
 import { RdaDialog } from "@/components/RDA/RdaDialog";
 import { subscribeToRdas, createRda, updateRda, deleteRda } from "@/services/rda-service";
 import { Rda, defaultRda } from "@/data/rda";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/rda")({
   component: RdaPage,
@@ -23,6 +33,7 @@ function RdaPage() {
   const [rdas, setRdas] = useState<Rda[]>([]);
   const [selectedRda, setSelectedRda] = useState<Rda | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [rdaToDelete, setRdaToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = subscribeToRdas((data) => {
@@ -47,9 +58,14 @@ function RdaPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este RDA?")) {
-      await deleteRda(id);
+  const handleDelete = (id: string) => {
+    setRdaToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (rdaToDelete) {
+      await deleteRda(rdaToDelete);
+      setRdaToDelete(null);
     }
   };
 
@@ -146,13 +162,15 @@ function RdaPage() {
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary/80 hover:bg-secondary/80">
+            <TableRow className="bg-secondary/80 hover:bg-secondary/80 text-xs">
               <TableHead className="font-semibold text-foreground/80">TÍTULO DEL REPORTE</TableHead>
               <TableHead className="font-semibold text-foreground/80">ESTATUS</TableHead>
               <TableHead className="font-semibold text-foreground/80">PLANTA</TableHead>
               <TableHead className="font-semibold text-foreground/80">RESPONSABLE</TableHead>
-              <TableHead className="font-semibold text-foreground/80">FECHA DE ANOMALÍA</TableHead>
-              <TableHead className="w-24 text-right font-semibold text-foreground/80">ACCIÓN</TableHead>
+              <TableHead className="font-semibold text-foreground/80">AUTOR / CREADOR</TableHead>
+              <TableHead className="font-semibold text-foreground/80">FECHA LÍMITE</TableHead>
+              <TableHead className="font-semibold text-foreground/80">ACTUALIZACIÓN</TableHead>
+              <TableHead className="text-right font-semibold text-foreground/80">ACCIÓN</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -164,21 +182,42 @@ function RdaPage() {
               </TableRow>
             ) : (
               rdas.map((rda) => (
-                <TableRow key={rda.id} className="cursor-pointer transition-colors hover:bg-secondary/30" onClick={() => handleEdit(rda)}>
+                <TableRow key={rda.id} className="cursor-pointer transition-colors hover:bg-secondary/30 text-sm" onClick={() => handleEdit(rda)}>
                   <TableCell className="font-medium">{rda.title}</TableCell>
                   <TableCell>{rda.status}</TableCell>
                   <TableCell>{rda.context.planta}</TableCell>
                   <TableCell>{rda.context.responsable || "-"}</TableCell>
                   <TableCell>
-                    {rda.createdAt ? new Date(rda.createdAt).toLocaleDateString() : "-"}
+                    <div className="flex flex-col">
+                      <span className="font-medium uppercase text-foreground">{rda.portada?.autorOriginal || "-"}</span>
+                      {rda.portada?.autorEmail && (
+                        <span className="text-[11px] text-muted-foreground">{rda.portada.autorEmail}</span>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(rda)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(rda.id)} className="text-red-500 hover:text-red-700">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell>
+                    {(() => {
+                      const dateStr = rda.portada?.fechaLimite;
+                      if (!dateStr) return "-";
+                      // Assuming dateStr might be an ISO string if they used DatePicker, or dd/mm/yyyy.
+                      // RDA usually uses DatePicker now which outputs ISO strings
+                      const d = new Date(dateStr);
+                      if (isNaN(d.getTime())) return dateStr;
+                      return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+                    })()}
+                  </TableCell>
+                  <TableCell>
+                    {rda.updatedAt ? new Date(rda.updatedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : "-"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="link" className="text-primary h-8 px-2 font-semibold" onClick={(e) => { e.stopPropagation(); handleEdit(rda); }}>
+                        Abrir
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(rda.id); }} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -186,8 +225,20 @@ function RdaPage() {
           </TableBody>
         </Table>
       </div>
-
-      
+      <AlertDialog open={!!rdaToDelete} onOpenChange={(open) => !open && setRdaToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar RDA?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro de que deseas eliminar este Reporte de Anomalía? Esta acción no se puede deshacer y se perderán todos los datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

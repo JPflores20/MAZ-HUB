@@ -27,6 +27,8 @@ export interface ParetoInteractiveProps {
   on_unit_change?: ((new_unit: string) => void) | undefined;
   is_step_completed?: boolean | undefined;
   on_toggle_step?: (() => void) | undefined;
+  is_na?: boolean | undefined;
+  on_toggle_na?: (() => void) | undefined;
   on_add_root?: (() => void) | undefined;
   /** Título del gráfico (controlado desde el padre vía title_map). */
   chart_title?: string | undefined;

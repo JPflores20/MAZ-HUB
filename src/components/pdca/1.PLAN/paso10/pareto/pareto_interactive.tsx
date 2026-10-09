@@ -21,7 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StepCard } from "@/components/ui/step-card";
-import { StepInstructions } from "../../step-instructions";
+import { StepInstructions } from "../../../step-instructions";
 import { ParetoDataTable } from "./pareto_data_table";
 import { ParetoChart } from "./pareto_chart";
 import { ParetoImportDialog } from "./pareto_import_dialog";
@@ -45,6 +45,8 @@ export function ParetoInteractive({
   on_unit_change,
   is_step_completed,
   on_toggle_step,
+  is_na,
+  on_toggle_na,
   on_add_root,
   chart_title: external_chart_title,
   on_chart_title_change: external_on_chart_title_change,
@@ -96,6 +98,10 @@ export function ParetoInteractive({
   return (
     <StepCard
       className="col-span-full animate-in fade-in zoom-in-95"
+      isStepCompleted={is_step_completed}
+      onToggleStep={on_toggle_step}
+      isNa={is_na}
+      onToggleNa={on_toggle_na}
       title={
         <>
           {level > 0 && <ArrowRight className="size-4 text-muted-foreground" />} {title}

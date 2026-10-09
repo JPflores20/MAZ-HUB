@@ -16,6 +16,7 @@ interface PropiedadesPasoRendimiento {
   isNa?: boolean | undefined;
   onToggleStep?: () => void;
   onToggleNa?: (() => void) | undefined;
+  title?: string;
 }
 
 export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
@@ -25,6 +26,7 @@ export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
   isNa: pasoEsNoAplica,
   onToggleStep: alAlternarEstadoPaso,
   onToggleNa: alAlternarNoAplica,
+  title = "PASO 14: PERFORMANCE ACTUAL DEL PROCESO ( ANÁLISIS DE PIS)",
 }) => {
   const manejarAgregarRegistroNuevo = () => {
     const registroEstructuraNueva: RendimientoActualPiItem = {
@@ -53,7 +55,7 @@ export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
 
   return (
     <StepCard
-      title="PASO 14: PERFORMANCE ACTUAL DEL PROCESO ( ANÁLISIS DE PIS)"
+      title={title}
       isStepCompleted={pasoEstaCompletado}
       onToggleStep={alAlternarEstadoPaso}
       isNa={pasoEsNoAplica}
