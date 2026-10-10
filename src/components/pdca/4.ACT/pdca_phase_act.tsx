@@ -4,7 +4,7 @@ import { TablaEstandarizacion } from "./paso27/tabla-estandarizacion";
 import { AnalisisRiesgosProcesoTable } from "../1.PLAN/paso6/analisis-riesgos-proceso-table";
 import { StepCard } from "@/components/ui/step-card";
 import { ImageUploadSection } from "../image-upload-section";
-import { RichTextEditor } from "../rich-text-editor";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ConclusionesStep } from "../RESUMEN/conclusiones-step";
 import { ConclusionesKpiData, ConclusionesPiItem } from "@/data/pdca";
 

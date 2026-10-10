@@ -26,8 +26,9 @@ export function RdaEvidenceTab({
     const index = newItems.findIndex((e) => e.id === actionId);
 
     if (image) {
-      if (index >= 0) {
-        newItems[index].images = [image];
+      const existingItem = index >= 0 ? newItems[index] : undefined;
+      if (existingItem) {
+        newItems[index] = { ...existingItem, images: [image] };
       } else {
         newItems.push({ id: actionId, title: "", description: "", images: [image] });
       }

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AREAS } from "@/data/pdca";
-import { EditorTextoEnriquecido } from "../plan-rich-text-editor";
+import { RichTextEditor as EditorTextoEnriquecido } from "@/components/ui/rich-text-editor";
 import type { PropiedadesFasePlan } from "../plan-props";
 import { useTranslation } from "react-i18next";
 
