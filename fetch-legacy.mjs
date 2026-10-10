@@ -17,29 +17,36 @@ const db = getFirestore(app);
 async function run() {
   const q = query(collection(db, "pdcas"));
   const snap = await getDocs(q);
-  
-  const michelob = snap.docs.find(d => d.data().title?.includes("Michelob Ultra"));
-  
+
+  const michelob = snap.docs.find((d) => d.data().title?.includes("Michelob Ultra"));
+
   if (michelob) {
     const data = michelob.data();
-    fs.writeFileSync("michelob-data.json", JSON.stringify({
-      five_whys_tables: data.five_whys_tables,
-      fiveWhysTables: data.fiveWhysTables,
-      fiveWhys: data.fiveWhys,
-      ishikawas: data.ishikawas,
-      ishikawaCauses: data.ishikawaCauses,
-      ishikawa_causes: data.ishikawa_causes
-    }, null, 2));
+    fs.writeFileSync(
+      "michelob-data.json",
+      JSON.stringify(
+        {
+          five_whys_tables: data.five_whys_tables,
+          fiveWhysTables: data.fiveWhysTables,
+          fiveWhys: data.fiveWhys,
+          ishikawas: data.ishikawas,
+          ishikawaCauses: data.ishikawaCauses,
+          ishikawa_causes: data.ishikawa_causes,
+        },
+        null,
+        2,
+      ),
+    );
     console.log("Found Michelob Ultra! Saved to michelob-data.json");
   } else {
     console.log("Not found by exact title. Just dumping the first 5 into a file.");
-    const out = snap.docs.slice(0, 5).map(d => ({
+    const out = snap.docs.slice(0, 5).map((d) => ({
       title: d.data().title,
       five_whys_tables: d.data().five_whys_tables,
       fiveWhysTables: d.data().fiveWhysTables,
       ishikawas: d.data().ishikawas,
       ishikawaCauses: d.data().ishikawaCauses,
-      ishikawa_causes: d.data().ishikawa_causes
+      ishikawa_causes: d.data().ishikawa_causes,
     }));
     fs.writeFileSync("michelob-data.json", JSON.stringify(out, null, 2));
   }

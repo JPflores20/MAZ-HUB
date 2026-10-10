@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ParetoItem } from "@/data/pdca";
 import { ParetoInteractive } from "./pareto/pareto-interactive";
 
@@ -20,7 +21,7 @@ interface PropiedadesSeccionPareto {
 }
 
 export function ParetoSection({
-  drillDowns: nivelesDesglose,
+drillDowns: nivelesDesglose,
   setDrillDowns: asignarNivelesDesglose,
   dataMap: mapaDatosParetos,
   setDataMap: asignarMapaDatosParetos,
@@ -35,6 +36,7 @@ export function ParetoSection({
   mainTitle: tituloPrincipalSeccion = "PASO 10: ESTRATIFICACIÓN DEL PROBLEMA (PARETO)",
   secondaryTitlePrefix: prefijoTitulosSecundarios = "PASO 10: PARETO INDEPENDIENTE",
 }: PropiedadesSeccionPareto) {
+  const { t } = useTranslation();
   const [mapaTitulosInterno, asignarMapaTitulosInterno] = useState<Record<string, string>>({});
   const mapaTitulosFinal = titulosParetosExternos ?? mapaTitulosInterno;
   const manejadorCambioTitulos = alCambiarTitulosExternos ?? asignarMapaTitulosInterno;

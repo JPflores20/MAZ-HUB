@@ -13,7 +13,7 @@ describe("PdcaPhaseAct", () => {
         na_steps={new Set()}
         on_toggle_step={vi.fn()}
         is_editable={true}
-      />
+      />,
     );
 
     expect(screen.getByText(/PASO 25: ESTANDARIZACIï¿½N DE PROCESOS/i)).toBeDefined();

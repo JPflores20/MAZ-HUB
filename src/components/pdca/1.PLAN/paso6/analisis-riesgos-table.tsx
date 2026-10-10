@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 interface AnalisisRiesgosTableProps {
   items: AnalisisRiesgoItem[];
@@ -31,6 +32,7 @@ interface AnalisisRiesgosTableProps {
 }
 
 export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ items, onChange, title, isStepCompleted, onToggleStep, isNa, onToggleNa }) => {
+    const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: AnalisisRiesgoItem = {
       id: crypto.randomUUID(),
@@ -89,50 +91,43 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
       <div className="space-y-4">
         <div className="flex items-center justify-end">
           <Button onClick={handleAdd} variant="outline" size="sm">
-            <Plus className="size-4 mr-2" /> Agregar Riesgo
-          </Button>
+            <Plus className="size-4 mr-2" /> {t('pdcaPlan.dynamic.agregarRiesgo')}</Button>
         </div>
 
         <div className="border rounded-md overflow-x-auto shadow-sm">
           <Table className="min-w-[1000px] text-[11px]">
             <TableHeader>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-                <TableHead rowSpan={2} className="font-bold text-white text-center w-10 border-r border-white/40">NO. DE RIESGO</TableHead>
-                <TableHead rowSpan={2} className="font-bold text-white text-center min-w-[200px] border-r border-white/40">DESCRIPCIÓN DEL RIESGO</TableHead>
-                <TableHead className="font-bold text-white text-center w-28 border-r border-white/40 border-b border-white/40">TIPO DE IMPACTO</TableHead>
-                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">PROBABILIDAD</TableHead>
-                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">IMPACTO</TableHead>
-                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">PRIORIDAD</TableHead>
-                <TableHead rowSpan={2} className="font-bold text-white text-center w-24 border-r border-white/40">RPN <br/><span className="text-[9px] font-normal">(Probabilidad x Impacto x Prioridad)</span></TableHead>
-                <TableHead colSpan={3} className="font-bold text-white text-center border-b border-white/40">RESPUESTA AL RIESGO</TableHead>
+                <TableHead rowSpan={2} className="font-bold text-white text-center w-10 border-r border-white/40">{t('pdcaPlan.dynamic.noDeRiesgo')}</TableHead>
+                <TableHead rowSpan={2} className="font-bold text-white text-center min-w-[200px] border-r border-white/40">{t('pdcaPlan.dynamic.descripciNDelRiesgo')}</TableHead>
+                <TableHead className="font-bold text-white text-center w-28 border-r border-white/40 border-b border-white/40">{t('pdcaPlan.dynamic.tipoDeImpacto')}</TableHead>
+                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">{t('pdcaPlan.dynamic.probabilidad')}</TableHead>
+                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">{t('pdcaPlan.dynamic.impacto')}</TableHead>
+                <TableHead className="font-bold text-white text-center w-32 border-r border-white/40 border-b border-white/40">{t('pdcaPlan.dynamic.prioridad')}</TableHead>
+                <TableHead rowSpan={2} className="font-bold text-white text-center w-24 border-r border-white/40">{t('pdcaPlan.dynamic.rpn')}<br/><span className="text-[9px] font-normal">{t('pdcaPlan.dynamic.probabilidadXImpactoXPrioridad')}</span></TableHead>
+                <TableHead colSpan={3} className="font-bold text-white text-center border-b border-white/40">{t('pdcaPlan.dynamic.respuestaAlRiesgo')}</TableHead>
                 <TableHead rowSpan={2} className="w-10 border-l border-white/40"></TableHead>
               </TableRow>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
                 <TableHead className="font-bold text-white text-center text-[10px] leading-tight border-r border-white/40 whitespace-pre-line">
-                  Alcance{"\n"}Costo{"\n"}Tiempo
-                </TableHead>
+                  {t('pdcaPlan.dynamic.alcance')}{"\n"}{t('pdcaPlan.dynamic.costo')}{"\n"}{t('pdcaPlan.dynamic.tiempo')}</TableHead>
                 <TableHead className="font-bold text-white text-center text-[10px] leading-tight border-r border-white/40 whitespace-pre-line">
-                  1 Nada{"\n"}2 Bajo{"\n"}3 Medio{"\n"}4 Alto
-                </TableHead>
+                  {t('pdcaPlan.dynamic.1Nada')}{"\n"}{t('pdcaPlan.dynamic.2Bajo')}{"\n"}{t('pdcaPlan.dynamic.3Medio')}{"\n"}{t('pdcaPlan.dynamic.4Alto')}</TableHead>
                 <TableHead className="font-bold text-white text-center text-[10px] leading-tight border-r border-white/40 whitespace-pre-line">
-                  1 Nada{"\n"}2 Bajo{"\n"}3 Moderado{"\n"}4 Alto
-                </TableHead>
+                  {t('pdcaPlan.dynamic.1Nada')}{"\n"}{t('pdcaPlan.dynamic.2Bajo')}{"\n"}{t('pdcaPlan.dynamic.3Moderado')}{"\n"}{t('pdcaPlan.dynamic.4Alto')}</TableHead>
                 <TableHead className="font-bold text-white text-center text-[10px] leading-tight border-r border-white/40 whitespace-pre-line">
-                  1 Nada{"\n"}2 Bajo{"\n"}3 Medio{"\n"}4 Alto
-                </TableHead>
+                  {t('pdcaPlan.dynamic.1Nada')}{"\n"}{t('pdcaPlan.dynamic.2Bajo')}{"\n"}{t('pdcaPlan.dynamic.3Medio')}{"\n"}{t('pdcaPlan.dynamic.4Alto')}</TableHead>
                 <TableHead className="font-bold text-white text-center text-[10px] leading-tight border-r border-white/40 whitespace-pre-line">
-                  Aceptar{"\n"}Evitar{"\n"}Mitigar
-                </TableHead>
-                <TableHead className="font-bold text-white text-center border-r border-white/40">RESPONSABLE</TableHead>
-                <TableHead className="font-bold text-white text-center">FECHA LÃMITE</TableHead>
+                  {t('pdcaPlan.dynamic.aceptar')}{"\n"}{t('pdcaPlan.dynamic.evitar')}{"\n"}{t('pdcaPlan.dynamic.mitigar')}</TableHead>
+                <TableHead className="font-bold text-white text-center border-r border-white/40">{t('pdcaPlan.dynamic.responsable2')}</TableHead>
+                <TableHead className="font-bold text-white text-center">{t('pdcaPlan.dynamic.fechaLMite2')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {(!items || items.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={11} className="text-center py-6 text-muted-foreground">
-                    No hay riesgos identificados.
-                  </TableCell>
+                    {t('pdcaPlan.dynamic.noHayRiesgosIdentificados')}</TableCell>
                 </TableRow>
               )}
               {items?.map((item, index) => {
@@ -146,7 +141,7 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                       <Input
                         value={item.riesgo}
                         onChange={(e) => handleUpdate(item.id, "riesgo", e.target.value)}
-                        placeholder="Ej. Falla de equipo"
+                        placeholder={t('pdcaPlan.dynamic.ejFallaDeEquipo')}
                         className="h-8 text-xs shadow-none"
                       />
                     </TableCell>
@@ -156,12 +151,12 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                         onValueChange={(v) => handleUpdate(item.id, "tipo_impacto", v)}
                       >
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Seleccionar" />
+                          <SelectValue placeholder={t('pdcaPlan.dynamic.seleccionar')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Scope">Scope (Alcance)</SelectItem>
-                          <SelectItem value="Cost">Cost (Costo)</SelectItem>
-                          <SelectItem value="Time">Time (Tiempo)</SelectItem>
+                          <SelectItem value="Scope">{t('pdcaPlan.dynamic.scopeAlcance')}</SelectItem>
+                          <SelectItem value="Cost">{t('pdcaPlan.dynamic.costCosto')}</SelectItem>
+                          <SelectItem value="Time">{t('pdcaPlan.dynamic.timeTiempo')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -174,10 +169,10 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                           <SelectValue placeholder="1-4" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">1 Nada</SelectItem>
-                          <SelectItem value="2">2 Bajo</SelectItem>
-                          <SelectItem value="3">3 Medio</SelectItem>
-                          <SelectItem value="4">4 Alto</SelectItem>
+                          <SelectItem value="1">{t('pdcaPlan.dynamic.1Nada')}</SelectItem>
+                          <SelectItem value="2">{t('pdcaPlan.dynamic.2Bajo')}</SelectItem>
+                          <SelectItem value="3">{t('pdcaPlan.dynamic.3Medio')}</SelectItem>
+                          <SelectItem value="4">{t('pdcaPlan.dynamic.4Alto')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -190,10 +185,10 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                           <SelectValue placeholder="1-4" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">1 Nada</SelectItem>
-                          <SelectItem value="2">2 Bajo</SelectItem>
-                          <SelectItem value="3">3 Moderado</SelectItem>
-                          <SelectItem value="4">4 Alto</SelectItem>
+                          <SelectItem value="1">{t('pdcaPlan.dynamic.1Nada')}</SelectItem>
+                          <SelectItem value="2">{t('pdcaPlan.dynamic.2Bajo')}</SelectItem>
+                          <SelectItem value="3">{t('pdcaPlan.dynamic.3Moderado')}</SelectItem>
+                          <SelectItem value="4">{t('pdcaPlan.dynamic.4Alto')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -206,10 +201,10 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                           <SelectValue placeholder="1-4" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">1 Nada</SelectItem>
-                          <SelectItem value="2">2 Bajo</SelectItem>
-                          <SelectItem value="3">3 Medio</SelectItem>
-                          <SelectItem value="4">4 Alto</SelectItem>
+                          <SelectItem value="1">{t('pdcaPlan.dynamic.1Nada')}</SelectItem>
+                          <SelectItem value="2">{t('pdcaPlan.dynamic.2Bajo')}</SelectItem>
+                          <SelectItem value="3">{t('pdcaPlan.dynamic.3Medio')}</SelectItem>
+                          <SelectItem value="4">{t('pdcaPlan.dynamic.4Alto')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -222,12 +217,12 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                         onValueChange={(v) => handleUpdate(item.id, "mitigacion", v)}
                       >
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Respuesta" />
+                          <SelectValue placeholder={t('pdcaPlan.dynamic.respuesta')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Accept">Accept</SelectItem>
-                          <SelectItem value="Avoid">Avoid</SelectItem>
-                          <SelectItem value="Mitigate">Mitigate</SelectItem>
+                          <SelectItem value="Accept">{t('pdcaPlan.dynamic.accept')}</SelectItem>
+                          <SelectItem value="Avoid">{t('pdcaPlan.dynamic.avoid')}</SelectItem>
+                          <SelectItem value="Mitigate">{t('pdcaPlan.dynamic.mitigate')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -235,7 +230,7 @@ export const AnalisisRiesgosTable: React.FC<AnalisisRiesgosTableProps> = ({ item
                       <Input
                         value={item.responsable}
                         onChange={(e) => handleUpdate(item.id, "responsable", e.target.value)}
-                        placeholder="Responsable"
+                        placeholder={t('pdcaPlan.dynamic.responsable3')}
                         className="h-8 text-xs shadow-none"
                       />
                     </TableCell>

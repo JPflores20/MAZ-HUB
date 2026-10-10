@@ -2,6 +2,7 @@ import React from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 interface ElementoSerie {
   mes: string;
@@ -32,14 +33,15 @@ export function TablaSeries({
   alAgregarFila,
   alEliminarFila,
 }: PropiedadesTablaSeries) {
+    const { t } = useTranslation();
   return (
     <div className="w-full xl:w-[40%] overflow-x-auto border border-[#0078D7] rounded-sm bg-white dark:bg-background">
       <table className="w-full text-xs text-center border-collapse">
         <thead>
           <tr className="bg-[#0078D7] text-white">
-            <th className="border-r border-white/20 p-2 font-bold w-[30%]">PERÍODO</th>
-            <th className="border-r border-white/20 p-2 font-bold w-[30%]">META</th>
-            <th className="border-r border-white/20 p-2 font-bold w-[30%]">ACTUAL</th>
+            <th className="border-r border-white/20 p-2 font-bold w-[30%]">{t('pdcaPlan.dynamic.perOdo')}</th>
+            <th className="border-r border-white/20 p-2 font-bold w-[30%]">{t('pdcaPlan.dynamic.meta')}</th>
+            <th className="border-r border-white/20 p-2 font-bold w-[30%]">{t('pdcaPlan.dynamic.actual')}</th>
             <th className="p-1 w-[10%]">
               <Button
                 type="button"
@@ -94,8 +96,7 @@ export function TablaSeries({
           ))}
           <tr className="border-b border-border/40">
             <td className="border-r border-border/40 p-2 font-bold bg-[#E2E2E2] dark:bg-secondary/30 text-right pr-4">
-              YTD Target
-            </td>
+              {t('pdcaPlan.dynamic.ytdTarget')}</td>
             <td className="border-r border-border/40 p-2 font-bold font-mono text-[#0078D7]">
               {formatearValor(metaYtd)}
             </td>
@@ -104,8 +105,7 @@ export function TablaSeries({
           </tr>
           <tr>
             <td className="border-r border-border/40 p-2 font-bold bg-[#E2E2E2] dark:bg-secondary/30 text-right pr-4">
-              YTD Actual
-            </td>
+              {t('pdcaPlan.dynamic.ytdActual')}</td>
             <td className="border-r border-border/40 p-2 bg-[#F2F8FC] dark:bg-secondary/10"></td>
             <td className="border-r border-border/40 p-2 font-bold font-mono text-muted-foreground">
               {formatearValor(actualYtd)}

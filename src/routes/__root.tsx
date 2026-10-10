@@ -135,6 +135,7 @@ import { AppLayout } from "../components/layout";
 import { AuthProvider } from "@/context/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PdcaProvider } from "@/context/pdca-context";
+import "@/lib/i18n";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();

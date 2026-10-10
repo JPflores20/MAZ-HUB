@@ -1,6 +1,6 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let f = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+let f = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 // Replace TableHeader
 f = f.replace(
@@ -16,7 +16,7 @@ f = f.replace(
               <TableHead className="font-semibold text-foreground/80">ACTUALIZACIÓN</TableHead>
               <TableHead className="text-right font-semibold text-foreground/80">ACCIÓN</TableHead>
             </TableRow>
-          </TableHeader>`
+          </TableHeader>`,
 );
 
 // Replace TableBody mapping
@@ -70,13 +70,16 @@ const newMapping = `              rdas.map((rda) => (
                 </TableRow>
               ))`;
 
-f = f.replace(/              rdas\.map\(\(rda\) => \([\s\S]*?<\/[T]ableRow>\r?\n              \)\)/, newMapping);
+f = f.replace(
+  /              rdas\.map\(\(rda\) => \([\s\S]*?<\/[T]ableRow>\r?\n              \)\)/,
+  newMapping,
+);
 // Handle edge case if regex doesn't match perfectly
-if (f.indexOf('AUTOR / CREADOR') === -1) {
-  console.log('Regex 1 failed');
+if (f.indexOf("AUTOR / CREADOR") === -1) {
+  console.log("Regex 1 failed");
 }
-if (f.indexOf('Abrir') === -1) {
-  console.log('Regex 2 failed');
+if (f.indexOf("Abrir") === -1) {
+  console.log("Regex 2 failed");
 }
 
-fs.writeFileSync('src/routes/rda.tsx', f);
+fs.writeFileSync("src/routes/rda.tsx", f);

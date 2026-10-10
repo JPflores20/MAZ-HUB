@@ -1,6 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { RdaAnomalyContext } from "@/data/rda";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,6 +22,7 @@ interface RdaContextFormProps {
 }
 
 export function RdaContextForm({ context, onChange, disabled }: RdaContextFormProps) {
+  const { t } = useTranslation();
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   const handleChange = (field: keyof RdaAnomalyContext, value: string) => {
@@ -43,21 +52,23 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
     setIsCalendarOpen(false);
   };
 
-  const headClass = "font-bold text-white uppercase text-center border-r border-white/20 text-[10px] bg-[#0078D7] py-2 h-auto";
+  const headClass =
+    "font-bold text-white uppercase text-center border-r border-white/20 text-[10px] bg-[#0078D7] py-2 h-auto";
   const cellClass = "p-2 align-top border-r border-border";
-  const inputClass = "w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+  const inputClass =
+    "w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
   return (
     <div className="border rounded-md overflow-x-auto bg-white shadow-sm">
       <Table className="min-w-[1000px] text-xs">
         <TableHeader>
           <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-            <TableHead className={headClass}>PLANTA</TableHead>
-            <TableHead className={headClass}>FECHA DE LA ANOMALÍA</TableHead>
-            <TableHead className={headClass}>TURNO/EQUIPO</TableHead>
-            <TableHead className={headClass}>INICIADO POR:</TableHead>
-            <TableHead className={headClass}>RESPONSABLE:</TableHead>
-            <TableHead className={`${headClass} border-r-0`}>ETAPA</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thPlanta')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thFecha')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thTurno')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thIniciadoPor')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thResponsable')}</TableHead>
+            <TableHead className={`${headClass} border-r-0`}>{t('rdaInternal.thEtapa')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,7 +79,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.planta}
                 onChange={(e) => handleChange("planta", e.target.value)}
-                placeholder="ZACATECAS"
+                placeholder={t('rdaInternal.phPlanta')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -78,7 +89,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                     className={`${inputClass} cursor-pointer caret-transparent`}
                     value={context.fecha}
                     onChange={(e) => handleChange("fecha", e.target.value)}
-                    placeholder="DD-MMM"
+                    placeholder={t('rdaInternal.phFecha')}
                     readOnly
                   />
                 </PopoverTrigger>
@@ -98,7 +109,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.turno}
                 onChange={(e) => handleChange("turno", e.target.value)}
-                placeholder="Ej. 3"
+                placeholder={t('rdaInternal.phTurno')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -106,7 +117,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.iniciadoPor}
                 onChange={(e) => handleChange("iniciadoPor", e.target.value)}
-                placeholder="Nombres..."
+                placeholder={t('rdaInternal.phIniciadoPor')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -114,7 +125,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.responsable}
                 onChange={(e) => handleChange("responsable", e.target.value)}
-                placeholder="Responsable..."
+                placeholder={t('rdaInternal.phResponsable')}
               />
             </TableCell>
             <TableCell className="p-2 align-top">
@@ -122,18 +133,20 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.etapa}
                 onChange={(e) => handleChange("etapa", e.target.value)}
-                placeholder="Ej. BBT"
+                placeholder={t('rdaInternal.phEtapa')}
               />
             </TableCell>
           </TableRow>
 
           {/* Row 2 Headers */}
           <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-            <TableHead className={headClass}>DEPARTAMENTO</TableHead>
-            <TableHead className={headClass}>ÁREA</TableHead>
-            <TableHead className={headClass}>DISPARADOR</TableHead>
-            <TableHead colSpan={2} className={headClass}>EQUIPO AFECTADO:</TableHead>
-            <TableHead className={`${headClass} border-r-0`}>FOLIO RDA:</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thDepartamento')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thArea')}</TableHead>
+            <TableHead className={headClass}>{t('rdaInternal.thDisparador')}</TableHead>
+            <TableHead colSpan={2} className={headClass}>
+              {t('rdaInternal.thEquipoAfectado')}
+            </TableHead>
+            <TableHead className={`${headClass} border-r-0`}>{t('rdaInternal.thFolioRda')}</TableHead>
           </TableRow>
 
           {/* Row 2 Inputs */}
@@ -143,7 +156,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.departamento}
                 onChange={(e) => handleChange("departamento", e.target.value)}
-                placeholder="Ej. Elaboración"
+                placeholder={t('rdaInternal.phDepartamento')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -151,7 +164,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.area}
                 onChange={(e) => handleChange("area", e.target.value)}
-                placeholder="Ej. Gobierno"
+                placeholder={t('rdaInternal.phArea')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -159,7 +172,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.disparador}
                 onChange={(e) => handleChange("disparador", e.target.value)}
-                placeholder="..."
+                placeholder={t('rdaInternal.phDisparador')}
               />
             </TableCell>
             <TableCell colSpan={2} className={cellClass}>
@@ -167,7 +180,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.equiposAfectados}
                 onChange={(e) => handleChange("equiposAfectados", e.target.value)}
-                placeholder="Ej. BBT 62, BBT 60..."
+                placeholder={t('rdaInternal.phEquipoAfectado')}
               />
             </TableCell>
             <TableCell className="p-2 align-top">
@@ -175,19 +188,31 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.folio}
                 onChange={(e) => handleChange("folio", e.target.value)}
-                placeholder="Ej. RDA_2026_13"
+                placeholder={t('rdaInternal.phFolioRda')}
               />
             </TableCell>
           </TableRow>
 
           {/* Row 3 Headers (Impacto) */}
           <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-            <TableHead className={headClass}>TIEMPO DE PARO<br/>(NÚMEROS)</TableHead>
-            <TableHead className={headClass}>UNIDADES<br/>(TIEMPO DE PARO)</TableHead>
-            <TableHead className={headClass}>PÉRDIDAS / DESPERDICIOS<br/>(NÚMEROS)</TableHead>
-            <TableHead className={headClass}>UNIDADES<br/>(PÉRDIDAS)</TableHead>
-            <TableHead className={headClass}>PRODUCTOS NO CONFORMES<br/>(NÚMEROS)</TableHead>
-            <TableHead className={`${headClass} border-r-0`}>UNIDADES<br/>(PRODUCTO NO CONFORME)</TableHead>
+            <TableHead className={headClass}>
+              {t('rdaInternal.thTiempoParoNum')}
+            </TableHead>
+            <TableHead className={headClass}>
+              {t('rdaInternal.thUnidadesTiempoParo')}
+            </TableHead>
+            <TableHead className={headClass}>
+              {t('rdaInternal.thPerdidasNum')}
+            </TableHead>
+            <TableHead className={headClass}>
+              {t('rdaInternal.thUnidadesPerdidas')}
+            </TableHead>
+            <TableHead className={headClass}>
+              {t('rdaInternal.thNoConformesNum')}
+            </TableHead>
+            <TableHead className={`${headClass} border-r-0`}>
+              {t('rdaInternal.thUnidadesNoConformes')}
+            </TableHead>
           </TableRow>
 
           {/* Row 3 Inputs */}
@@ -197,7 +222,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.tiempoParo}
                 onChange={(e) => handleChange("tiempoParo", e.target.value)}
-                placeholder="Ej. 20"
+                placeholder={t('rdaInternal.phTiempoParo')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -205,7 +230,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.unidadesTiempoParo}
                 onChange={(e) => handleChange("unidadesTiempoParo", e.target.value)}
-                placeholder="Ej. 0"
+                placeholder={t('rdaInternal.phUnidadesTiempo')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -213,7 +238,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.perdidas}
                 onChange={(e) => handleChange("perdidas", e.target.value)}
-                placeholder="Ej. 0"
+                placeholder={t('rdaInternal.phUnidadesTiempo')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -221,7 +246,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.unidadesPerdidas}
                 onChange={(e) => handleChange("unidadesPerdidas", e.target.value)}
-                placeholder="Ej. $0.00"
+                placeholder={t('rdaInternal.phUnidadesPerdidas')}
               />
             </TableCell>
             <TableCell className={cellClass}>
@@ -229,7 +254,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.productosNoConformes}
                 onChange={(e) => handleChange("productosNoConformes", e.target.value)}
-                placeholder="Ej. 5"
+                placeholder={t('rdaInternal.phNoConformes')}
               />
             </TableCell>
             <TableCell className="p-2 align-top">
@@ -237,7 +262,7 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
                 className={inputClass}
                 value={context.unidadesNoConformes}
                 onChange={(e) => handleChange("unidadesNoConformes", e.target.value)}
-                placeholder="Ej. TANQUE"
+                placeholder={t('rdaInternal.phUnidadesNoConformes')}
               />
             </TableCell>
           </TableRow>

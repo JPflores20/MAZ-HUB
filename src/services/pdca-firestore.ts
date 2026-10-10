@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Pdca } from "@/data/pdca-types";
+import type { ActionItem } from "@/data/types/do_types";
 import {
   set_pdca_snapshot,
   get_pdca_snapshot,
@@ -141,6 +142,31 @@ export async function save_pdca_to_firestore(pdca: Pdca): Promise<void> {
       if (Object.keys(changed_fields).length === 0) {
         return;
       }
+
+      // Check for new responsables
+      const oldActions = (original_pdca["acciones"] as ActionItem[]) || [];
+      const newActions = pdca.acciones || [];
+
+      newActions.forEach((action) => {
+        const oldAction = oldActions.find((a) => a.id === action.id);
+        const currentResponsable = action.responsable || action.who;
+        const oldResponsable = oldAction ? oldAction.responsable || oldAction.who : null;
+
+        const isNewAssign = currentResponsable && currentResponsable !== oldResponsable;
+        if (isNewAssign) {
+          import("firebase/firestore").then(({ collection, addDoc }) => {
+            addDoc(collection(db, "notifications"), {
+              userId: currentResponsable,
+              pdcaId: pdca.id,
+              pdcaTitle: pdca.titulo,
+              actionId: action.id,
+              message: `Has sido asignado como responsable en la acción: ${action.accion || action.what || "Nueva Acción"}`,
+              read: false,
+              createdAt: new Date().toISOString(),
+            }).catch((e) => console.error("[pdca-firestore] Error adding notification", e));
+          });
+        }
+      });
 
       await updateDoc(doc_ref, changed_fields);
     } else {

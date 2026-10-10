@@ -31,15 +31,11 @@ export function comprimirImagen(
         canvas.width = imagenElement.width * escala;
         canvas.height = imagenElement.height * escala;
 
-        canvas
-          .getContext("2d")!
-          .drawImage(imagenElement, 0, 0, canvas.width, canvas.height);
+        canvas.getContext("2d")!.drawImage(imagenElement, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(
           (blob) =>
-            blob
-              ? resolve(blob)
-              : reject(new Error("Compresión fallida: toBlob devolvió null")),
+            blob ? resolve(blob) : reject(new Error("Compresión fallida: toBlob devolvió null")),
           "image/jpeg",
           calidadJpeg,
         );
@@ -58,13 +54,10 @@ export function comprimirImagen(
  * @param archivo - Archivo de imagen a subir.
  */
 export async function subirImagenAFirebase(archivo: File): Promise<string> {
-  const { ref, uploadBytesResumable, getDownloadURL } = await import(
-    "firebase/storage"
-  );
+  const { ref, uploadBytesResumable, getDownloadURL } = await import("firebase/storage");
   const { storage } = await import("@/lib/firebase");
 
-  const identificadorUnico =
-    Date.now().toString() + Math.random().toString(36).substring(7);
+  const identificadorUnico = Date.now().toString() + Math.random().toString(36).substring(7);
   const extensionArchivo = archivo.name.split(".").pop() || "jpg";
   const rutaEnStorage = `uploads/gemba_evidencias/${identificadorUnico}.${extensionArchivo}`;
 
@@ -73,11 +66,8 @@ export async function subirImagenAFirebase(archivo: File): Promise<string> {
   const tareaDeSubida = uploadBytesResumable(referenciaStorage, blobComprimido);
 
   return new Promise((resolve, reject) => {
-    tareaDeSubida.on(
-      "state_changed",
-      null,
-      reject,
-      async () => resolve(await getDownloadURL(tareaDeSubida.snapshot.ref)),
+    tareaDeSubida.on("state_changed", null, reject, async () =>
+      resolve(await getDownloadURL(tareaDeSubida.snapshot.ref)),
     );
   });
 }

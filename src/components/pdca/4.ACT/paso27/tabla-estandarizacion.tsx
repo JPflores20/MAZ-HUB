@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -20,6 +21,7 @@ interface TablaEstandarizacionProps {
 }
 
 export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ items, onChange }) => {
+  const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: TablaEstandarizacionItem = {
       id: crypto.randomUUID(),
@@ -35,9 +37,7 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
   };
 
   const handleUpdate = (id: string, field: keyof TablaEstandarizacionItem, value: string) => {
-    const newItems = items.map((item) =>
-      item.id === id ? { ...item, [field]: value } : item
-    );
+    const newItems = items.map((item) => (item.id === id ? { ...item, [field]: value } : item));
     onChange(newItems);
   };
 
@@ -49,23 +49,17 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
     <div className="space-y-4">
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
-          <li>Definir las acciones que se estandarizarán y rellenar el gráfico.</li>
-          <li>Rellene cada columna con información detallada sobre la acción elegida.</li>
-          <li>
-            La columna "Herramienta VPO" está pensada para ser rellenada con items como SOP, Checklists, planes y rutinas PM, SWIs, Checklist de ATO CIL, actualizaciones PTS, actualizaciones del mapa de procesos, actualizaciones del panel de control KPI/PI, creación/modificaciones de entrenamiento, actualizaciones SKAP, cambios en la rutina de reuniones, etc.
-          </li>
-          <li>
-            La pestaña de Mapa de Problemas será útil como referencia para comprobar todos los pilares de los elementos que deben ser creados o actualizados como parte de la etapa de normalización, ya que los mencionados aquí son sólo ejemplos de las muchas posibilidades.
-          </li>
-          <li>
-            Nota: si la respuesta es "Sí" a la presentación del GOP/Práctica óptima, por favor introdúzcala en el Eureka! Buenas Ideas en el Portal Global de VPO.
-          </li>
+          <li>{t('pdcaAct.instruccion1')}</li>
+          <li>{t('pdcaAct.instruccion2')}</li>
+          <li>{t('pdcaAct.instruccion3')}</li>
+          <li>{t('pdcaAct.instruccion4')}</li>
+          <li>{t('pdcaAct.instruccion5')}</li>
         </ol>
       </StepInstructions>
 
       <div className="flex items-center justify-end">
         <Button onClick={handleAdd} variant="outline" size="sm">
-          <Plus className="size-4 mr-2" /> Agregar Fila
+          <Plus className="size-4 mr-2" /> {t('pdcaAct.agregarFila')}
         </Button>
       </div>
 
@@ -73,13 +67,27 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
         <Table className="min-w-[1000px] text-xs">
           <TableHeader>
             <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">ACCIONES PARA MITIGAR EL RIESGO O MANTENER LA GANANCIA</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">HERRAMIENTA VPO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DUEÑO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">¿A QUÉ EQUIPO SE COMUNICARÁ / ENTRENARÁ?</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">DATOS DE ENTRENAMIENTO</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">¿GOP O PRESENTACIÓN DE LAS MEJORES PRÁCTICAS?</TableHead>
-              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">FECHA DE FINALIZACIÓN</TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.accionesMitigar')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.herramientaVpo')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.dueno')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.equipoComunicara')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.datosEntrenamiento')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.gopPresentacionMejoresPracticas')}
+              </TableHead>
+              <TableHead className="font-bold text-white uppercase text-center border-r border-white/20 text-[10px]">
+                {t('pdcaAct.fechaFinalizacion')}
+              </TableHead>
               <TableHead className="w-12 border-none"></TableHead>
             </TableRow>
           </TableHeader>
@@ -87,7 +95,7 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
             {(!items || items.length === 0) && (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
-                  No hay registros de estandarización. Agrega uno.
+                  {t('pdcaAct.noRegistrosEstandarizacion')}
                 </TableCell>
               </TableRow>
             )}
@@ -156,16 +164,18 @@ export const TablaEstandarizacion: React.FC<TablaEstandarizacionProps> = ({ item
                 <TableCell className="p-1.5">
                   <DatePicker
                     date={item.fechaFinalizacion ? new Date(item.fechaFinalizacion) : undefined}
-                    setDate={(date) => handleUpdate(item.id, "fechaFinalizacion", date ? date.toISOString() : "")}
+                    setDate={(date) =>
+                      handleUpdate(item.id, "fechaFinalizacion", date ? date.toISOString() : "")
+                    }
                     className="w-full h-7 text-xs border-0 bg-transparent px-2 shadow-none"
-                    placeholder="Seleccionar..."
+                    placeholder={t('pdcaAct.seleccionar')}
                   />
                 </TableCell>
                 <TableCell className="p-1.5 text-center">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="h-8 w-8 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:bg-red-900/20"
                     onClick={() => handleDelete(item.id)}
                   >
                     <Trash2 className="size-4" />

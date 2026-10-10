@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,11 @@ interface PropiedadesTablaPareto {
   gapTotal: number;
   unidadMedida: string;
   longitudDatosOriginales: number;
-  alActualizarFila: (idFila: number, campoModificado: "area" | "gap", nuevoValor: string | number) => void;
+  alActualizarFila: (
+    idFila: number,
+    campoModificado: "area" | "gap",
+    nuevoValor: string | number,
+  ) => void;
   alEliminarFila: (idFila: number) => void;
 }
 
@@ -29,15 +34,25 @@ export function TablaPareto({
   alActualizarFila,
   alEliminarFila,
 }: PropiedadesTablaPareto) {
+  const { t } = useTranslation();
+
   return (
     <div className="overflow-x-auto border rounded-md">
       <Table className="text-xs">
         <TableHeader className="bg-[#0078D7] [&_th]:text-white">
           <TableRow className="hover:bg-[#0078D7]">
-            <TableHead className="py-2 px-3 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">ÁREA / CATEGORÍA</TableHead>
-            <TableHead className="py-2 px-3 w-24 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">VALOR (GAP)</TableHead>
-            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">% IND.</TableHead>
-            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white">% ACUM.</TableHead>
+            <TableHead className="py-2 px-3 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+              ÁREA / CATEGORÍA
+            </TableHead>
+            <TableHead className="py-2 px-3 w-24 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+              VALOR (GAP)
+            </TableHead>
+            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+              % IND.
+            </TableHead>
+            <TableHead className="py-2 px-3 w-20 font-bold uppercase text-[10px] tracking-wider text-white">
+              % ACUM.
+            </TableHead>
             <TableHead className="w-10 text-white" />
           </TableRow>
         </TableHeader>
@@ -47,7 +62,9 @@ export function TablaPareto({
               <TableCell className="py-1.5 px-3">
                 <Input
                   value={filaItem.area ?? ""}
-                  onChange={(eventoCambioInput) => alActualizarFila(filaItem.id ?? 0, "area", eventoCambioInput.target.value)}
+                  onChange={(eventoCambioInput) =>
+                    alActualizarFila(filaItem.id ?? 0, "area", eventoCambioInput.target.value)
+                  }
                   placeholder="Ej. Envasado..."
                   className="h-7 text-xs shadow-none border-0 px-1 bg-transparent
                     hover:bg-secondary/50 focus-visible:bg-background"
@@ -57,7 +74,13 @@ export function TablaPareto({
                 <Input
                   type="number"
                   value={filaItem.gap ?? ""}
-                  onChange={(eventoCambioInput) => alActualizarFila(filaItem.id ?? 0, "gap", Number(eventoCambioInput.target.value))}
+                  onChange={(eventoCambioInput) =>
+                    alActualizarFila(
+                      filaItem.id ?? 0,
+                      "gap",
+                      Number(eventoCambioInput.target.value),
+                    )
+                  }
                   className="h-7 text-xs shadow-none border-0 px-1 bg-transparent
                     hover:bg-secondary/50 focus-visible:bg-background text-right"
                 />

@@ -36,7 +36,13 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
   progreso,
   action_items,
 }) => {
-  const meta = goal_definition || { kpi: "", pis: "", desdeValor: "", aValor: "", unidadMedida: "" };
+  const meta = goal_definition || {
+    kpi: "",
+    pis: "",
+    desdeValor: "",
+    aValor: "",
+    unidadMedida: "",
+  };
   const vpoChecks = vpo_checkpoints || [];
   const initialParetoRoot = pareto_data_map?.["root"] || [];
   const newParetoRoot = nuevo_pareto_data_map?.["root"] || [];

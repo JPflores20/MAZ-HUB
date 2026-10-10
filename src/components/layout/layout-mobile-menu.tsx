@@ -23,10 +23,7 @@ export const LayoutMobileMenu: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex md:hidden">
-      <div
-        className="fixed inset-0 bg-black/50"
-        onClick={() => setMobileMenuOpen(false)}
-      />
+      <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
       <div className="relative flex w-64 max-w-xs flex-col bg-brand-dark text-white shadow-xl">
         <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
           <div className="flex items-center gap-3">
@@ -35,9 +32,7 @@ export const LayoutMobileMenu: React.FC<Props> = ({
               alt="Logo MAZ"
               className="h-8 w-auto object-contain rounded"
             />
-            <span className="font-display text-lg font-bold uppercase tracking-wide">
-              MAZ HUB
-            </span>
+            <span className="font-display text-lg font-bold uppercase tracking-wide">MAZ HUB</span>
           </div>
           <Button
             variant="ghost"
@@ -78,9 +73,7 @@ export const LayoutMobileMenu: React.FC<Props> = ({
             Cerrar Sesión
           </Button>
           <div className="mt-6 text-center text-[10px] text-white/30 leading-tight">
-            <p className="font-semibold uppercase tracking-widest">
-              Cerveceria Zacatecas
-            </p>
+            <p className="font-semibold uppercase tracking-widest">Cerveceria Zacatecas</p>
             <p className="mt-1.5">Creado: Ing. en Soft. José Luis Flores</p>
           </div>
         </div>

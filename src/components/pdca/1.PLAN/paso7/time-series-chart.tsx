@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 interface PropiedadesGraficaSeries {
   datosGrafica: any[];
@@ -28,6 +29,7 @@ export function GraficaSeries({
   minimoEjeY,
   maximoEjeY,
 }: PropiedadesGraficaSeries) {
+    const { t } = useTranslation();
   
   const EtiquetaBarraPersonalizada = (props: any) => {
     const { x, y, width, value } = props;
@@ -53,7 +55,7 @@ export function GraficaSeries({
         <Input
           value={tituloGrafica}
           onChange={(eventoCambioInput) => alCambiarTituloGrafica(eventoCambioInput.target.value)}
-          placeholder="CURRENT TIME SERIES"
+          placeholder={t('pdcaPlan.dynamic.currentTimeSeries')}
           className="text-center font-bold text-sm mb-4 tracking-wider text-foreground/80 border-transparent hover:border-input focus:border-input bg-transparent shadow-none"
         />
       ) : (

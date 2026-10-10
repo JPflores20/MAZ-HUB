@@ -1,4 +1,4 @@
-# 🏭 MAZ HUB — Young Talent PDCA & Continuous Improvement Platform
+﻿# 🏭 MAZ HUB — Young Talent PDCA & Continuous Improvement Platform
 
 [![React](https://img.shields.io/badge/React-19.2-blue?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -6,7 +6,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-v12-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
 
-**MAZ HUB** es una plataforma web corporativa diseñada para la gestión, seguimiento y evaluación de metodologías de mejora continua (**PDCA**, **RDA**, **Árbol de KPIs** y **Tableros Kanban**) para el programa *Young Talents* y equipos de operaciones industriales en Grupo Modelo.
+**MAZ HUB** es una plataforma web corporativa diseñada para la gestión, seguimiento y evaluación de metodologías de mejora continua (**PDCA**, **RDA**, **Árbol de KPIs** y **Tableros Kanban**) para el programa _Young Talents_ y equipos de operaciones industriales en Grupo Modelo.
 
 ---
 
@@ -131,16 +131,16 @@ flowchart TD
 
 ## 🛠 Stack Tecnológico
 
-| Capa | Tecnología | Propósito |
-| :--- | :--- | :--- |
-| **Framework / Runtime** | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) | Entorno declarativo y fuertemente tipado. |
-| **Enrutador & Servidor**| [TanStack Router](https://tanstack.com/router) & [TanStack Start](https://tanstack.com/start) | Enrutamiento robusto basado en sistema de archivos con tipado seguro. |
-| **Estilos & UI** | [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) / [Radix UI](https://www.radix-ui.com/) | Sistema de diseño corporativo moderno y accesible. |
-| **Backend & Cloud** | [Firebase](https://firebase.google.com/) (Auth, Firestore, Storage) | Base de datos NoSQL reactiva en tiempo real, autenticación y storage de archivos. |
-| **Gráficas & Diagramas**| [Recharts](https://recharts.org/) + [@xyflow/react](https://reactflow.dev/) | Visualización de datos estadísticos y diagramación interactiva de árboles. |
-| **Editor de Texto** | [TipTap Starter Kit](https://tiptap.dev/) | Editor WYSIWYG enriquecido para notas y reportes. |
-| **Generación de PDFs** | [@react-pdf/renderer](https://react-pdf.org/) + [html2pdf.js](https://ekoopmans.github.io/html2pdf.js/) | Renderizado y descarga de reportes ejecutivos. |
-| **Testing** | [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) | Suite de pruebas unitarias y de componentes. |
+| Capa                     | Tecnología                                                                                                                | Propósito                                                                         |
+| :----------------------- | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------- |
+| **Framework / Runtime**  | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)                                            | Entorno declarativo y fuertemente tipado.                                         |
+| **Enrutador & Servidor** | [TanStack Router](https://tanstack.com/router) & [TanStack Start](https://tanstack.com/start)                             | Enrutamiento robusto basado en sistema de archivos con tipado seguro.             |
+| **Estilos & UI**         | [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) / [Radix UI](https://www.radix-ui.com/) | Sistema de diseño corporativo moderno y accesible.                                |
+| **Backend & Cloud**      | [Firebase](https://firebase.google.com/) (Auth, Firestore, Storage)                                                       | Base de datos NoSQL reactiva en tiempo real, autenticación y storage de archivos. |
+| **Gráficas & Diagramas** | [Recharts](https://recharts.org/) + [@xyflow/react](https://reactflow.dev/)                                               | Visualización de datos estadísticos y diagramación interactiva de árboles.        |
+| **Editor de Texto**      | [TipTap Starter Kit](https://tiptap.dev/)                                                                                 | Editor WYSIWYG enriquecido para notas y reportes.                                 |
+| **Generación de PDFs**   | [@react-pdf/renderer](https://react-pdf.org/) + [html2pdf.js](https://ekoopmans.github.io/html2pdf.js/)                   | Renderizado y descarga de reportes ejecutivos.                                    |
+| **Testing**              | [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/)                                           | Suite de pruebas unitarias y de componentes.                                      |
 
 ---
 
@@ -166,18 +166,21 @@ VITE_FIREBASE_APP_ID="1:390282074253:web:0627abcb94fd00d6ef2ac4"
 ## 💻 Instalación y Uso Local
 
 ### Prerrequisitos
+
 - **Node.js** >= 18.x (se recomienda v20 LTS o superior)
 - **npm** >= 9.x o **bun**
 
 ### Pasos de inicialización:
 
 1. **Clonar el repositorio:**
+
    ```bash
    git clone https://github.com/JPflores20/MAZ-HUB.git
    cd MAZ-HUB
    ```
 
 2. **Instalar dependencias:**
+
    ```bash
    npm install
    ```
@@ -245,6 +248,7 @@ El proyecto incluye la configuración lista en `firebase.json`:
 ### 2. Despliegue en Vercel / Netlify
 
 Si utilizas plataformas como Vercel o Netlify:
+
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist` (o `dist/client` según la configuración de SSR/SPA)
 - **Framework Preset**: `Vite`

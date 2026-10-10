@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
@@ -93,7 +94,7 @@ const DATOS_POR_DEFECTO: DatosCorrelacionSabor = {
 };
 
 export function FlavorCorrelationSection({
-  data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, onToggleNa, title = "Correlación"
+data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, onToggleNa, title = "Correlación"
 }: {
   data?: DatosCorrelacionSabor | null | undefined;
   onChange?: ((datosNuevos: DatosCorrelacionSabor) => void) | undefined;
@@ -105,6 +106,7 @@ export function FlavorCorrelationSection({
   onToggleNa?: (() => void) | undefined;
   title?: string | undefined;
 }) {
+  const { t } = useTranslation();
   const datosActuales = data || DATOS_POR_DEFECTO;
   const tituloPositivo = datosActuales?.positiveTitle || DATOS_POR_DEFECTO.positiveTitle;
   const tituloNegativo = datosActuales?.negativeTitle || DATOS_POR_DEFECTO.negativeTitle;

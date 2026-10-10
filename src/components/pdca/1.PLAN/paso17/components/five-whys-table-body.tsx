@@ -1,4 +1,5 @@
-import React, { Fragment } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AutoResizeTextarea } from "../../../auto-resize-textarea";
@@ -33,6 +34,8 @@ export function TablaCuerpo({
   alEliminarFila,
   alSubirEvidencia,
 }: PropiedadesTablaCuerpo) {
+  const { t } = useTranslation();
+
   return (
     <>
       <table className="w-full text-sm border-collapse min-w-[900px]">
@@ -46,9 +49,7 @@ export function TablaCuerpo({
                 {i + 1}º POR QUÉ
               </th>
             ))}
-            <th className="font-bold uppercase text-center p-2 text-[10px] min-w-[80px] border-r border-white/20">
-              CAUSA RAÍZ
-            </th>
+            <th className="font-bold uppercase text-center p-2 text-[10px] min-w-[80px] border-r border-white/20">{t("pdcaPlan.paso17_five_whys_root_cause")}</th>
             <th className="font-bold uppercase text-center p-2 text-[10px] min-w-[150px] border-r border-white/20">
               ACCION(ES)
             </th>
@@ -68,7 +69,7 @@ export function TablaCuerpo({
                         ? "bg-red-50 dark:bg-red-950/30"
                         : fila.isRootCause === "No"
                           ? "bg-green-50 dark:bg-green-950/30"
-                          : "bg-blue-100/50 dark:bg-blue-900/20"
+                          : "bg-blue-100 dark:bg-blue-900/40/50 dark:bg-blue-900/20",
                     )}
                   >
                     <AutoResizeTextarea
@@ -87,7 +88,7 @@ export function TablaCuerpo({
                       ? "bg-red-100 dark:bg-red-900/40"
                       : fila.isRootCause === "No"
                         ? "bg-green-100 dark:bg-green-900/40"
-                        : "bg-[#E2E2E2] dark:bg-secondary"
+                        : "bg-[#E2E2E2] dark:bg-secondary",
                   )}
                 >
                   <div className="flex flex-col items-center justify-center gap-1">
@@ -98,18 +99,16 @@ export function TablaCuerpo({
                         alActualizarFila(
                           fila.id,
                           "isRootCause",
-                          fila.isRootCause === "Sí" ? "" : "Sí"
+                          fila.isRootCause === "Sí" ? "" : "Sí",
                         )
                       }
                       className={cn(
                         "h-6 w-12 text-[10px] px-0",
                         fila.isRootCause === "Sí"
                           ? "bg-red-600 hover:bg-red-700 text-white border-red-600"
-                          : "hover:bg-red-50 hover:text-red-600"
+                          : "hover:bg-red-50 dark:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400",
                       )}
-                    >
-                      SÍ
-                    </Button>
+                    >{t("pdcaPlan.paso17_five_whys_yes")}</Button>
                     <Button
                       variant={fila.isRootCause === "No" ? "default" : "outline"}
                       size="sm"
@@ -117,18 +116,16 @@ export function TablaCuerpo({
                         alActualizarFila(
                           fila.id,
                           "isRootCause",
-                          fila.isRootCause === "No" ? "" : "No"
+                          fila.isRootCause === "No" ? "" : "No",
                         )
                       }
                       className={cn(
                         "h-6 w-12 text-[10px] px-0",
                         fila.isRootCause === "No"
                           ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
-                          : "hover:bg-green-50 hover:text-green-600"
+                          : "hover:bg-green-50 dark:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400",
                       )}
-                    >
-                      NO
-                    </Button>
+                    >{t("pdcaPlan.paso17_five_whys_no")}</Button>
                   </div>
                 </td>
                 <td
@@ -139,7 +136,7 @@ export function TablaCuerpo({
                       ? "bg-red-50 dark:bg-red-950/30"
                       : fila.isRootCause === "No"
                         ? "bg-green-50 dark:bg-green-950/30"
-                        : "bg-[#E2E2E2] dark:bg-secondary"
+                        : "bg-[#E2E2E2] dark:bg-secondary",
                   )}
                 >
                   <AutoResizeTextarea
@@ -169,13 +166,11 @@ export function TablaCuerpo({
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>{t("pdcaPlan.paso16_ishikawa_cancel")}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => alEliminarFila(fila.id)}
                             className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                          >
-                            Eliminar
-                          </AlertDialogAction>
+                          >{t("pdcaPlan.paso17_five_whys_delete")}</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -192,7 +187,7 @@ export function TablaCuerpo({
                         ? "bg-red-100 dark:bg-red-900/40"
                         : fila.isRootCause === "No"
                           ? "bg-green-100 dark:bg-green-900/40"
-                          : "bg-[#E2E2E2] dark:bg-secondary"
+                          : "bg-[#E2E2E2] dark:bg-secondary",
                     )}
                   >
                     <AutoResizeTextarea

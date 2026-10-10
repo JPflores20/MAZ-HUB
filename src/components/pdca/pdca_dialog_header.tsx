@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowLeft, Check, UploadCloud, Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import { cn } from "@/lib/utils";
@@ -9,11 +10,40 @@ import { parse_date_string } from "./utils/date_helpers";
 
 /** All trackable step IDs across every phase */
 export const ALL_STEP_IDS = [
-  "step-1", "step-2", "step-3", "step-4", "step-5", "step-6", "step-7",
-  "step-8", "step-9", "step-10", "step-11", "step-12", "step-13", "step-14",
-  "step-15", "step-16", "step-17", "step-18", "step-19", "step-20", "step-21",
-  "step-22", "step-23", "step-24", "step-25", "step-26", "step-27", "step-28",
-  "step-29", "step-30", "step-31", "step-32", "step-33", "step-34"
+  "step-1",
+  "step-2",
+  "step-3",
+  "step-4",
+  "step-5",
+  "step-6",
+  "step-7",
+  "step-8",
+  "step-9",
+  "step-10",
+  "step-11",
+  "step-12",
+  "step-13",
+  "step-14",
+  "step-15",
+  "step-16",
+  "step-17",
+  "step-18",
+  "step-19",
+  "step-20",
+  "step-21",
+  "step-22",
+  "step-23",
+  "step-24",
+  "step-25",
+  "step-26",
+  "step-27",
+  "step-28",
+  "step-29",
+  "step-30",
+  "step-31",
+  "step-32",
+  "step-33",
+  "step-34",
 ] as const;
 
 export const TOTAL_STEPS = ALL_STEP_IDS.length;
@@ -49,9 +79,11 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
   on_trigger_firestore_save,
   on_go_back,
 }) => {
+  const { t } = useTranslation();
   const valid_steps = ALL_STEP_IDS.filter((id) => !na_steps.has(id));
   const completed_count = valid_steps.filter((id) => completed_steps.has(id)).length;
-  const progress_pct = valid_steps.length > 0 ? Math.round((completed_count / valid_steps.length) * 100) : 0;
+  const progress_pct =
+    valid_steps.length > 0 ? Math.round((completed_count / valid_steps.length) * 100) : 0;
 
   let deadline_info = null;
   if (deadline_string && deadline_string !== "Sin límite") {
@@ -61,18 +93,26 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
       const diff = differenceInDays(deadline_date, today);
       if (diff < 0) {
         deadline_info = (
-          <span className="text-red-500 font-bold ml-2">Vencido por {Math.abs(diff)} días</span>
+          <span className="text-red-500 dark:text-red-400 font-bold ml-2">
+            {t("pdcaDialog.expiredBy", { days: Math.abs(diff) })}
+          </span>
         );
       } else if (diff === 0) {
-        deadline_info = <span className="text-amber-500 font-bold ml-2">Vence hoy</span>;
+        deadline_info = (
+          <span className="text-amber-500 font-bold ml-2">{t("pdcaDialog.expiresToday")}</span>
+        );
       } else {
         deadline_info = (
-          <span className="text-emerald-500 font-medium ml-2">Quedan {diff} días</span>
+          <span className="text-emerald-500 font-medium ml-2">
+            {t("pdcaDialog.daysLeft", { days: diff })}
+          </span>
         );
       }
     }
   } else if (deadline_string === "Sin límite") {
-    deadline_info = <span className="text-muted-foreground ml-2">Sin límite de tiempo</span>;
+    deadline_info = (
+      <span className="text-muted-foreground ml-2">{t("pdcaDialog.noTimeLimit")}</span>
+    );
   }
 
   return (
@@ -84,23 +124,25 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
       >
         <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
-        Volver a Mis PDCAs
+        {t("pdcaDialog.backToPdcas")}
       </button>
 
       {/* Row 2: Meta + Save */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3 flex-wrap">
           <span className="font-mono text-xs font-semibold text-muted-foreground bg-secondary/60 px-2 py-0.5 rounded">
-            {document_identifier || "Nuevo PDCA"}
+            {document_identifier || t("pdcaDialog.newPdca")}
           </span>
           <PhaseBadge phase={current_phase} />
           {creation_date && (
-            <span className="text-xs text-muted-foreground ml-2">Abierto: {creation_date}</span>
+            <span className="text-xs text-muted-foreground ml-2">
+              {t("pdcaDialog.opened")} {creation_date}
+            </span>
           )}
           {deadline_info && <span className="text-xs">| {deadline_info}</span>}
           {last_updated && (
             <span className="text-xs text-muted-foreground ml-2">
-              | Actualizado: {last_updated}
+              | {t("table.updated")}: {last_updated}
             </span>
           )}
         </div>
@@ -109,15 +151,15 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2 pr-2">
             {is_saving_in_progress ? (
               <span className="inline-flex items-center gap-1.5 text-xs text-primary font-medium animate-pulse">
-                <UploadCloud className="size-3.5 animate-bounce" /> Guardando cambios...
+                <UploadCloud className="size-3.5 animate-bounce" /> {t("pdcaDialog.saving")}
               </span>
             ) : has_pending_modifications ? (
               <span className="inline-flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
-                <Save className="size-3.5" /> Cambios pendientes
+                <Save className="size-3.5" /> {t("pdcaDialog.pendingChanges")}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                <Check className="size-3.5" /> Sincronizado
+                <Check className="size-3.5" /> {t("pdcaDialog.synchronized")}
               </span>
             )}
           </div>
@@ -136,7 +178,7 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
             )}
           >
             <UploadCloud className="size-3.5" />
-            {is_saving_in_progress ? "Guardando..." : "Guardar PDCA"}
+            {is_saving_in_progress ? t("pdcaDialog.saving") : t("pdcaDialog.savePdca")}
           </Button>
         </div>
       </div>
@@ -144,14 +186,14 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
       {/* Row 3: Title + Progress */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight max-w-3xl">
-          {pdca_title || "Nuevo PDCA"}
+          {pdca_title || t("pdcaDialog.newPdca")}
         </h1>
 
         <div className="flex-shrink-0 text-right">
           <div className="text-sm font-semibold text-foreground whitespace-nowrap">
-            Progreso del PDCA: <span className="text-primary">{progress_pct}%</span>
+            {t("pdcaDialog.progress")} <span className="text-primary">{progress_pct}%</span>
             <span className="text-xs text-muted-foreground ml-1 font-normal">
-              ({completed_count}/{TOTAL_STEPS} pasos)
+              ({completed_count}/{TOTAL_STEPS} {t("pdcaDialog.steps")})
             </span>
           </div>
           {/* Progress bar */}

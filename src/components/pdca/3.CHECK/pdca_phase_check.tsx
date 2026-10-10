@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StepCard } from "@/components/ui/step-card";
 import { TimeSeriesYTD } from "../1.PLAN/paso7/time-series-ytd";
 import { ImageUploadSection } from "../image-upload-section";
@@ -22,7 +23,7 @@ interface PhaseCheckProps {
   na_steps?: Set<string> | undefined;
   on_toggle_step: (step_id: string) => void;
   on_toggle_na?: ((step_id: string) => void) | undefined;
-  
+
   nuevo_performance_image?: string | undefined;
   on_nuevo_performance_image_change?: ((img?: string) => void) | undefined;
   nuevo_pareto_image?: string | undefined;
@@ -60,7 +61,10 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
   on_final_time_series_ymin_change,
   final_time_series_ymax,
   on_final_time_series_ymax_change,
-  completed_steps, na_steps, on_toggle_step, on_toggle_na,
+  completed_steps,
+  na_steps,
+  on_toggle_step,
+  on_toggle_na,
   nuevo_performance_image,
   on_nuevo_performance_image_change,
   nuevo_pareto_image,
@@ -84,28 +88,31 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
   nueva_correlacion_data,
   on_nueva_correlacion_data_change,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       {/* ── PASO 21: Nuevo Performance ────────────────────────────── */}
       <ImageUploadSection
         image={nuevo_performance_image || null}
         onChange={(img) => on_nuevo_performance_image_change?.(img || undefined)}
-        title="PASO 21: NUEVO PERFORMANCE DEL PROCESO ( ANÁLISIS DE PIs)"
-        subtitle="Sube una imagen del análisis de PIs"
+        title={t("pdcaPhases.check.step21.title")}
+        subtitle={t("pdcaPhases.check.step21.subtitle")}
         isStepCompleted={completed_steps.has("step-22")}
         onToggleStep={() => on_toggle_step("step-22")}
-        isNa={na_steps?.has("step-22")} onToggleNa={() => on_toggle_na?.("step-22")}
+        isNa={na_steps?.has("step-22")}
+        onToggleNa={() => on_toggle_na?.("step-22")}
       />
 
       {/* ── PASO 22: Mapeo Proceso ────────────────────────────── */}
       <ImageUploadSection
         image={mapeo_proceso_image || null}
         onChange={(img) => on_mapeo_proceso_image_change?.(img || undefined)}
-        title="PASO 22: NUEVO MAPEO DE PROCESOS"
-        subtitle="Sube una imagen del nuevo flujo de proceso"
+        title={t("pdcaPhases.check.step22.title")}
+        subtitle={t("pdcaPhases.check.step22.subtitle")}
         isStepCompleted={completed_steps.has("step-23")}
         onToggleStep={() => on_toggle_step("step-23")}
-        isNa={na_steps?.has("step-23")} onToggleNa={() => on_toggle_na?.("step-23")}
+        isNa={na_steps?.has("step-23")}
+        onToggleNa={() => on_toggle_na?.("step-23")}
       />
 
       {/* ── PASO 23: Pruebas ejecutadas ─────────────────────────── */}
@@ -114,7 +121,8 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onChange={on_pruebas_ejecutadas_change!}
         isStepCompleted={completed_steps.has("step-24")}
         onToggleStep={() => on_toggle_step("step-24")}
-        isNa={na_steps?.has("step-24")} onToggleNa={() => on_toggle_na?.("step-24")}
+        isNa={na_steps?.has("step-24")}
+        onToggleNa={() => on_toggle_na?.("step-24")}
       />
 
       {/* ── PASO 24: Nuevo Pareto ───────────────────────────────── */}
@@ -127,19 +135,21 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onUnitChange={on_nuevo_pareto_unit_change!}
         isStepCompleted={completed_steps.has("step-25")}
         onToggleStep={() => on_toggle_step("step-25")}
-        isNa={na_steps?.has("step-25")} onToggleNa={() => on_toggle_na?.("step-25")}
+        isNa={na_steps?.has("step-25")}
+        onToggleNa={() => on_toggle_na?.("step-25")}
         paretoTitles={nuevo_pareto_titles || {}}
         onParetoTitlesChange={on_nuevo_pareto_titles_change!}
-        mainTitle="PASO 24: NUEVO PARETO"
-        secondaryTitlePrefix="PASO 24: NUEVO PARETO INDEPENDIENTE"
+        mainTitle={t("pdcaPhases.check.step24.mainTitle")}
+        secondaryTitlePrefix={t("pdcaPhases.check.step24.secondaryTitlePrefix")}
       />
 
       {/* ── PASO 25: Nueva Correlaciones ────────────────────────── */}
       <FlavorCorrelationSection
-        title="PASO 25: NUEVAS CORRELACIONES"
+        title={t("pdcaPhases.check.step25.title")}
         isStepCompleted={completed_steps.has("step-26")}
         onToggleStep={() => on_toggle_step("step-26")}
-        isNa={na_steps?.has("step-26")} onToggleNa={() => on_toggle_na?.("step-26")}
+        isNa={na_steps?.has("step-26")}
+        onToggleNa={() => on_toggle_na?.("step-26")}
       />
 
       {/* ── PASO 26: Evolución de KPIs ──────────────────────────── */}
@@ -148,7 +158,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onChange={on_final_time_series_data_change}
         unit={final_time_series_unit}
         onUnitChange={on_final_time_series_unit_change}
-        title="PASO 26: EVOLUCIÓN DE KPIs"
+        title={t("pdcaPhases.check.step26.title")}
         chartTitle={final_time_series_title}
         onTitleChange={on_final_time_series_title_change}
         yMin={final_time_series_ymin}
@@ -157,7 +167,8 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onYMaxChange={on_final_time_series_ymax_change}
         isStepCompleted={completed_steps.has("step-27")}
         onToggleStep={() => on_toggle_step("step-27")}
-        isNa={na_steps?.has("step-27")} onToggleNa={() => on_toggle_na?.("step-27")}
+        isNa={na_steps?.has("step-27")}
+        onToggleNa={() => on_toggle_na?.("step-27")}
       />
     </div>
   );

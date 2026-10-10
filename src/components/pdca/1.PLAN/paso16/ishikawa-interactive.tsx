@@ -1,4 +1,5 @@
-import React from "react";
+﻿import React from "react";
+import { useTranslation } from "react-i18next";
 import { Maximize2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +28,10 @@ interface PropiedadesIshikawaInteractivo {
   causasPriorizadas?: any[];
   alCambiarCausasPriorizadas?: (nuevasCausas: any[]) => void;
   etiquetasPersonalizadas?: Record<string, string>;
-  alCambiarEtiquetas?: (nuevasEtiquetas: Record<string, string> | ((previas: Record<string, string>) => Record<string, string>)) => void;
+  alCambiarEtiquetas?: (
+    nuevasEtiquetas:
+      Record<string, string> | ((previas: Record<string, string>) => Record<string, string>),
+  ) => void;
   sufijoTitulo?: string | undefined;
   tituloPersonalizado?: string | undefined;
   alCambiarTitulo?: ((nuevoTitulo: string) => void) | undefined;
@@ -36,6 +40,8 @@ interface PropiedadesIshikawaInteractivo {
   isNa?: boolean;
   onToggleStep?: () => void;
   onToggleNa?: () => void;
+  defaultExpanded?: boolean;
+  hidePrioritizationTable?: boolean;
 }
 
 export function IshikawaInteractivo({
@@ -55,19 +61,53 @@ export function IshikawaInteractivo({
   isNa,
   onToggleStep,
   onToggleNa,
+  defaultExpanded,
+  hidePrioritizationTable,
 }: PropiedadesIshikawaInteractivo) {
+  const { t } = useTranslation();
+
   const arregloCategorias = [
-    { id: "machine", label: etiquetasPersonalizadas["machine"] ?? "Concepto de: Máquina", position: "top" as const },
-    { id: "method", label: etiquetasPersonalizadas["method"] ?? "Concepto de: Método", position: "top" as const },
-    { id: "material", label: etiquetasPersonalizadas["material"] ?? "Concepto de: Material", position: "top" as const },
-    { id: "manpower", label: etiquetasPersonalizadas["manpower"] ?? "Concepto de: Mano de Obra", position: "bottom" as const },
-    { id: "measurement", label: etiquetasPersonalizadas["measurement"] ?? "Concepto de: Medición", position: "bottom" as const },
-    { id: "environment", label: etiquetasPersonalizadas["environment"] ?? "Concepto de: Medio Amb.", position: "bottom" as const },
+    {
+      id: "machine",
+      label: etiquetasPersonalizadas["machine"] ?? "Concepto de: Máquina",
+      position: "top" as const,
+    },
+    {
+      id: "method",
+      label: etiquetasPersonalizadas["method"] ?? "Concepto de: Método",
+      position: "top" as const,
+    },
+    {
+      id: "material",
+      label: etiquetasPersonalizadas["material"] ?? "Concepto de: Material",
+      position: "top" as const,
+    },
+    {
+      id: "manpower",
+      label: etiquetasPersonalizadas["manpower"] ?? "Concepto de: Mano de Obra",
+      position: "bottom" as const,
+    },
+    {
+      id: "measurement",
+      label: etiquetasPersonalizadas["measurement"] ?? "Concepto de: Medición",
+      position: "bottom" as const,
+    },
+    {
+      id: "environment",
+      label: etiquetasPersonalizadas["environment"] ?? "Concepto de: Medio Amb.",
+      position: "bottom" as const,
+    },
   ];
 
-  const manejarCambioEtiquetaCategoria = (idCategoriaModificada: string, nuevaEtiquetaTexto: string) => {
+  const manejarCambioEtiquetaCategoria = (
+    idCategoriaModificada: string,
+    nuevaEtiquetaTexto: string,
+  ) => {
     if (alCambiarEtiquetas) {
-      alCambiarEtiquetas((etiquetasPrevias) => ({ ...etiquetasPrevias, [idCategoriaModificada]: nuevaEtiquetaTexto }));
+      alCambiarEtiquetas((etiquetasPrevias) => ({
+        ...etiquetasPrevias,
+        [idCategoriaModificada]: nuevaEtiquetaTexto,
+      }));
     }
   };
 
@@ -75,14 +115,19 @@ export function IshikawaInteractivo({
     if (!valorTextoCausa.trim()) return;
     alCambiarCausas((estadoPrevioCausas) => ({
       ...estadoPrevioCausas,
-      [idCategoriaDestino]: [...(estadoPrevioCausas[idCategoriaDestino] || []), valorTextoCausa.trim()],
+      [idCategoriaDestino]: [
+        ...(estadoPrevioCausas[idCategoriaDestino] || []),
+        valorTextoCausa.trim(),
+      ],
     }));
   };
 
   const eliminarCausaExistente = (idCategoriaOrigen: string, indiceElementoAEliminar: number) => {
     alCambiarCausas((estadoPrevioCausas) => ({
       ...estadoPrevioCausas,
-      [idCategoriaOrigen]: (estadoPrevioCausas[idCategoriaOrigen] || []).filter((_, indiceFiltro) => indiceFiltro !== indiceElementoAEliminar),
+      [idCategoriaOrigen]: (estadoPrevioCausas[idCategoriaOrigen] || []).filter(
+        (_, indiceFiltro) => indiceFiltro !== indiceElementoAEliminar,
+      ),
     }));
   };
 
@@ -94,7 +139,9 @@ export function IshikawaInteractivo({
         </div>
 
         <div className="absolute top-1/2 right-0 -translate-y-1/2 bg-destructive/10 text-destructive text-[11px] font-bold uppercase tracking-widest p-2 rounded-xl border border-destructive/30 z-10 w-36 text-center flex flex-col items-center justify-center shadow-sm min-h-[90px]">
-          <span className="text-[9px] font-semibold text-destructive/70 uppercase tracking-wider mb-1">Efecto / Problema</span>
+          <span className="text-[9px] font-semibold text-destructive/70 uppercase tracking-wider mb-1">
+            Efecto / Problema
+          </span>
           <Textarea
             value={efectoPrincipal}
             onChange={(eventoCajaTexto) => alCambiarEfecto(eventoCajaTexto.target.value)}
@@ -105,35 +152,39 @@ export function IshikawaInteractivo({
         </div>
 
         <div className="grid grid-cols-3 gap-4 pr-44 relative z-10">
-          {arregloCategorias.filter((categoriaItem) => categoriaItem.position === "top").map((categoriaFiltrada) => (
-            <div key={categoriaFiltrada.id} className="flex flex-col items-center">
-              <CajaCategoriaIshikawa
-                categoria={categoriaFiltrada}
-                listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
-                alAgregarCausa={agregarNuevaCausa}
-                alEliminarCausa={eliminarCausaExistente}
-                alCambiarEtiqueta={manejarCambioEtiquetaCategoria}
-              />
-              <div className="w-0.5 h-8 bg-border"></div>
-            </div>
-          ))}
+          {arregloCategorias
+            .filter((categoriaItem) => categoriaItem.position === "top")
+            .map((categoriaFiltrada) => (
+              <div key={categoriaFiltrada.id} className="flex flex-col items-center">
+                <CajaCategoriaIshikawa
+                  categoria={categoriaFiltrada}
+                  listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
+                  alAgregarCausa={agregarNuevaCausa}
+                  alEliminarCausa={eliminarCausaExistente}
+                  alCambiarEtiqueta={manejarCambioEtiquetaCategoria}
+                />
+                <div className="w-0.5 h-8 bg-border"></div>
+              </div>
+            ))}
         </div>
 
         <div className="h-4"></div>
 
         <div className="grid grid-cols-3 gap-4 pr-44 relative z-10">
-          {arregloCategorias.filter((categoriaItem) => categoriaItem.position === "bottom").map((categoriaFiltrada) => (
-            <div key={categoriaFiltrada.id} className="flex flex-col items-center">
-              <div className="w-0.5 h-8 bg-border"></div>
-              <CajaCategoriaIshikawa
-                categoria={categoriaFiltrada}
-                listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
-                alAgregarCausa={agregarNuevaCausa}
-                alEliminarCausa={eliminarCausaExistente}
-                alCambiarEtiqueta={manejarCambioEtiquetaCategoria}
-              />
-            </div>
-          ))}
+          {arregloCategorias
+            .filter((categoriaItem) => categoriaItem.position === "bottom")
+            .map((categoriaFiltrada) => (
+              <div key={categoriaFiltrada.id} className="flex flex-col items-center">
+                <div className="w-0.5 h-8 bg-border"></div>
+                <CajaCategoriaIshikawa
+                  categoria={categoriaFiltrada}
+                  listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
+                  alAgregarCausa={agregarNuevaCausa}
+                  alEliminarCausa={eliminarCausaExistente}
+                  alCambiarEtiqueta={manejarCambioEtiquetaCategoria}
+                />
+              </div>
+            ))}
         </div>
       </div>
     </div>
@@ -146,6 +197,7 @@ export function IshikawaInteractivo({
       isNa={isNa}
       onToggleStep={onToggleStep}
       onToggleNa={onToggleNa}
+      defaultExpanded={defaultExpanded}
       title={
         <Input
           value={tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}
@@ -164,8 +216,7 @@ export function IshikawaInteractivo({
                   size="sm"
                   className="h-8 px-2.5 text-[11px] font-bold uppercase shadow-sm gap-1"
                 >
-                  <X className="size-3.5" /> Eliminar Ishikawa
-                </Button>
+                  <X className="size-3.5" />{t("pdcaPlan.paso16_ishikawa_delete")}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -176,13 +227,11 @@ export function IshikawaInteractivo({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{t("pdcaPlan.paso16_ishikawa_cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={alEliminarIshikawa}
                     className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                  >
-                    Eliminar
-                  </AlertDialogAction>
+                  >{t("pdcaPlan.paso17_five_whys_delete")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -191,11 +240,12 @@ export function IshikawaInteractivo({
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-2">
-                <Maximize2 className="size-3.5" /> Expandir Diagrama
-              </Button>
+                <Maximize2 className="size-3.5" />{t("pdcaPlan.paso16_ishikawa_expand")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-[95vw] w-full p-6">
-              <h3 className="text-lg font-bold uppercase mb-4">{tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}</h3>
+              <h3 className="text-lg font-bold uppercase mb-4">
+                {tituloPersonalizado ?? `ISHIKAWA${sufijoTitulo}`}
+              </h3>
               {renderizarDiagramaPescado}
             </DialogContent>
           </Dialog>
@@ -204,7 +254,12 @@ export function IshikawaInteractivo({
     >
       <div className="space-y-6">
         {renderizarDiagramaPescado}
-        <MatrizPriorizacionIshikawa valorMatriz={causasPriorizadas} alCambiarValores={alCambiarCausasPriorizadas} />
+        {!hidePrioritizationTable && (
+          <MatrizPriorizacionIshikawa
+            valorMatriz={causasPriorizadas}
+            alCambiarValores={alCambiarCausasPriorizadas}
+          />
+        )}
       </div>
     </StepCard>
   );

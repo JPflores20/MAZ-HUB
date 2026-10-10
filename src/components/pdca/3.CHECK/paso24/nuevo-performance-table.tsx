@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { StepCard } from "@/components/ui/step-card";
 import type { NuevoPerformanceItem } from "@/data/pdca";
+import { useTranslation } from "react-i18next";
 
 interface NuevoPerformanceTableProps {
   items: NuevoPerformanceItem[];
@@ -22,7 +23,15 @@ interface NuevoPerformanceTableProps {
   onToggleNa?: (() => void) | undefined;
 }
 
-export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ items, onChange, isStepCompleted, onToggleStep, isNa, onToggleNa }) => {
+export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({
+  items,
+  onChange,
+  isStepCompleted,
+  onToggleStep,
+  isNa,
+  onToggleNa,
+}) => {
+  const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: NuevoPerformanceItem = {
       id: crypto.randomUUID(),
@@ -35,9 +44,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
   };
 
   const handleUpdate = (id: string, field: keyof NuevoPerformanceItem, value: string) => {
-    const newItems = items.map((item) =>
-      item.id === id ? { ...item, [field]: value } : item
-    );
+    const newItems = items.map((item) => (item.id === id ? { ...item, [field]: value } : item));
     onChange(newItems);
   };
 
@@ -47,7 +54,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
 
   return (
     <StepCard
-      title="PASO 24: NUEVO PERFORMANCE DE PROCESOS (ESTADÃSTICO)"
+      title={t("pdcaTables.newPerformance.title")}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
@@ -56,7 +63,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
       <div className="space-y-4">
         <div className="flex items-center justify-end">
           <Button onClick={handleAdd} variant="outline" size="sm">
-            <Plus className="size-4 mr-2" /> Agregar Indicador
+            <Plus className="size-4 mr-2" /> {t("pdcaTables.newPerformance.addIndicator")}
           </Button>
         </div>
 
@@ -64,10 +71,14 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
           <Table className="min-w-[600px] text-xs">
             <TableHeader>
               <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
-                <TableHead className="font-bold text-white text-center">INDICADOR / PI / KPI</TableHead>
-                <TableHead className="font-bold text-white text-center">ANTES (BASELINE)</TableHead>
-                <TableHead className="font-bold text-white text-center">DESPUÃ‰S (IMPLEMENTACIÓN)</TableHead>
-                <TableHead className="font-bold text-white text-center">MEJORA (%)</TableHead>
+                <TableHead className="font-bold text-white text-center">
+                  {t("pdcaTables.newPerformance.indicator")}
+                </TableHead>
+                <TableHead className="font-bold text-white text-center">{t("pdcaTables.newPerformance.beforeBaseline")}</TableHead>
+                <TableHead className="font-bold text-white text-center">
+                  {t("pdcaTables.newPerformance.afterImplementation")}
+                </TableHead>
+                <TableHead className="font-bold text-white text-center">{t("pdcaTables.newPerformance.improvement")}</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -75,7 +86,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
               {(!items || items.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                    No hay indicadores registrados.
+                    {t("pdcaTables.newPerformance.noIndicators")}
                   </TableCell>
                 </TableRow>
               )}
@@ -85,7 +96,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
                     <Input
                       value={item.indicador}
                       onChange={(e) => handleUpdate(item.id, "indicador", e.target.value)}
-                      placeholder="Ej. Tiempo de ciclo, Defectos..."
+                      placeholder={t("pdcaTables.newPerformance.placeholders.indicator")}
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -93,7 +104,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
                     <Input
                       value={item.antes}
                       onChange={(e) => handleUpdate(item.id, "antes", e.target.value)}
-                      placeholder="Valor inicial..."
+                      placeholder={t("pdcaTables.newPerformance.placeholders.initialValue")}
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -101,7 +112,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
                     <Input
                       value={item.despues}
                       onChange={(e) => handleUpdate(item.id, "despues", e.target.value)}
-                      placeholder="Valor final..."
+                      placeholder={t("pdcaTables.newPerformance.placeholders.finalValue")}
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -109,7 +120,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
                     <Input
                       value={item.mejora}
                       onChange={(e) => handleUpdate(item.id, "mejora", e.target.value)}
-                      placeholder="Ej. +15%"
+                      placeholder={t("pdcaTables.newPerformance.placeholders.improvement")}
                       className="h-8 text-xs shadow-none"
                     />
                   </TableCell>
@@ -117,7 +128,7 @@ export const NuevoPerformanceTable: React.FC<NuevoPerformanceTableProps> = ({ it
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      className="h-8 w-8 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:bg-red-900/20"
                       onClick={() => handleDelete(item.id)}
                     >
                       <Trash2 className="size-4" />

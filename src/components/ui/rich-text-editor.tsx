@@ -1,127 +1,173 @@
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
+import React, { useRef } from "react";
 import { Bold, Italic, List, ListOrdered } from "lucide-react";
-import { Toggle } from "./toggle";
-import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const FONT_SIZES = [
+  { label: "8", value: "1" },
+  { label: "10", value: "2" },
+  { label: "12", value: "3" },
+  { label: "14", value: "4" },
+  { label: "18", value: "5" },
+  { label: "24", value: "6" },
+  { label: "36", value: "7" },
+];
 
 interface RichTextEditorProps {
   value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  className?: string;
+  onChange: (v: string) => void;
   disabled?: boolean;
+  placeholder?: string;
+  minHeight?: string;
+  className?: string;
 }
 
 export function RichTextEditor({
   value,
   onChange,
-  placeholder,
-  className,
   disabled,
+  placeholder = "Escribe aquí...",
+  minHeight = "140px",
+  className,
 }: RichTextEditorProps) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: placeholder || "Escribe aquí...",
-        emptyEditorClass: "is-editor-empty",
-      }),
-    ],
-    content: value,
-    editable: !disabled,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-    editorProps: {
-      attributes: {
-        class: cn(
-          "min-h-[150px] w-full rounded-md px-3 py-2 text-sm focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 prose prose-sm max-w-none dark:prose-invert",
-          disabled && "bg-muted opacity-50 cursor-not-allowed",
-        ),
-      },
-    },
-  });
+  const editorRef = useRef<HTMLDivElement>(null);
+  const isMounted = useRef(false);
 
-  // Sync value when it changes externally
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
+  React.useEffect(() => {
+    if (!editorRef.current) return;
+    if (!isMounted.current) {
+      editorRef.current.innerHTML = value || "";
+      isMounted.current = true;
+      return;
     }
-  }, [value, editor]);
-
-  useEffect(() => {
-    if (editor) {
-      editor.setEditable(!disabled);
+    if (value !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value || "";
     }
-  }, [disabled, editor]);
+  }, [value]);
 
-  if (!editor) {
-    return null;
-  }
+  const execCmd = (cmd: string, arg?: string) => {
+    editorRef.current?.focus();
+    document.execCommand(cmd, false, arg);
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  const handleInput = () => {
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col border border-input rounded-md overflow-hidden bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring",
-        className,
-      )}
-    >
-      {!disabled && (
-        <div className="flex flex-wrap items-center gap-1 p-1 border-b border-input bg-muted/40">
-          <Toggle
-            size="sm"
-            pressed={editor.isActive("bold")}
-            onPressedChange={() => editor.chain().focus().toggleBold().run()}
-            aria-label="Toggle bold"
-          >
-            <Bold className="h-4 w-4" />
-          </Toggle>
-          <Toggle
-            size="sm"
-            pressed={editor.isActive("italic")}
-            onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-            aria-label="Toggle italic"
-          >
-            <Italic className="h-4 w-4" />
-          </Toggle>
-          <div className="w-px h-4 bg-input mx-1" />
-          <Toggle
-            size="sm"
-            pressed={editor.isActive("bulletList")}
-            onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-            aria-label="Toggle bullet list"
-          >
-            <List className="h-4 w-4" />
-          </Toggle>
-          <Toggle
-            size="sm"
-            pressed={editor.isActive("orderedList")}
-            onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-            aria-label="Toggle ordered list"
-          >
-            <ListOrdered className="h-4 w-4" />
-          </Toggle>
+    <div className={cn("border border-border rounded-md overflow-hidden", className)}>
+      {/* Toolbar */}
+      <div className="flex items-center gap-0.5 px-2 py-1 border-b border-border bg-muted/30 flex-wrap">
+        {/* Bold */}
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("bold");
+          }}
+          className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          title="Negrita"
+        >
+          <Bold className="size-3.5" />
+        </button>
+        {/* Italic */}
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("italic");
+          }}
+          className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          title="Itálica"
+        >
+          <Italic className="size-3.5" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        {/* Unordered list */}
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("insertUnorderedList");
+          }}
+          className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          title="Lista de viñetas"
+        >
+          <List className="size-3.5" />
+        </button>
+        {/* Ordered list */}
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("insertOrderedList");
+          }}
+          className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          title="Lista numerada"
+        >
+          <ListOrdered className="size-3.5" />
+        </button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        {/* Font size */}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground ml-1">
+          <span className="font-medium">Tamaño:</span>
+          <Select defaultValue="3" onValueChange={(val) => execCmd("fontSize", val)}>
+            <SelectTrigger
+              className="h-7 w-[64px] text-xs px-2 focus:ring-0"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_SIZES.map((s) => (
+                <SelectItem key={s.value} value={s.value} className="text-xs cursor-pointer">
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
-      <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
-      <style>{`
-        .is-editor-empty:first-child::before {
+      </div>
+
+      {/* Editable area */}
+      <div
+        ref={editorRef}
+        contentEditable={!disabled}
+        suppressContentEditableWarning
+        onInput={handleInput}
+        onBlur={handleInput}
+        style={{ minHeight }}
+        className="p-3 text-sm focus:outline-none prose prose-sm max-w-none"
+        data-placeholder={placeholder}
+      />
+
+      {/* Placeholder style */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        [data-placeholder]:empty:before {
           content: attr(data-placeholder);
-          float: left;
-          color: #adb5bd;
+          color: #94a3b8;
           pointer-events: none;
-          height: 0;
         }
-        .ProseMirror p {
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-        }
-        .ProseMirror > *:first-child {
-          margin-top: 0;
-        }
-      `}</style>
+      `,
+        }}
+      />
     </div>
   );
 }

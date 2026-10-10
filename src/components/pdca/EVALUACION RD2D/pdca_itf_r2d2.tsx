@@ -77,7 +77,7 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
 
     return (
       <div className="flex flex-col md:flex-row items-stretch gap-2 mb-4 border-b border-border pb-4 last:border-0 last:pb-0">
-        <div className="flex-shrink-0 flex items-center justify-center bg-blue-500 text-white font-bold text-4xl w-16 h-full min-h-[100px] rounded-md shadow-sm">
+        <div className="flex-shrink-0 flex items-center justify-center bg-blue-500 dark:bg-blue-600 text-white font-bold text-4xl w-16 h-full min-h-[100px] rounded-md shadow-sm">
           {letter}
         </div>
         <div className="w-48 bg-card rounded-md shadow-sm border border-border p-3">
@@ -100,7 +100,7 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
                 checked={data.check}
                 disabled={!!disabled}
                 onChange={(e) => updateField(key, "check", e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 dark:text-blue-400 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -172,18 +172,12 @@ export const PdcaItfR2d2: React.FC<PdcaItfR2d2Props> = ({
           "Manténgalo simple... los paretos para reducir el enfoque del equipo rápidamente",
           "Comience a usar el Plan de acción del PDCA inmediatamente",
         ])}
-        {renderRow(
-          "dontReinventTheWheel",
-          "D",
-          "No reinventes la rueda",
-          "",
-          [
-            "Buenas prácticas operativas (GOP)",
-            "Recomendaciones de proveedores",
-            "Amigos en todo el mundo",
-            "Lista de Verificación SDCA",
-          ],
-        )}
+        {renderRow("dontReinventTheWheel", "D", "No reinventes la rueda", "", [
+          "Buenas prácticas operativas (GOP)",
+          "Recomendaciones de proveedores",
+          "Amigos en todo el mundo",
+          "Lista de Verificación SDCA",
+        ])}
         {renderRow("noHippos", "+1", "Sin hipopótamos", "No te quedes atascado en el barro", [
           "La lista de verificación SDCA debe ser rápida",
           "Múltiples PDCAs como ramificaciones",

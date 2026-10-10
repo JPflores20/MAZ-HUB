@@ -1,5 +1,5 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 const oldHeader = `<div className="flex items-center gap-2">
           <Button
@@ -30,11 +30,11 @@ const newHeader = `<div className="flex items-center gap-2">
 
 code = code.replace(oldHeader, newHeader);
 
-if (!code.includes('RefreshCw')) {
-    code = code.replace(
-        'import { Plus, Search, Trash2, Edit } from "lucide-react";',
-        'import { Plus, Search, Trash2, Edit, RefreshCw } from "lucide-react";'
-    );
+if (!code.includes("RefreshCw")) {
+  code = code.replace(
+    'import { Plus, Search, Trash2, Edit } from "lucide-react";',
+    'import { Plus, Search, Trash2, Edit, RefreshCw } from "lucide-react";',
+  );
 }
 
-fs.writeFileSync('src/routes/rda.tsx', code);
+fs.writeFileSync("src/routes/rda.tsx", code);

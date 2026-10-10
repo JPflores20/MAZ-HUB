@@ -31,7 +31,9 @@ export function calcularCorrelacionPearson(puntos: PuntoCorrelacion[]): string {
   }
   const cantidadPuntos = puntos.length;
   const numerador = cantidadPuntos * sumaXY - sumaX * sumaY;
-  const denominador = Math.sqrt((cantidadPuntos * sumaX2 - sumaX * sumaX) * (cantidadPuntos * sumaY2 - sumaY * sumaY));
+  const denominador = Math.sqrt(
+    (cantidadPuntos * sumaX2 - sumaX * sumaX) * (cantidadPuntos * sumaY2 - sumaY * sumaY),
+  );
   if (denominador === 0) return "0.000";
   return (numerador / denominador).toFixed(3);
 }

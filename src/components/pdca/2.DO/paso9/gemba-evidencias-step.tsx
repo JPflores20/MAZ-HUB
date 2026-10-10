@@ -42,7 +42,9 @@ export function GembaEvidenciasStep({
 
   /** Procesa un array de archivos: sube los que sean imágenes y quepan en el límite */
   const procesarArchivos = async (archivos: FileList | File[]) => {
-    const soloImagenes = Array.from(archivos).filter((f) => f.type.startsWith("image/"));
+    const soloImagenes = Array.from(archivos).filter(
+      (f) => f.type.startsWith("image/") || f.type === "application/pdf",
+    );
     const espaciosDisponibles = GEMBA_MAX_ARCHIVOS - images.length;
     const archivosASubir = soloImagenes.slice(0, espaciosDisponibles);
 
@@ -132,7 +134,7 @@ export function GembaEvidenciasStep({
         <input
           ref={referenciaInputArchivo}
           type="file"
-          accept="image/*"
+          accept="image/*,application/pdf"
           multiple
           className="hidden"
           onChange={manejarCambioInput}

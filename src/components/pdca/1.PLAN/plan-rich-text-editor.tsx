@@ -51,7 +51,10 @@ export function EditorTextoEnriquecido({
       <div className="flex items-center gap-0.5 px-2 py-1 border-b border-border bg-muted/30">
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); ejecutarComando("bold"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            ejecutarComando("bold");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Negrita"
         >
@@ -59,7 +62,10 @@ export function EditorTextoEnriquecido({
         </button>
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); ejecutarComando("italic"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            ejecutarComando("italic");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Itálica"
         >
@@ -68,7 +74,10 @@ export function EditorTextoEnriquecido({
         <div className="w-px h-4 bg-border mx-1" />
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); ejecutarComando("insertUnorderedList"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            ejecutarComando("insertUnorderedList");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Lista de viñetas"
         >
@@ -76,7 +85,10 @@ export function EditorTextoEnriquecido({
         </button>
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); ejecutarComando("insertOrderedList"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            ejecutarComando("insertOrderedList");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Lista numerada"
         >

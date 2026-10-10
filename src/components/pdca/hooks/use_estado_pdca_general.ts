@@ -11,15 +11,19 @@ export const use_estado_pdca_general = (
   const [tituloProyecto, setTituloProyecto] = useState<string>(pdcaInicial.titulo || "");
   const [areaProyecto, setAreaProyecto] = useState<string>(pdcaInicial.area || "cocimientos");
   const [problemaDeclarado, setProblemaDeclarado] = useState<string>(pdcaInicial.problema || "");
-  const [causaRaizIdentificada, setCausaRaizIdentificada] = useState<string>(pdcaInicial.causaRaiz || "");
-  
+  const [causaRaizIdentificada, setCausaRaizIdentificada] = useState<string>(
+    pdcaInicial.causaRaiz || "",
+  );
+
   const [listaComentarios, setListaComentarios] = useState<PdcaComment[]>(
     pdcaInicial.comentarios || [],
   );
   const [historialEventos, setHistorialEventos] = useState<PdcaHistoryEvent[]>(
     pdcaInicial.historial || [],
   );
-  const [pestañaInferiorActiva, setPestañaInferiorActiva] = useState<"comments" | "history">("comments");
+  const [pestañaInferiorActiva, setPestañaInferiorActiva] = useState<"comments" | "history">(
+    "comments",
+  );
 
   const [fechaLimite, setFechaLimite] = useState<Date | undefined>(() =>
     parse_date_string(pdcaInicial.fechaFinalizacion),
@@ -43,29 +47,46 @@ export const use_estado_pdca_general = (
   const [pasosNoAplica, setPasosNoAplica] = useState<Set<string>>(
     new Set(pdcaInicial.naSteps || pdcaInicial.na_steps || []),
   );
-  
+
   const [miembrosEquipo, setMiembrosEquipo] = useState<string[]>(pdcaInicial.equipo || []);
   const [datosParticipantes, setDatosParticipantes] = useState<ParticipantesData>(
     pdcaInicial.participantes || DEFAULT_PARTICIPANTES,
   );
 
   return {
-    pestañaActiva, setPestañaActiva,
-    tituloProyecto, setTituloProyecto,
-    areaProyecto, setAreaProyecto,
-    problemaDeclarado, setProblemaDeclarado,
-    causaRaizIdentificada, setCausaRaizIdentificada,
-    listaComentarios, setListaComentarios,
-    historialEventos, setHistorialEventos,
-    pestañaInferiorActiva, setPestañaInferiorActiva,
-    fechaLimite, setFechaLimite,
-    nombreAutor, setNombreAutor,
-    correoAutor, setCorreoAutor,
-    usuariosAsignados, setUsuariosAsignados,
-    fasesCompletadas, setFasesCompletadas,
-    pasosCompletados, setPasosCompletados,
-    pasosNoAplica, setPasosNoAplica,
-    miembrosEquipo, setMiembrosEquipo,
-    datosParticipantes, setDatosParticipantes
+    pestañaActiva,
+    setPestañaActiva,
+    tituloProyecto,
+    setTituloProyecto,
+    areaProyecto,
+    setAreaProyecto,
+    problemaDeclarado,
+    setProblemaDeclarado,
+    causaRaizIdentificada,
+    setCausaRaizIdentificada,
+    listaComentarios,
+    setListaComentarios,
+    historialEventos,
+    setHistorialEventos,
+    pestañaInferiorActiva,
+    setPestañaInferiorActiva,
+    fechaLimite,
+    setFechaLimite,
+    nombreAutor,
+    setNombreAutor,
+    correoAutor,
+    setCorreoAutor,
+    usuariosAsignados,
+    setUsuariosAsignados,
+    fasesCompletadas,
+    setFasesCompletadas,
+    pasosCompletados,
+    setPasosCompletados,
+    pasosNoAplica,
+    setPasosNoAplica,
+    miembrosEquipo,
+    setMiembrosEquipo,
+    datosParticipantes,
+    setDatosParticipantes,
   };
 };

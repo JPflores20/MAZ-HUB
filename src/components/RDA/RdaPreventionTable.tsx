@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,8 @@ interface RdaPreventionTableProps {
 }
 
 export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps) {
+  const { t } = useTranslation();
+
   const addRow = () => {
     onChange([
       ...items,
@@ -57,13 +60,13 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
           <Table>
             <TableHeader className="bg-secondary/50">
               <TableRow>
-                <TableHead className="w-[130px]">Fecha</TableHead>
-                <TableHead className="w-[180px]">Tema / Origen</TableHead>
-                <TableHead className="w-[250px]">Acción de Prevención</TableHead>
-                <TableHead className="w-[200px]">Comentarios</TableHead>
-                <TableHead className="w-[150px]">Responsable</TableHead>
-                <TableHead className="w-[130px]">Fecha Límite</TableHead>
-                <TableHead className="w-[130px]">Eestatus</TableHead>
+                <TableHead className="w-[130px]">{t("rda.date")}</TableHead>
+                <TableHead className="w-[180px]">{t("rdaInternal.themeOrigin")}</TableHead>
+                <TableHead className="w-[250px]">{t("rdaInternal.preventionAction")}</TableHead>
+                <TableHead className="w-[200px]">{t("rda.comments")}</TableHead>
+                <TableHead className="w-[150px]">{t("rdaInternal.responsible")}</TableHead>
+                <TableHead className="w-[130px]">{t("rda.deadline")}</TableHead>
+                <TableHead className="w-[130px]">{t("rdaInternal.statusHeader")}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -124,10 +127,10 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Pendiente">Pendiente</SelectItem>
-                        <SelectItem value="En progreso">En progreso</SelectItem>
-                        <SelectItem value="Completa">Completada</SelectItem>
-                        <SelectItem value="Retrasado">Retrasado</SelectItem>
+                        <SelectItem value="Pendiente">{t("rdaInternal.pending")}</SelectItem>
+                        <SelectItem value="En progreso">{t("rdaInternal.inProgress")}</SelectItem>
+                        <SelectItem value="Completa">{t("rdaInternal.completed")}</SelectItem>
+                        <SelectItem value="Retrasado">{t("rdaInternal.delayed")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -146,7 +149,7 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                    No hay acciones de prevención registradas.
+                    {t("rdaInternal.noPreventionActions")}
                   </TableCell>
                 </TableRow>
               )}
@@ -156,7 +159,7 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
       </div>
       <Button variant="outline" size="sm" onClick={addRow} className="gap-2">
         <Plus className="h-4 w-4" />
-        Agregar Acción de Prevención
+        {t("rdaInternal.addPreventionAction")}
       </Button>
     </div>
   );

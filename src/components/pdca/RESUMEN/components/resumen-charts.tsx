@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, BarChart as BarChartIcon } from "lucide-react";
 import {
@@ -26,6 +27,7 @@ export const ResumenCharts: React.FC<Props> = ({
   initialParetoRoot,
   newParetoRoot,
 }) => {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -38,7 +40,7 @@ export const ResumenCharts: React.FC<Props> = ({
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <TrendingUp className="size-3.5 text-blue-500" />
-            Tendencia del KPI (Paso 26)
+            {t('pdcaResumen.kpiTrendStep26')}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3 pt-3 pb-2">
@@ -46,7 +48,11 @@ export const ResumenCharts: React.FC<Props> = ({
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                 <LineChart data={timeSeries} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
                   <XAxis dataKey="mes" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
                   <Tooltip />
@@ -56,7 +62,7 @@ export const ResumenCharts: React.FC<Props> = ({
                     dataKey="actual"
                     stroke="#0078D7"
                     strokeWidth={2}
-                    name="Real"
+                    name={t('pdcaResumen.actual')}
                     connectNulls
                     dot={{ r: 3 }}
                   />
@@ -66,7 +72,7 @@ export const ResumenCharts: React.FC<Props> = ({
                     stroke="#ef4444"
                     strokeDasharray="4 4"
                     strokeWidth={1.5}
-                    name="Target"
+                    name={t('pdcaResumen.target')}
                     dot={false}
                   />
                 </LineChart>
@@ -75,7 +81,7 @@ export const ResumenCharts: React.FC<Props> = ({
           ) : (
             <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
               <p className="text-xs text-muted-foreground text-center">
-                Sin datos de serie de tiempo aún (Paso 26).
+                {t('pdcaResumen.noTimeSeriesDataStep26')}
               </p>
             </div>
           )}
@@ -86,27 +92,34 @@ export const ResumenCharts: React.FC<Props> = ({
       <Card className="shadow-sm border-border">
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <BarChartIcon className="size-3.5 text-red-500" />
-            Pareto Antes (Paso 10)
+            <BarChartIcon className="size-3.5 text-red-500 dark:text-red-400" />
+            {t('pdcaResumen.paretoBeforeStep10')}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3 pt-3 pb-2">
           {initialParetoRoot.length > 0 && mounted ? (
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-                <BarChart data={initialParetoRoot} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <BarChart
+                  data={initialParetoRoot}
+                  margin={{ top: 8, right: 12, left: -20, bottom: 0 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
                   <XAxis dataKey="area" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip />
-                  <Bar dataKey="gap" fill="#ef4444" radius={[3, 3, 0, 0]} name="Brecha" />
+                  <Bar dataKey="gap" fill="#ef4444" radius={[3, 3, 0, 0]} name={t('pdcaResumen.gap')} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
             <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
               <p className="text-xs text-muted-foreground text-center">
-                Sin datos de Pareto inicial (Paso 10).
+                {t('pdcaResumen.noInitialParetoStep10')}
               </p>
             </div>
           )}
@@ -118,7 +131,7 @@ export const ResumenCharts: React.FC<Props> = ({
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <BarChartIcon className="size-3.5 text-green-500" />
-            Pareto Después (Paso 24)
+            {t('pdcaResumen.paretoAfterStep24')}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3 pt-3 pb-2">
@@ -126,20 +139,24 @@ export const ResumenCharts: React.FC<Props> = ({
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                 <BarChart data={newParetoRoot} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
                   <XAxis dataKey="area" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip />
-                  <Bar dataKey="gap" fill="#22c55e" radius={[3, 3, 0, 0]} name="Brecha" />
+                  <Bar dataKey="gap" fill="#22c55e" radius={[3, 3, 0, 0]} name={t('pdcaResumen.gap')} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
             <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
               <p className="text-xs text-muted-foreground text-center px-4">
-                Sin datos aún de Pareto Después.
+                {t('pdcaResumen.noParetoAfter')}
                 <br />
-                Se completará en la fase Check (Paso 24).
+                {t('pdcaResumen.willBeCompletedInCheckPhaseStep24')}
               </p>
             </div>
           )}

@@ -1,12 +1,12 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/components/pdca_dialog/pdca_phase_plan.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/components/pdca_dialog/pdca_phase_plan.tsx", "utf8");
 
 // Add AlertDialog imports
-if (!code.includes('AlertDialog,')) {
+if (!code.includes("AlertDialog,")) {
   code = code.replace(
     /import \{ Popover, PopoverContent, PopoverTrigger \} from "@\/components\/ui\/popover";/,
     `import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";`
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";`,
   );
 }
 
@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 const popoverRegex = /<Popover>[\s\S]*?<\/Popover>/g;
 let matchCount = 0;
 code = code.replace(popoverRegex, (match) => {
-  if (match.includes('QUITAR ANÁLISIS') || match.includes('set_has_flavor_correlation')) {
+  if (match.includes("QUITAR ANÁLISIS") || match.includes("set_has_flavor_correlation")) {
     matchCount++;
     return `<AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -44,5 +44,5 @@ code = code.replace(popoverRegex, (match) => {
   return match;
 });
 
-fs.writeFileSync('src/components/pdca_dialog/pdca_phase_plan.tsx', code);
-console.log('Modified pdca_phase_plan.tsx to use AlertDialog. Matches:', matchCount);
+fs.writeFileSync("src/components/pdca_dialog/pdca_phase_plan.tsx", code);
+console.log("Modified pdca_phase_plan.tsx to use AlertDialog. Matches:", matchCount);

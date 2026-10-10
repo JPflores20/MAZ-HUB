@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StepInstructions } from "../../step-instructions";
+import { useTranslation } from "react-i18next";
 
 export type AnalisisRiesgoProcesoItem = {
   id: string;
@@ -26,6 +27,7 @@ interface AnalisisRiesgosProcesoTableProps {
 }
 
 export const AnalisisRiesgosProcesoTable: React.FC<AnalisisRiesgosProcesoTableProps> = ({ items, onChange }) => {
+    const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: AnalisisRiesgoProcesoItem = {
       id: crypto.randomUUID(),
@@ -52,15 +54,14 @@ export const AnalisisRiesgosProcesoTable: React.FC<AnalisisRiesgosProcesoTablePr
     <div className="space-y-4">
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
-          <li>Identificar todos los posibles riesgos asociados a los cambios permanentes realizados como resultado del pdca/ITF y luego llenar en el cuadro la columna que corresponde a esa informaciÃƒÂ³n.</li>
-          <li>Aplicar todos los procesos de gestiÃƒÂ³n del cambio necesarios en funciÃƒÂ³n de los riesgos. Utilice la herramienta MOC en el Portal Global de VPO para ayudar en este proceso.</li>
+          <li>{t('pdcaPlan.dynamic.identificarTodosLosPosiblesRiesgos')}</li>
+          <li>{t('pdcaPlan.dynamic.aplicarTodosLosProcesosDe')}</li>
         </ol>
       </StepInstructions>
 
       <div className="flex items-center justify-end">
         <Button onClick={handleAdd} variant="outline" size="sm">
-          <Plus className="size-4 mr-2" /> Agregar Fila
-        </Button>
+          <Plus className="size-4 mr-2" /> {t('pdcaPlan.dynamic.agregarFila')}</Button>
       </div>
 
       <div className="border rounded-md overflow-x-auto bg-white shadow-sm">
@@ -68,10 +69,10 @@ export const AnalisisRiesgosProcesoTable: React.FC<AnalisisRiesgosProcesoTablePr
           <TableHeader>
             <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
               <TableHead className="w-10 font-bold text-white text-center border-r border-white/20">#</TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">RIESGO</TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">ACCION</TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">PERSONA A CARGO</TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">FRECUENCIA</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">{t('pdcaPlan.dynamic.riesgo')}</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">{t('pdcaPlan.dynamic.accion')}</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">{t('pdcaPlan.dynamic.personaACargo')}</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 uppercase">{t('pdcaPlan.dynamic.frecuencia')}</TableHead>
               <TableHead className="w-12 border-none"></TableHead>
             </TableRow>
           </TableHeader>
@@ -79,8 +80,7 @@ export const AnalisisRiesgosProcesoTable: React.FC<AnalisisRiesgosProcesoTablePr
             {(!items || items.length === 0) && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
-                  No hay riesgos identificados. Agrega uno.
-                </TableCell>
+                  {t('pdcaPlan.dynamic.noHayRiesgosIdentificadosAgrega')}</TableCell>
               </TableRow>
             )}
             {items?.map((item, index) => (

@@ -1,6 +1,11 @@
 import React from "react";
 import type { Phase } from "@/data/pdca";
-import { getCustomPhases, isPhaseStepsCompleted, PILAR_STYLE_MAP } from "./stepper/stepper-constants";
+import { useTranslation } from "react-i18next";
+import {
+  getCustomPhases,
+  isPhaseStepsCompleted,
+  PILAR_STYLE_MAP,
+} from "./stepper/stepper-constants";
 import { StepperPhaseItem } from "./stepper/stepper-phase-item";
 
 interface CustomStepperProps {
@@ -22,7 +27,8 @@ export function CustomStepper({
   naSteps,
   isAdmin,
 }: CustomStepperProps) {
-  const customPhases = getCustomPhases(!!isAdmin);
+  const { t } = useTranslation();
+  const customPhases = getCustomPhases(!!isAdmin, t);
   const currentIndex = customPhases.findIndex((p) => p.id === current);
 
   return (

@@ -53,8 +53,7 @@ export function comprimirImagenParaSubida(archivo: File): Promise<Blob> {
 
         const formatoSalida = archivo.type === "image/png" ? "image/png" : "image/jpeg";
         canvas.toBlob(
-          (blob) =>
-            blob ? resolve(blob) : reject(new Error("Error al comprimir la imagen")),
+          (blob) => (blob ? resolve(blob) : reject(new Error("Error al comprimir la imagen"))),
           formatoSalida,
           0.85,
         );
@@ -94,11 +93,8 @@ export async function subirArchivoAFirebase(
   const tareaDeSubida = uploadBytesResumable(referenciaStorage, blobParaSubir);
 
   return new Promise((resolve, reject) => {
-    tareaDeSubida.on(
-      "state_changed",
-      null,
-      reject,
-      async () => resolve(await getDownloadURL(tareaDeSubida.snapshot.ref)),
+    tareaDeSubida.on("state_changed", null, reject, async () =>
+      resolve(await getDownloadURL(tareaDeSubida.snapshot.ref)),
     );
   });
 }

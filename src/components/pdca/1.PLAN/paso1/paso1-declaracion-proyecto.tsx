@@ -19,6 +19,7 @@ import {
 import { AREAS } from "@/data/pdca";
 import { EditorTextoEnriquecido } from "../plan-rich-text-editor";
 import type { PropiedadesFasePlan } from "../plan-props";
+import { useTranslation } from "react-i18next";
 
 export type PropiedadesPaso1Declaracion = Pick<
   PropiedadesFasePlan,
@@ -75,9 +76,10 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
   on_toggle_step,
   on_toggle_na,
 }) => {
+    const { t } = useTranslation();
   return (
     <StepCard
-      title="PASO 1: DECLARACIÓN DEL PROYECTO"
+      title={t('pdcaPlan.dynamic.paso1DeclaraciNDel')}
       isStepCompleted={completed_steps.has("step-1")}
       onToggleStep={() => on_toggle_step("step-1")}
       isNa={na_steps?.has("step-1")}
@@ -85,29 +87,28 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
     >
       <StepInstructions>
         <p>
-          Define el alcance del problema, el equipo responsable y los datos de contexto del PDCA.
-        </p>
+          {t('pdcaPlan.dynamic.defineElAlcanceDelProblema')}</p>
       </StepInstructions>
 
       <div className="space-y-5 mt-4">
         {/* Metadatos principales: Título, Área, Fecha Límite, Autor */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1.5 lg:col-span-1">
-            <Label className="text-xs font-semibold">TÍTULO DEL PROYECTO</Label>
+            <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.tTuloDelProyecto')}</Label>
             <Input
               value={title_value}
               onChange={(e) => on_title_change(e.target.value)}
               disabled={!is_editable}
-              placeholder="Ej: Reducción de mermas en cocimientos"
+              placeholder={t('pdcaPlan.dynamic.ejReducciNDeMermas')}
               className="h-9 text-xs"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">ÁREA</Label>
+            <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.rea')}</Label>
             <Select value={area_value} onValueChange={on_area_change} disabled={!is_editable}>
               <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Seleccionar área" />
+                <SelectValue placeholder={t('pdcaPlan.dynamic.seleccionarRea')} />
               </SelectTrigger>
               <SelectContent>
                 {AREAS.map((area) => (
@@ -120,18 +121,18 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">FECHA LÍMITE</Label>
+            <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.fechaLMite')}</Label>
             <DatePicker
               date={deadline_date}
               setDate={(d) => on_deadline_change?.(d)}
-              placeholder="Seleccionar fecha límite"
+              placeholder={t('pdcaPlan.dynamic.seleccionarFechaLMite')}
               disabled={!is_admin_user}
               className="h-9 text-xs w-full"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">AUTOR ORIGINAL</Label>
+            <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.autorOriginal')}</Label>
             {is_admin_user ? (
               <Select
                 value={author_email}
@@ -141,7 +142,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
                 }}
               >
                 <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="Seleccionar autor" />
+                  <SelectValue placeholder={t('pdcaPlan.dynamic.seleccionarAutor')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(available_users ?? []).map((usuario) => (
@@ -159,7 +160,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
 
         {/* Usuarios Asignados */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold">USUARIOS ASIGNADOS (CO-RESPONSABLES)</Label>
+          <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.usuariosAsignadosCoResponsables')}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -167,7 +168,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
                 className="w-full justify-start text-left font-normal min-h-[36px] h-auto p-2"
               >
                 {(assigned_users ?? []).length === 0 ? (
-                  <span className="text-xs text-muted-foreground">Seleccionar usuarios...</span>
+                  <span className="text-xs text-muted-foreground">{t('pdcaPlan.dynamic.seleccionarUsuarios')}</span>
                 ) : (
                   <div className="flex flex-wrap gap-1">
                     {(assigned_users ?? []).map((usuario) => (
@@ -192,8 +193,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
                       <span>{usuario.name}</span>
                       {estaAsignado && (
                         <Badge variant="outline" className="text-[10px]">
-                          Asignado
-                        </Badge>
+                          {t('pdcaPlan.dynamic.asignado')}</Badge>
                       )}
                     </div>
                   );
@@ -205,7 +205,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
 
         {/* Descripción del Problema */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold">DESCRIPCIÓN DEL PROBLEMA</Label>
+          <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.descripciNDelProblema')}</Label>
           <EditorTextoEnriquecido
             value={problem_description}
             onChange={on_problem_change}
@@ -216,10 +216,9 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
         {/* Definición de la Meta */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold">DEFINICIÓN DE LA META (VPO STANDARD)</Label>
+            <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.definiciNDeLaMeta')}</Label>
             <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-              ⏱ Formato oficial A3 / A8 InBev
-            </span>
+              {t('pdcaPlan.dynamic.formatoOficialA3A8Inbev')}</span>
           </div>
           <PdcaGoalDefinition
             value={goal_definition}

@@ -1,34 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  Plus,
-  Search,
-  Filter,
-  Calendar,
-  Trash2,
-  CalendarClock,
-  X,
-  Target,
-  CheckCircle2,
-  Building,
-  LayoutDashboard,
-  Snowflake,
-  Flame,
-  RefreshCw,
-} from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { format, isValid, isBefore, startOfDay, parse } from "date-fns";
 import { es } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,23 +16,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarUI } from "@/components/ui/calendar";
-import { PhaseBadge } from "@/components/pdca/pdca-badge";
 
-import { PdcaDialog } from "@/components/pdca/pdca-dialog-wrapper";
 import { deletePdcaFromFirestore, updatePdcaDeadline } from "@/services/pdca-service";
-import { phases, type Phase, type Pdca } from "@/data/pdca";
+import { type Phase, type Pdca } from "@/data/pdca";
 import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
-import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
+import { Skeleton } from "@/components/ui/skeleton";
+import React, { lazy, Suspense } from "react";
 
-function getComputedProgress(p: Pdca): number {
-  if (!p.completedSteps) return p.progreso || 0;
-  const completed_steps = new Set(p.completedSteps);
-  const completed_count = ALL_STEP_IDS.filter((id) => completed_steps.has(id)).length;
-  return TOTAL_STEPS > 0 ? Math.round((completed_count / TOTAL_STEPS) * 100) : 0;
-}
+const LazyPdcaDialog = lazy(() =>
+  import("@/components/pdca/pdca-dialog-wrapper").then((m) => ({ default: m.PdcaDialog })),
+);
+
+// Componentes extraídos
+import { DashboardFilters } from "@/components/dashboard/dashboard_filters";
+import { ProjectTable } from "@/components/dashboard/project_table";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -79,494 +55,256 @@ export const Route = createFileRoute("/")({
   component: MisPdcas,
 });
 
+/**
+ * Componente principal de la ruta de dashboard (Mis PDCAs)
+ */
 function MisPdcas() {
-  const { currentUser } = useAuth();
-  // ← Single shared listener from PdcaProvider, no duplicate subscription
-  const { pdcaList, allPdcas, refresh } = usePdcas();
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Phase | "Todas">("Todas");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deadlinePickerOpenId, setDeadlinePickerOpenId] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { t } = useTranslation();
+  const { currentUser: current_user } = useAuth();
+  const { pdcaList: pdca_list, allPdcas: all_pdcas, refresh, loading } = usePdcas();
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
+  // Estados de la vista
+  const [query, set_query] = useState("");
+  const [filter, set_filter] = useState<Phase | "Todas">("Todas");
+  const [selected_id, set_selected_id] = useState<string | null>(null);
+  const [is_creating_new, set_is_creating_new] = useState(false);
+  const [delete_id, set_delete_id] = useState<string | null>(null);
+  const [is_refreshing, set_is_refreshing] = useState(false);
+
+  // Manejador de recarga de datos
+  const handle_refresh = async () => {
+    set_is_refreshing(true);
     await refresh();
-    setIsRefreshing(false);
+    set_is_refreshing(false);
   };
 
-  const isAdmin = currentUser?.role === "admin";
-  // Admin sees all PDCAs; regular user sees only their own (already filtered by context)
-  const userPdcas = isAdmin ? allPdcas : pdcaList;
+  const is_admin = current_user?.role === "admin";
+  const user_pdcas = is_admin ? all_pdcas : pdca_list;
 
+  // PDCA seleccionado actualmente
   const selected = useMemo(() => {
-    if (!selectedId) return null;
-    return userPdcas.find((p) => p.id === selectedId) || null;
-  }, [selectedId, userPdcas]);
+    if (!selected_id) return null;
+    return user_pdcas.find((p) => p.id === selected_id) || null;
+  }, [selected_id, user_pdcas]);
 
+  // Cálculo de métricas
   const metrics = useMemo(() => {
     let activos = 0;
     let cerrados = 0;
-    let bloqueFrio = 0;
+    let bloque_frio = 0;
     let cocimientos = 0;
     let vencidos = 0;
-    let aTiempo = 0;
+    let a_tiempo = 0;
 
     const today = startOfDay(new Date());
 
-    userPdcas.forEach((p) => {
-      const isClosed = p.fase === "Act" && p.progreso === 100;
-      if (isClosed) {
+    user_pdcas.forEach((p) => {
+      const is_closed = p.fase === "Act" && p.progreso === 100;
+      if (is_closed) {
         cerrados++;
       } else {
         activos++;
         if (p.fechaFinalizacion) {
           try {
-            const deadlineDate = parse(p.fechaFinalizacion, "dd/MM/yyyy", new Date());
-            if (isValid(deadlineDate)) {
-              if (isBefore(deadlineDate, today)) {
+            const deadline_date = parse(p.fechaFinalizacion, "dd/MM/yyyy", new Date());
+            if (isValid(deadline_date)) {
+              if (isBefore(deadline_date, today)) {
                 vencidos++;
               } else {
-                aTiempo++;
+                a_tiempo++;
               }
             }
-          } catch (e) {}
+          } catch (e) {
+            // Ignorar errores de parseo de fecha
+          }
         }
       }
 
-      const areaStr = p.area.toLowerCase();
-      if (areaStr.includes("frio") || areaStr.includes("frío")) {
-        bloqueFrio++;
-      } else if (areaStr.includes("cocimiento")) {
+      const area_str = p.area.toLowerCase();
+      if (area_str.includes("frio") || area_str.includes("frío")) {
+        bloque_frio++;
+      } else if (area_str.includes("cocimiento")) {
         cocimientos++;
       }
     });
 
-    return { activos, cerrados, bloqueFrio, cocimientos, vencidos, aTiempo };
-  }, [userPdcas]);
+    return { activos, cerrados, bloque_frio, cocimientos, vencidos, a_tiempo };
+  }, [user_pdcas]);
 
+  // Filtrado de filas para la tabla
   const rows = useMemo(
     () =>
-      userPdcas.filter((p) => {
-        const matchPhase = filter === "Todas" || p.fase === filter;
+      user_pdcas.filter((p) => {
+        const match_phase = filter === "Todas" || p.fase === filter;
         const q = query.toLowerCase();
-        const matchQuery =
+        const match_query =
           !q ||
           p.titulo.toLowerCase().includes(q) ||
           p.area.toLowerCase().includes(q) ||
           (p.autor && p.autor.toLowerCase().includes(q)) ||
           (p.autorEmail && p.autorEmail.toLowerCase().includes(q));
 
-        return matchPhase && matchQuery;
+        return match_phase && match_query;
       }),
-    [query, filter, userPdcas],
+    [query, filter, user_pdcas],
   );
 
-  const requestDelete = (e: React.MouseEvent, id: string) => {
+  // Solicitud de eliminación
+  const request_delete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setDeleteId(id);
+    set_delete_id(id);
   };
 
-  const confirmDelete = async () => {
-    if (deleteId) {
-      await deletePdcaFromFirestore(deleteId);
+  // Confirmación de eliminación
+  const confirm_delete = async () => {
+    if (delete_id) {
+      await deletePdcaFromFirestore(delete_id);
       await refresh();
-      setDeleteId(null);
+      set_delete_id(null);
     }
   };
 
-  const handleDeadlineChange = async (
-    pdcaId: string,
+  // Cambio de fecha límite
+  const handle_deadline_change = async (
+    pdca_id: string,
     date: Date | undefined,
-    isNoLimit = false,
+    is_no_limit = false,
   ) => {
-    if (isNoLimit) {
-      await updatePdcaDeadline(pdcaId, "Sin límite");
+    if (is_no_limit) {
+      await updatePdcaDeadline(pdca_id, "Sin límite");
     } else {
       const formatted = date && isValid(date) ? format(date, "dd/MM/yyyy", { locale: es }) : "";
-      await updatePdcaDeadline(pdcaId, formatted || null);
+      await updatePdcaDeadline(pdca_id, formatted || null);
     }
     await refresh();
-    setDeadlinePickerOpenId(null);
   };
 
-  const handleRemoveDeadline = async (e: React.MouseEvent, pdcaId: string) => {
+  // Eliminar fecha límite
+  const handle_remove_deadline = async (e: React.MouseEvent, pdca_id: string) => {
     e.stopPropagation();
-    await updatePdcaDeadline(pdcaId, null);
+    await updatePdcaDeadline(pdca_id, null);
     await refresh();
   };
 
-  const openPdca = (p: Pdca | null) => {
+  // Apertura de modal PDCA
+  const open_pdca = (p: Pdca | null) => {
     if (p) {
-      setSelectedId(p.id);
-      setIsCreatingNew(false);
+      set_selected_id(p.id);
+      set_is_creating_new(false);
     } else {
-      setSelectedId(null);
-      setIsCreatingNew(true);
+      set_selected_id(null);
+      set_is_creating_new(true);
     }
   };
 
-  if (selected || isCreatingNew) {
+  // Mostrar vista de creación/edición de PDCA
+  if (selected || is_creating_new) {
     return (
       <div className="mx-auto w-full max-w-[1700px] px-6 py-6 sm:px-10 lg:px-12">
-        <PdcaDialog
-          pdca={selected}
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) {
-              setSelectedId(null);
-              setIsCreatingNew(false);
-            }
-          }}
-        />
+        <Suspense fallback={<Skeleton className="h-[600px] w-full rounded-xl" />}>
+          <ErrorBoundary>
+            <LazyPdcaDialog
+              pdca={selected}
+              open={true}
+              onOpenChange={(open) => {
+                if (!open) {
+                  set_selected_id(null);
+                  set_is_creating_new(false);
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </Suspense>
       </div>
     );
   }
 
+  // Vista principal del Dashboard
   return (
     <div className="mx-auto w-full max-w-[1700px] px-6 py-6 sm:px-10 lg:px-12">
+      {/* Encabezado */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Módulo PDCA
+            {t("pdcaModule")}
           </p>
-          <h1 className="mt-1 text-3xl font-bold uppercase">Mis PDCAs</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {userPdcas.length} ciclos de mejora continua{" "}
-            {currentUser?.role === "admin"
-              ? "registrados en la plataforma (Vista Global Admin)."
-              : `asignados a ${currentUser?.name || "ti"}.`}
-          </p>
+          <h1 className="mt-1 text-3xl font-bold uppercase">{t("myPdcas")}</h1>
+          <div className="mt-1">
+            {loading ? (
+              <Skeleton className="h-4 w-64" />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {user_pdcas.length} {t("registeredCycles")}{" "}
+                {current_user?.role === "admin"
+                  ? t("globalView")
+                  : `${t("assignedCycles")} ${current_user?.name || "ti"}.`}
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
+            onClick={handle_refresh}
+            disabled={is_refreshing}
             title="Actualizar datos"
           >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${is_refreshing ? "animate-spin" : ""}`} />
           </Button>
           <Button
             size="lg"
             className="bg-primary shadow-sm hover:bg-brand-dark"
-            onClick={() => openPdca(null)}
+            onClick={() => open_pdca(null)}
           >
-            <Plus /> Crear Nuevo PDCA
+            <Plus /> {t("createNewPdca")}
           </Button>
         </div>
       </header>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {phases.filter((phase) => phase !== "Resumen" && phase !== "Evaluacion").map((phase) => {
-          const borderColor: Record<string, string> = {
-            Plan: "border-t-phase-plan",
-            Do: "border-t-phase-do",
-            Check: "border-t-phase-check",
-            Act: "border-t-phase-act",
-          };
-          const color = borderColor[phase] || "border-t-gray-500";
-
-          return (
-            <button
-              key={phase}
-              type="button"
-              onClick={() => setFilter(phase)}
-              className={`rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] text-left transition-all hover:scale-[1.01] border-t-4 ${color} ${
-                filter === phase ? "ring-2 ring-primary" : ""
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <PhaseBadge phase={phase} />
-                <span className="text-2xl font-bold">
-                  {userPdcas.filter((p) => p.fase === phase).length}
-                </span>
-              </div>
-              <p className="mt-3 text-xs text-muted-foreground">Proyectos en fase {phase}</p>
-            </button>
-          );
-        })}
-      </div>
-
-      {userPdcas.length > 0 && (
-        <div className="mt-8 mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-              <Target className="size-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">PDCAs Activos</p>
-              <h3 className="text-2xl font-bold">{metrics.activos}</h3>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-              <CheckCircle2 className="size-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">PDCAs Cerrados</p>
-              <h3 className="text-2xl font-bold">{metrics.cerrados}</h3>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
-              <Building className="size-6" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-muted-foreground mb-1">Por Área (Activos)</p>
-              <div className="flex items-center gap-3 text-sm font-semibold">
-                <span className="flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
-                  <Snowflake className="size-3" /> {metrics.bloqueFrio}
-                </span>
-                <span className="text-border">|</span>
-                <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                  <Flame className="size-3" /> {metrics.cocimientos}
-                </span>
-              </div>
-            </div>
+      {loading ? (
+        <div className="space-y-6 mt-6">
+          <Skeleton className="h-[120px] w-full rounded-xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
           </div>
         </div>
+      ) : (
+        <>
+          {/* Componente de Filtros Superiores */}
+          <ErrorBoundary>
+            <DashboardFilters
+              user_pdcas={user_pdcas}
+              filter={filter}
+              setFilter={set_filter}
+              metrics={metrics}
+            />
+          </ErrorBoundary>
+
+          {/* Componente de Tabla de Proyectos */}
+          <ErrorBoundary>
+            <ProjectTable
+              rows={rows}
+              query={query}
+              setQuery={set_query}
+              filter={filter}
+              setFilter={set_filter}
+              current_user={current_user}
+              is_admin={is_admin}
+              set_selected_id={set_selected_id}
+              request_delete={request_delete}
+              handle_deadline_change={handle_deadline_change}
+              handle_remove_deadline={handle_remove_deadline}
+            />
+          </ErrorBoundary>
+        </>
       )}
 
-      <div className="mt-8 space-y-4 rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={
-                currentUser?.role === "admin"
-                  ? "Buscar por título, área o autor..."
-                  : "Buscar por título o área..."
-              }
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-9 text-xs"
-            />
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setFilter("Todas")}
-            disabled={filter === "Todas"}
-          >
-            <Filter /> {filter === "Todas" ? "Todas las fases" : `Fase: ${filter}`}
-          </Button>
-        </div>
-
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-secondary/80 hover:bg-secondary/80">
-              <TableHead className="font-semibold text-foreground/80">
-                TÍTULO DEL PROYECTO
-              </TableHead>
-              {currentUser?.role === "admin" && (
-                <TableHead className="hidden sm:table-cell font-semibold text-foreground/80">
-                  AUTOR / CREADOR
-                </TableHead>
-              )}
-              <TableHead className="hidden md:table-cell font-semibold text-foreground/80">
-                ÁREA
-              </TableHead>
-              <TableHead className="w-32 font-semibold text-foreground/80">FASE ACTUAL</TableHead>
-              <TableHead className="hidden w-36 lg:table-cell font-semibold text-foreground/80">
-                FECHA LÍMITE
-              </TableHead>
-              <TableHead className="hidden w-40 lg:table-cell font-semibold text-foreground/80">
-                ACTUALIZACIÓN
-              </TableHead>
-              <TableHead className="w-24 text-right font-semibold text-foreground/80">
-                ACCIÓN
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((p) => (
-              <TableRow
-                key={p.id}
-                className="cursor-pointer transition-colors hover:bg-secondary/30"
-                onClick={() => setSelectedId(p.id)}
-              >
-                <TableCell>
-                  <span className="block font-semibold">{p.titulo}</span>
-                  <span className="mt-0.5 flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                    {p.id}
-                    <span className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-secondary sm:block">
-                      <span
-                        className="block h-full rounded-full bg-primary"
-                        style={{ width: `${getComputedProgress(p)}%` }}
-                      />
-                    </span>
-                    <span className="hidden sm:inline">{getComputedProgress(p)}%</span>
-                  </span>
-                </TableCell>
-                {currentUser?.role === "admin" && (
-                  <TableCell className="hidden sm:table-cell text-xs">
-                    <span className="font-medium text-foreground block">
-                      {p.autor || "Sin autor"}
-                    </span>
-                    {p.autorEmail && (
-                      <span className="text-[11px] text-muted-foreground block">
-                        {p.autorEmail}
-                      </span>
-                    )}
-                  </TableCell>
-                )}
-                <TableCell className="hidden text-sm text-muted-foreground md:table-cell">
-                  {p.area}
-                </TableCell>
-                <TableCell>
-                  <PhaseBadge phase={p.fase} />
-                </TableCell>
-                <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
-                  {(() => {
-                    const deadlineStr = p.fechaFinalizacion?.trim();
-                    const isNoLimit = deadlineStr === "Sin límite";
-                    let deadlineDate: Date | undefined;
-                    if (deadlineStr && !isNoLimit) {
-                      const parts = deadlineStr.split("/");
-                      if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
-                        const parsed = new Date(+parts[2], +parts[1] - 1, +parts[0]);
-                        if (isValid(parsed)) deadlineDate = parsed;
-                      }
-                    }
-                    const isExpired = deadlineDate
-                      ? isBefore(startOfDay(deadlineDate), startOfDay(new Date()))
-                      : false;
-
-                    if (isAdmin) {
-                      return (
-                        <div
-                          className="flex items-center gap-1"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Popover
-                            open={deadlinePickerOpenId === p.id}
-                            onOpenChange={(open) => setDeadlinePickerOpenId(open ? p.id : null)}
-                          >
-                            <PopoverTrigger asChild>
-                              <button
-                                className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors hover:bg-secondary border ${
-                                  isExpired
-                                    ? "border-red-400/50 text-red-600 dark:text-red-400 bg-red-50/50 dark:bg-red-950/20"
-                                    : deadlineDate || isNoLimit
-                                      ? "border-border text-foreground bg-transparent"
-                                      : "border-dashed border-muted-foreground/40 text-muted-foreground/60 italic"
-                                }`}
-                              >
-                                <CalendarClock className="size-3.5 shrink-0" />
-                                {isNoLimit ? (
-                                  "Sin límite"
-                                ) : deadlineDate ? (
-                                  <>
-                                    {deadlineStr}
-                                    {isExpired && (
-                                      <span className="ml-1 text-[10px] font-bold uppercase bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-1 rounded">
-                                        Vencida
-                                      </span>
-                                    )}
-                                  </>
-                                ) : (
-                                  "Asignar fecha"
-                                )}
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start" side="bottom">
-                              <CalendarUI
-                                mode="single"
-                                selected={deadlineDate}
-                                onSelect={(date) => handleDeadlineChange(p.id, date)}
-                                locale={es}
-                                initialFocus
-                              />
-                              <div className="p-2 border-t border-border">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="w-full justify-start text-xs font-normal text-muted-foreground"
-                                  onClick={() => handleDeadlineChange(p.id, undefined, true)}
-                                >
-                                  Sin límite de tiempo
-                                </Button>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                          {deadlineDate && (
-                            <button
-                              title="Quitar fecha límite"
-                              onClick={(e) => handleRemoveDeadline(e, p.id)}
-                              className="rounded p-0.5 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors"
-                            >
-                              <X className="size-3" />
-                            </button>
-                          )}
-                        </div>
-                      );
-                    }
-
-                    // Non-admin: read-only display
-                    return isNoLimit ? (
-                      <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
-                        <CalendarClock className="size-3.5" />
-                        Sin límite
-                      </span>
-                    ) : deadlineDate ? (
-                      <span
-                        className={`inline-flex items-center gap-1.5 font-medium ${isExpired ? "text-red-500" : "text-foreground"}`}
-                      >
-                        <Calendar
-                          className={`size-3.5 ${isExpired ? "text-red-500" : "text-brand-yellow"}`}
-                        />
-                        {deadlineStr}
-                        {isExpired && (
-                          <span className="text-[10px] font-bold uppercase bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-1 rounded">
-                            Vencida
-                          </span>
-                        )}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground/50 italic text-xs">Sin asignar</span>
-                    );
-                  })()}
-                </TableCell>
-                <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
-                  <span className="inline-flex items-center gap-1.5 text-xs">{p.actualizado}</span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end items-center gap-1">
-                    <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">
-                      Abrir
-                    </Button>
-                    {currentUser?.role === "admin" && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
-                        onClick={(e) => requestDelete(e, p.id)}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-            {rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
-                  No hay PDCAs que coincidan con la búsqueda.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      {/* Diálogo de Eliminación */}
+      <AlertDialog open={!!delete_id} onOpenChange={(open) => !open && set_delete_id(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar PDCA?</AlertDialogTitle>
@@ -578,7 +316,7 @@ function MisPdcas() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDelete}
+              onClick={confirm_delete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Eliminar

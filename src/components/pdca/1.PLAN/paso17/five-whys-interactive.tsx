@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { subirArchivoAFirebase } from "./five-whys-firebase";
@@ -22,6 +23,8 @@ export function FiveWhysInteractive({
   index,
   onRemoveTable,
 }: PropiedadesFiveWhysInteractivo) {
+  const { t } = useTranslation();
+
   const [esPantallaCompleta, setEsPantallaCompleta] = useState(false);
   const [filasSubiendo, setFilasSubiendo] = useState<Set<number>>(new Set());
 
@@ -35,9 +38,7 @@ export function FiveWhysInteractive({
   const actualizarFila = (id: number, campo: string, valor: string) => {
     if (!onChange) return;
     onChange(
-      filasNormalizadas.map((fila: any) =>
-        fila.id === id ? { ...fila, [campo]: valor } : fila
-      )
+      filasNormalizadas.map((fila: any) => (fila.id === id ? { ...fila, [campo]: valor } : fila)),
     );
   };
 
@@ -76,8 +77,8 @@ export function FiveWhysInteractive({
       Object.keys(fila)
         .filter((k) => k.startsWith("q"))
         .map((k) => parseInt(k.substring(1)))
-        .filter((n) => !isNaN(n))
-    )
+        .filter((n) => !isNaN(n)),
+    ),
   );
 
   const agregarColumnaPorque = () => {
@@ -88,7 +89,7 @@ export function FiveWhysInteractive({
           ...fila,
           [`q${siguientePorque}`]: "",
           [`w${siguientePorque}`]: "",
-        }))
+        })),
       );
     }
   };
@@ -101,7 +102,7 @@ export function FiveWhysInteractive({
           delete nuevaFila[`q${cantidadPorques}`];
           delete nuevaFila[`w${cantidadPorques}`];
           return nuevaFila;
-        })
+        }),
       );
     }
   };
@@ -110,7 +111,7 @@ export function FiveWhysInteractive({
     <div
       className={cn(
         "overflow-x-auto border border-[#0078D7] rounded-sm bg-white dark:bg-background shadow-sm flex-1",
-        esPantallaCompleta ? "flex flex-col h-full" : ""
+        esPantallaCompleta ? "flex flex-col h-full" : "",
       )}
     >
       <BarraHerramientasTabla

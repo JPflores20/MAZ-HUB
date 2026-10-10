@@ -20,7 +20,10 @@ export type { StepCardProps };
 
 export function StepCard({
   title,
-  isStepCompleted, isNa, onToggleStep, onToggleNa,
+  isStepCompleted,
+  isNa,
+  onToggleStep,
+  onToggleNa,
   children,
   defaultExpanded = false, // Obliga a cerrarse por defecto
   className,
@@ -91,7 +94,10 @@ export function StepCard({
         "transition-all",
         isFullscreen
           ? "fixed inset-4 z-[100] bg-background border border-border shadow-2xl rounded-xl p-6 overflow-y-auto"
-          : cn("rounded-xl border border-border p-4 shadow-[var(--shadow-card)]", isNa ? "bg-muted/30" : "bg-card"),
+          : cn(
+              "rounded-xl border border-border p-4 shadow-[var(--shadow-card)]",
+              isNa ? "bg-muted/30" : "bg-card",
+            ),
         className,
       )}
     >
@@ -154,9 +160,9 @@ export function StepCard({
                 }}
                 className={cn(
                   "text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  isNa 
-                    ? "bg-slate-500 text-white border-slate-500" 
-                    : "bg-transparent text-slate-500 border-slate-500/50 hover:bg-slate-500/10"
+                  isNa
+                    ? "bg-slate-500 dark:bg-slate-600 text-white border-slate-500 dark:border-slate-600"
+                    : "bg-transparent text-slate-500 dark:text-slate-400 border-slate-500/50 dark:border-slate-600/50 hover:bg-slate-500/10 dark:bg-slate-800",
                 )}
                 title={isNa ? "Reactivar paso" : "Marcar paso como No Aplica (N/A)"}
               >
@@ -194,7 +200,7 @@ export function StepCard({
         className={cn(
           "grid transition-all duration-300 ease-in-out",
           isExpanded ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0",
-          isNa && "opacity-50 pointer-events-none grayscale"
+          isNa && "opacity-50 pointer-events-none grayscale",
         )}
       >
         <div

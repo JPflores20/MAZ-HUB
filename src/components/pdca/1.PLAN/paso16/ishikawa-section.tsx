@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
@@ -34,6 +35,8 @@ export function IshikawaSection({
   onToggleStep: alAlternarEstadoPaso,
   onToggleNa: alAlternarNoAplica,
 }: PropiedadesSeccionIshikawa) {
+  const { t } = useTranslation();
+
   const manejarCreacionNuevoIshikawa = () => {
     alCambiarRegistros([
       ...listaIshikawas,
@@ -55,12 +58,24 @@ export function IshikawaSection({
 
   const manejarEliminacionIshikawa = (idEliminar: string) => {
     if (listaIshikawas.length > 1) {
-      alCambiarRegistros(listaIshikawas.filter((diagramaIshikawa) => diagramaIshikawa.id !== idEliminar));
+      alCambiarRegistros(
+        listaIshikawas.filter((diagramaIshikawa) => diagramaIshikawa.id !== idEliminar),
+      );
     }
   };
 
-  const manejarActualizacionAtributoIshikawa = (idActualizar: string, nombreCampo: keyof IshikawaItem, nuevoValorModificado: any) => {
-    alCambiarRegistros(listaIshikawas.map((diagramaIshikawa) => (diagramaIshikawa.id === idActualizar ? { ...diagramaIshikawa, [nombreCampo]: nuevoValorModificado } : diagramaIshikawa)));
+  const manejarActualizacionAtributoIshikawa = (
+    idActualizar: string,
+    nombreCampo: keyof IshikawaItem,
+    nuevoValorModificado: any,
+  ) => {
+    alCambiarRegistros(
+      listaIshikawas.map((diagramaIshikawa) =>
+        diagramaIshikawa.id === idActualizar
+          ? { ...diagramaIshikawa, [nombreCampo]: nuevoValorModificado }
+          : diagramaIshikawa,
+      ),
+    );
   };
 
   return (
@@ -74,9 +89,7 @@ export function IshikawaSection({
     >
       <div className="flex items-center gap-2">
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700">
-          <span className="size-1.5 rounded-full bg-amber-500 animate-pulse inline-block" />
-          Estamos trabajando en la opción de subir archivos
-        </span>
+          <span className="size-1.5 rounded-full bg-amber-500 animate-pulse inline-block" />{t("pdcaPlan.paso16_ishikawa_section_working_on_files")}</span>
       </div>
 
       <StepInstructions>
@@ -110,26 +123,67 @@ export function IshikawaSection({
           <div key={diagramaActualItem.id} className="relative group/ishikawa">
             <IshikawaInteractivo
               causasRegistradas={diagramaActualItem.causes}
-              alCambiarCausas={(causasState) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "causes", typeof causasState === "function" ? causasState(diagramaActualItem.causes) : causasState)}
+              alCambiarCausas={(causasState) =>
+                manejarActualizacionAtributoIshikawa(
+                  diagramaActualItem.id,
+                  "causes",
+                  typeof causasState === "function"
+                    ? causasState(diagramaActualItem.causes)
+                    : causasState,
+                )
+              }
               efectoPrincipal={diagramaActualItem.effect}
-              alCambiarEfecto={(nuevoEfectoEscribido) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "effect", nuevoEfectoEscribido)}
+              alCambiarEfecto={(nuevoEfectoEscribido) =>
+                manejarActualizacionAtributoIshikawa(
+                  diagramaActualItem.id,
+                  "effect",
+                  nuevoEfectoEscribido,
+                )
+              }
               causasPriorizadas={diagramaActualItem.prioritization}
-              alCambiarCausasPriorizadas={(causasPriorizadasModificadas) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "prioritization", causasPriorizadasModificadas)}
+              alCambiarCausasPriorizadas={(causasPriorizadasModificadas) =>
+                manejarActualizacionAtributoIshikawa(
+                  diagramaActualItem.id,
+                  "prioritization",
+                  causasPriorizadasModificadas,
+                )
+              }
               etiquetasPersonalizadas={diagramaActualItem.customLabels || {}}
-              alCambiarEtiquetas={(etiquetasState) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "customLabels", typeof etiquetasState === "function" ? etiquetasState(diagramaActualItem.customLabels || {}) : etiquetasState)}
+              alCambiarEtiquetas={(etiquetasState) =>
+                manejarActualizacionAtributoIshikawa(
+                  diagramaActualItem.id,
+                  "customLabels",
+                  typeof etiquetasState === "function"
+                    ? etiquetasState(diagramaActualItem.customLabels || {})
+                    : etiquetasState,
+                )
+              }
               sufijoTitulo={listaIshikawas.length > 1 ? ` ${indiceIteracion + 1}` : ""}
               tituloPersonalizado={diagramaActualItem.title}
-              alCambiarTitulo={(tituloModificado) => manejarActualizacionAtributoIshikawa(diagramaActualItem.id, "title", tituloModificado)}
-              alEliminarIshikawa={listaIshikawas.length > 1 ? () => manejarEliminacionIshikawa(diagramaActualItem.id) : undefined}
+              alCambiarTitulo={(tituloModificado) =>
+                manejarActualizacionAtributoIshikawa(
+                  diagramaActualItem.id,
+                  "title",
+                  tituloModificado,
+                )
+              }
+              alEliminarIshikawa={
+                listaIshikawas.length > 1
+                  ? () => manejarEliminacionIshikawa(diagramaActualItem.id)
+                  : undefined
+              }
             />
           </div>
         ))}
       </div>
 
       <div className="flex justify-center border-t border-border/60 pt-6">
-        <Button onClick={manejarCreacionNuevoIshikawa} variant="outline" className="gap-2 shadow-sm bg-card hover:bg-card/80">
-          <Plus className="size-4" /> Agregar otro Ishikawa
-        </Button>
+        <Button
+          onClick={manejarCreacionNuevoIshikawa}
+          variant="outline"
+          className="gap-2 shadow-sm bg-card hover:bg-card/80"
+        >
+          <Plus className="size-4" />{t("pdcaPlan.paso16_ishikawa_section_add_another")}</Button>
       </div>
     </StepCard>
   );

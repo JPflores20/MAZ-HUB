@@ -27,10 +27,7 @@ export async function fetchRdas(maxLimit?: number): Promise<Rda[]> {
   }
 }
 
-export function subscribeToRdas(
-  onUpdate: (rdas: Rda[]) => void,
-  maxLimit?: number,
-): () => void {
+export function subscribeToRdas(onUpdate: (rdas: Rda[]) => void, maxLimit?: number): () => void {
   const collectionRef = collection(db, RDA_COLLECTION);
   const subscribeQuery = maxLimit ? query(collectionRef, limit(maxLimit)) : collectionRef;
 

@@ -81,7 +81,7 @@ describe("DEFAULT_PARETO_DATA_MAP", () => {
   });
 
   it("cada elemento en `root` tiene id, area y gap", () => {
-    for (const item of DEFAULT_PARETO_DATA_MAP['root']!) {
+    for (const item of DEFAULT_PARETO_DATA_MAP["root"]!) {
       expect(item).toHaveProperty("id");
       expect(item).toHaveProperty("area");
       expect(typeof item.gap).toBe("number");

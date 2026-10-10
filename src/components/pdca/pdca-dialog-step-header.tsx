@@ -100,7 +100,8 @@ import {
 } from "@/data/pdca";
 import {
   PdcaGoalDefinition,
-  DEFAULT_DEFINICION_META} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
+  DEFAULT_DEFINICION_META,
+} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { KpiTreeInteractive } from "../kpi-tree";
 import { ActionKanban } from "../action-kanban";
@@ -139,7 +140,7 @@ export function StepHeader({
         <button
           type="button"
           onClick={() => onToggleStep(stepId)}
-          title={isCompleted ? "Desmarcar paso como completado" : "Marcar paso como completado"}
+          title={isCompleted ? t("pdcaGlobal.desmarcar") : t("pdcaGlobal.marcar")}
           className={cn(
             "shrink-0 size-7 grid place-items-center rounded-full border-2 transition-all cursor-pointer",
             isCompleted

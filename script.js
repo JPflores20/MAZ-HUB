@@ -1,21 +1,22 @@
 const fs = require('fs');
-const path = 'c:/Users/pepej/Documents/CORONA/REPOS/YOUNG TALENT WEB/young-talent-pdca-hub/src/components/pdca_dialog/pdca_phase_plan.tsx';
-let content = fs.readFileSync(path, 'utf8');
-content = content.replace(
-/\{\/\* -- PASO 3: SIPOC MAP \(Placeholder\) --------------------------- \*\/\}[\s\S]*?<\/StepCard>/g,
-\{/* -- PASO 3: SIPOC MAP --------------------------- */}
-      <MultiImageUploadSection
-        images={sipoc_map_files || []}
-        onChange={(f) => on_sipoc_map_files_change?.(f)}
-        title=\PASO 3: SIPOC MAP\
-        subtitle=\Sube tus imágenes o PDFs\
-        description=\Adjunta fotos o documentos del SIPOC MAP (máximo 6 archivos). Se aceptan imágenes, PDF, Excel y PowerPoint.\
-        maxImages={6}
-        acceptTypes={ALL_ACCEPT_STRING}
-        isStepCompleted={completed_steps.has(\step-3\)}
-        onToggleStep={() => on_toggle_step(\step-3\)}
-        isNa={na_steps?.has(\step-3\)} onToggleNa={() => on_toggle_na?.(\step-3\)}
-      />\
-);
-fs.writeFileSync(path, content, 'utf8');
-console.log('Replaced successfully');
+const path = require('path');
+
+const dir = 'c:/Users/pepej/Documents/CORONA/REPOS/MAZ HUB/MAZ-HUB/src/components/pdca/1.PLAN';
+const pasos = ['paso1', 'paso2', 'paso5', 'paso6', 'paso7', 'paso9'];
+
+pasos.forEach(paso => {
+    const pasoDir = path.join(dir, paso);
+    if (!fs.existsSync(pasoDir)) return;
+    const files = fs.readdirSync(pasoDir).filter(f => f.endsWith('.tsx'));
+    files.forEach(f => {
+        const content = fs.readFileSync(path.join(pasoDir, f), 'utf-8');
+        console.log('--- ' + paso + '/' + f + ' ---');
+        
+        // Simple regex to find uppercase text inside tags or attributes like title="...", >TEXT<
+        const matches = content.match(/>([^<{}a-z]+)</g);
+        if (matches) {
+            const strings = [...new Set(matches.map(m => m.slice(1, -1).trim()).filter(s => s.length > 2 && /[A-Z-]/.test(s)))];
+            console.log(strings);
+        }
+    });
+});

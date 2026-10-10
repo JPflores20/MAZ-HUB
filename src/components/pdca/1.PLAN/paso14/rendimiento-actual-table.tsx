@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,20 +20,21 @@ interface PropiedadesTablaRendimiento {
 }
 
 export const TablaRendimientoActual: React.FC<PropiedadesTablaRendimiento> = ({
-  registrosIndicadores,
+registrosIndicadores,
   alActualizarRegistro,
   alEliminarRegistro,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-md overflow-x-auto shadow-sm">
       <Table className="min-w-[900px] text-xs">
         <TableHeader>
           <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
             <TableHead className="font-bold text-white text-center border-r border-white/20">Estación de trabajo de operador o técnico</TableHead>
-            <TableHead className="font-bold text-white text-center border-r border-white/20">Nombre de Indicador</TableHead>
-            <TableHead className="font-bold text-white text-center border-r border-white/20">Estado Actual</TableHead>
-            <TableHead className="font-bold text-white text-center border-r border-white/20">Puesto Responsable</TableHead>
-            <TableHead className="font-bold text-white text-center border-r border-white/20">Herramienta en la que se Encuentra</TableHead>
+            <TableHead className="font-bold text-white text-center border-r border-white/20">{t("pdcaPlan.paso14_rendimiento_table_indicator", "Nombre de Indicador")}</TableHead>
+            <TableHead className="font-bold text-white text-center border-r border-white/20">{t("pdcaPlan.paso14_rendimiento_table_current_state", "Estado Actual")}</TableHead>
+            <TableHead className="font-bold text-white text-center border-r border-white/20">{t("pdcaPlan.paso14_rendimiento_table_responsible", "Puesto Responsable")}</TableHead>
+            <TableHead className="font-bold text-white text-center border-r border-white/20">{t("pdcaPlan.paso14_rendimiento_table_tool", "Herramienta en la que se Encuentra")}</TableHead>
             <TableHead className="font-bold text-white text-center">Ubicación de PI</TableHead>
             <TableHead className="w-12 bg-white"></TableHead>
           </TableRow>

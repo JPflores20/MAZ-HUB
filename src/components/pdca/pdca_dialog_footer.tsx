@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { Phase } from "@/data/pdca";
 
@@ -20,8 +21,9 @@ export const PdcaDialogFooter: React.FC<FooterProps> = ({
   on_close_dialog,
   isAdmin,
 }) => {
+  const { t } = useTranslation();
   const isFinalPhase = (current_phase === "Act" && !isAdmin) || current_phase === "Evaluacion";
-  
+
   return (
     <div
       className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 mt-6"
@@ -32,7 +34,7 @@ export const PdcaDialogFooter: React.FC<FooterProps> = ({
         onClick={on_close_dialog}
         className="text-xs font-semibold text-muted-foreground hover:text-foreground"
       >
-        Cerrar Ventana
+        {t("pdcaDialog.closeWindow")}
       </Button>
 
       <div className="flex items-center gap-3">
@@ -41,7 +43,7 @@ export const PdcaDialogFooter: React.FC<FooterProps> = ({
           disabled={!is_user_permitted_to_edit}
           onClick={on_proceed_next_phase}
         >
-          {isFinalPhase ? "Finalizar PDCA" : "Siguiente Paso"}
+          {isFinalPhase ? t("pdcaDialog.finishPdca") : t("pdcaDialog.nextStep")}
           <ArrowRight className="size-4" />
         </Button>
       </div>

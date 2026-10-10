@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";
+import { useTranslation } from "react-i18next";
 import type { ActionItem } from "@/data/pdca";
 import { crearFilaAccionVacia, ETIQUETAS_FACTORES } from "./utils/action-plan-utils";
 import { FilaAccionPlan } from "./components/action-plan-row";
@@ -33,6 +34,7 @@ interface PropiedadesActionPlanTable {
   onToggleStep?: (() => void) | undefined;
   onToggleNa?: (() => void) | undefined;
   title?: string | undefined;
+  bottomContent?: React.ReactNode;
 }
 
 /**
@@ -47,7 +49,9 @@ export function ActionPlanTable({
   onToggleStep,
   onToggleNa,
   title,
+  bottomContent,
 }: PropiedadesActionPlanTable) {
+  const { t } = useTranslation();
   const agregarFila = () => onChange([...items, crearFilaAccionVacia()]);
 
   const actualizarFila = (id: string, campo: keyof ActionItem, valor: string) => {
@@ -56,9 +60,17 @@ export function ActionPlanTable({
 
   const eliminarFila = (id: string) => onChange(items.filter((r) => r.id !== id));
 
+  const COLUMNAS_FINALES_TRANS = [
+    { label: t("pdcaTables.actionPlan.comments"), ancho: "min-w-[180px]" },
+    { label: t("pdcaTables.actionPlan.responsible"), ancho: "min-w-[140px]" },
+    { label: t("pdcaTables.actionPlan.date"), ancho: "min-w-[110px]" },
+    { label: t("pdcaTables.actionPlan.status"), ancho: "min-w-[110px]" },
+    { label: t("pdcaTables.actionPlan.sdca"), ancho: "min-w-[100px]" },
+  ];
+
   return (
     <StepCard
-      title={title ?? "PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN"}
+      title={title ?? t("pdcaTables.actionPlan.title")}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
@@ -72,22 +84,20 @@ export function ActionPlanTable({
             agregarFila();
           }}
         >
-          <Plus className="mr-1.5 size-3.5" /> Agregar Acción
+          <Plus className="mr-1.5 size-3.5" /> {t("pdcaTables.actionPlan.addAction")}
         </Button>
       }
     >
       <StepInstructions>
         <p className="mb-1">
-          1. Usa esto como{" "}
+          {t("pdcaTables.actionPlan.instruction1")}
           <span className="text-primary underline cursor-default">
-            cualquier otro registro de acción en su MCRS
+            {t("pdcaTables.actionPlan.instruction1Highlight")}
           </span>
           .
         </p>
         <p>
-          2. Si una acción particular tuvo éxito en la eliminación de un síntoma o causa de raíz,
-          indique si se necesita una herramienta SDCA o necesita ser actualizada para estandarizar
-          el resultado.
+          {t("pdcaTables.actionPlan.instruction2")}
         </p>
       </StepInstructions>
 
@@ -95,7 +105,7 @@ export function ActionPlanTable({
         <Table className="text-xs min-w-[1550px]">
           <TableHeader>
             <TableRow className="bg-[#0070c0] hover:bg-[#0070c0]">
-              {["TEMA", "CAUSA RAÍZ", "ACCIÓN"].map((label) => (
+              {[t("pdcaTables.actionPlan.topic"), t("pdcaTables.actionPlan.rootCause"), t("pdcaTables.actionPlan.action")].map((label) => (
                 <TableHead
                   key={label}
                   className="text-white font-bold h-8 py-1 px-2 border-r border-white/20 text-center min-w-[200px] leading-tight"
@@ -104,29 +114,29 @@ export function ActionPlanTable({
                 </TableHead>
               ))}
 
-              {ETIQUETAS_FACTORES.map((label) => (
+              {[t("pdcaTables.actionPlan.factors.safety"), t("pdcaTables.actionPlan.factors.quality"), t("pdcaTables.actionPlan.factors.cost"), t("pdcaTables.actionPlan.factors.environment"), t("pdcaTables.actionPlan.factors.service")].map((label) => (
                 <TableHead
                   key={label}
                   className="text-white font-bold h-8 py-1 px-1 border-r border-white/20 text-center min-w-[100px] leading-tight"
                 >
-                  {label.toUpperCase()}
+                  {label}
                 </TableHead>
               ))}
 
               <TableHead className="text-white font-bold h-8 py-1 px-1 border-r border-white/20 text-center min-w-[110px] leading-tight">
-                RESULTADOS (R)
+                {t("pdcaTables.actionPlan.resultsR")}
               </TableHead>
               <TableHead className="text-white font-bold h-8 py-1 px-1 border-r border-white/20 text-center min-w-[95px] leading-tight">
-                PRIORIZAR
+                {t("pdcaTables.actionPlan.prioritize")}
               </TableHead>
               <TableHead className="text-white font-bold h-8 py-1 px-1 border-r border-white/20 text-center min-w-[95px] leading-tight">
-                QUICK WIN
+                {t("pdcaTables.actionPlan.quickWin")}
               </TableHead>
               <TableHead className="text-white font-bold h-8 py-1 px-1 border-r border-white/20 text-center min-w-[110px] leading-tight">
-                TECH REQUIRED
+                {t("pdcaTables.actionPlan.techRequired")}
               </TableHead>
 
-              {COLUMNAS_FINALES.map(({ label, ancho }) => (
+              {COLUMNAS_FINALES_TRANS.map(({ label, ancho }) => (
                 <TableHead
                   key={label}
                   className={cn(
@@ -145,7 +155,7 @@ export function ActionPlanTable({
             {items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  No hay acciones. Haz clic en "Agregar Acción" para comenzar.
+                  {t("pdcaTables.actionPlan.noActions")}
                 </TableCell>
               </TableRow>
             )}
@@ -160,6 +170,7 @@ export function ActionPlanTable({
           </TableBody>
         </Table>
       </div>
+      {bottomContent}
     </StepCard>
   );
 }

@@ -1,5 +1,5 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 const rdaPageTop = `function RdaPage() {
   const [rdas, setRdas] = useState<Rda[]>([]);
@@ -26,6 +26,9 @@ const newRenderLogic = `  if (selectedRda || isDialogOpen) {
 
   return (`;
 
-code = code.replace('  return (\n    <div className="mx-auto w-full', newRenderLogic + '\n    <div className="mx-auto w-full');
+code = code.replace(
+  '  return (\n    <div className="mx-auto w-full',
+  newRenderLogic + '\n    <div className="mx-auto w-full',
+);
 
-fs.writeFileSync('src/routes/rda.tsx', code);
+fs.writeFileSync("src/routes/rda.tsx", code);

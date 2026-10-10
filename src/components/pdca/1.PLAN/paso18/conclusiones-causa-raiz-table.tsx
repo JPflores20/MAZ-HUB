@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TextareaAutosize from "react-textarea-autosize";
@@ -24,6 +25,7 @@ interface ConclusionesCausaRaizTableProps {
 }
 
 export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProps> = ({ items, onChange, title, isStepCompleted, onToggleStep, isNa, onToggleNa }) => {
+  const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: ConclusionCausaRaizItem = {
       id: crypto.randomUUID(),

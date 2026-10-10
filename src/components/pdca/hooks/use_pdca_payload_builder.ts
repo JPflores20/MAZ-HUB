@@ -5,7 +5,7 @@ import type { Pdca } from "@/data/pdca";
 export function useConstruirPayloadPdca(
   pdcaActual: Pdca,
   estadoPdca: any, // We can use any or the return type of use_pdca_dialog_state
-  progresoCalculado: number
+  progresoCalculado: number,
 ) {
   return useCallback((): Pdca => {
     return {
@@ -106,7 +106,8 @@ export function useConstruirPayloadPdca(
       progreso: progresoCalculado,
       fechaFinalizacion: estadoPdca.deadline_date
         ? format_date_to_string(estadoPdca.deadline_date)
-        : pdcaActual.fechaFinalizacion === "Sin límite" || pdcaActual.fechaFinalizacion === "Sin lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­mite" // handle corrupted string
+        : pdcaActual.fechaFinalizacion === "Sin límite" ||
+            pdcaActual.fechaFinalizacion === "Sin lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­mite" // handle corrupted string
           ? "Sin límite"
           : pdcaActual.fechaFinalizacion && !parse_date_string(pdcaActual.fechaFinalizacion)
             ? pdcaActual.fechaFinalizacion

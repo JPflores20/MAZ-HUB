@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type VpoCheckpointItem } from "@/data/pdca";
+import { useTranslation } from "react-i18next";
 
 const MAPA_ESTILOS_PILAR: Record<string, { bg: string; text: string; border: string }> = {
   Seguridad: {
@@ -34,6 +35,7 @@ export function FilaCheckpointVpo({
   alActualizarEvidencia,
   alActualizarEstatus,
 }: PropiedadesFilaVpo) {
+    const { t } = useTranslation();
   const estiloPilar = MAPA_ESTILOS_PILAR[itemCheckpoint.pilar] || {
     bg: "bg-secondary",
     text: "text-secondary-foreground",
@@ -65,7 +67,7 @@ export function FilaCheckpointVpo({
           onChange={(eventoCambioEntrada) =>
             alActualizarEvidencia(itemCheckpoint.id, eventoCambioEntrada.target.value)
           }
-          placeholder="Escribe evidencias o comentarios..."
+          placeholder={t('pdcaPlan.dynamic.escribeEvidenciasOComentarios')}
           className="h-9 text-xs bg-background/80 hover:bg-background border border-border/80 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-500 px-3 transition-all placeholder:text-muted-foreground/50 shadow-none"
         />
       </TableCell>
@@ -82,8 +84,7 @@ export function FilaCheckpointVpo({
                 : "text-muted-foreground hover:text-foreground hover:bg-background/50",
             )}
           >
-            <Check className="size-3.5 stroke-[3]" /> YES
-          </button>
+            <Check className="size-3.5 stroke-[3]" /> {t('pdcaPlan.dynamic.yes')}</button>
           <button
             type="button"
             onClick={() => alActualizarEstatus(itemCheckpoint.id, "NO")}
@@ -94,8 +95,7 @@ export function FilaCheckpointVpo({
                 : "text-muted-foreground hover:text-foreground hover:bg-background/50",
             )}
           >
-            <X className="size-3.5 stroke-[3]" /> NO
-          </button>
+            <X className="size-3.5 stroke-[3]" /> {t('pdcaPlan.dynamic.no')}</button>
           <button
             type="button"
             onClick={() => alActualizarEstatus(itemCheckpoint.id, "N/A")}
@@ -106,8 +106,7 @@ export function FilaCheckpointVpo({
                 : "text-muted-foreground hover:text-foreground hover:bg-background/50",
             )}
           >
-            N/A
-          </button>
+            {t('pdcaPlan.dynamic.nA')}</button>
         </div>
       </TableCell>
     </TableRow>

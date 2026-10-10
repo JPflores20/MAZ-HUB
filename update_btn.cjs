@@ -1,5 +1,5 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 code = code.replace(
   '<div className="flex items-center gap-2">',
@@ -11,7 +11,7 @@ code = code.replace(
             className="hidden sm:flex bg-card mr-2"
           >
             <RefreshCw className="size-4" />
-          </Button>`
+          </Button>`,
 );
 
-fs.writeFileSync('src/routes/rda.tsx', code);
+fs.writeFileSync("src/routes/rda.tsx", code);

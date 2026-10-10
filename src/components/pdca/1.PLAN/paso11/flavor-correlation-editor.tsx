@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
@@ -9,7 +10,12 @@ interface PropiedadesEditorSerie {
   alActualizarNombre: (idSerie: string, nuevoNombre: string) => void;
   alAgregarPunto: (idSerie: string) => void;
   alEliminarSerie: (idSerie: string) => void;
-  alActualizarPunto: (idSerie: string, indicePunto: number, eje: "x" | "y", nuevoValor: number) => void;
+  alActualizarPunto: (
+    idSerie: string,
+    indicePunto: number,
+    eje: "x" | "y",
+    nuevoValor: number,
+  ) => void;
   alEliminarPunto: (idSerie: string, indicePunto: number) => void;
 }
 
@@ -21,7 +27,11 @@ export function EditorSerieCorrelacion({
   alActualizarPunto,
   alEliminarPunto,
 }: PropiedadesEditorSerie) {
-  const puntosArreglo = (Array.isArray(serie.points) ? serie.points : Object.values(serie.points || {})) as PuntoCorrelacion[];
+  const { t } = useTranslation();
+
+  const puntosArreglo = (
+    Array.isArray(serie.points) ? serie.points : Object.values(serie.points || {})
+  ) as PuntoCorrelacion[];
 
   return (
     <div className="border rounded p-3 space-y-3 bg-card">
@@ -30,7 +40,7 @@ export function EditorSerieCorrelacion({
           value={serie.name}
           onChange={(eventoInput) => alActualizarNombre(serie.id, eventoInput.target.value)}
           className="h-7 text-sm font-bold w-full"
-          placeholder="Nombre de la serie"
+          placeholder={t("pdcaPlan.paso11_flavor_editor_series_name")}
         />
         <Button
           variant="outline"
@@ -38,8 +48,7 @@ export function EditorSerieCorrelacion({
           onClick={() => alAgregarPunto(serie.id)}
           className="h-7 text-xs px-2 shrink-0"
         >
-          <Plus className="size-3 mr-1" /> Punto
-        </Button>
+          <Plus className="size-3 mr-1" />{t("pdcaPlan.paso11_flavor_editor_point")}</Button>
         <Button
           variant="ghost"
           size="icon"
@@ -49,15 +58,20 @@ export function EditorSerieCorrelacion({
           <X className="size-4" />
         </Button>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
         {puntosArreglo.map((puntoItem: PuntoCorrelacion, indicePunto: number) => (
-          <div key={puntoItem.id || indicePunto} className="flex items-center gap-1 bg-secondary/30 p-1 rounded border">
+          <div
+            key={puntoItem.id || indicePunto}
+            className="flex items-center gap-1 bg-secondary/30 p-1 rounded border"
+          >
             <span className="text-[10px] font-bold w-3 text-center">X</span>
             <Input
               type="number"
               value={puntoItem.x}
-              onChange={(eventoInput) => alActualizarPunto(serie.id, indicePunto, "x", Number(eventoInput.target.value))}
+              onChange={(eventoInput) =>
+                alActualizarPunto(serie.id, indicePunto, "x", Number(eventoInput.target.value))
+              }
               className="h-6 text-xs px-1"
             />
             <span className="text-[10px] font-bold w-3 text-center ml-1">Y</span>
@@ -65,7 +79,9 @@ export function EditorSerieCorrelacion({
               type="number"
               step="0.1"
               value={puntoItem.y}
-              onChange={(eventoInput) => alActualizarPunto(serie.id, indicePunto, "y", Number(eventoInput.target.value))}
+              onChange={(eventoInput) =>
+                alActualizarPunto(serie.id, indicePunto, "y", Number(eventoInput.target.value))
+              }
               className="h-6 text-xs px-1"
             />
             <Button
@@ -79,9 +95,7 @@ export function EditorSerieCorrelacion({
           </div>
         ))}
         {puntosArreglo.length === 0 && (
-          <p className="text-xs text-muted-foreground col-span-2">
-            No hay puntos. Añade uno para comenzar.
-          </p>
+          <p className="text-xs text-muted-foreground col-span-2">{t("pdcaPlan.paso11_flavor_editor_no_points")}</p>
         )}
       </div>
     </div>

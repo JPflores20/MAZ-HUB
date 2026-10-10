@@ -1,13 +1,13 @@
-import type { 
-  DefinicionMeta, 
-  ParticipantesData, 
-  ActionItem, 
-  ParetoItem, 
+import type {
+  DefinicionMeta,
+  ParticipantesData,
+  ActionItem,
+  ParetoItem,
   TablaEstandarizacionItem,
-  ItfR2d2Evaluation 
+  ItfR2d2Evaluation,
 } from "./pdca";
 
-export type RdaStatus = 'Abierto' | 'En Progreso' | 'Cerrado';
+export type RdaStatus = "Abierto" | "En Progreso" | "Cerrado";
 
 export interface RdaQualityEval {
   definicionProblema: number;
@@ -53,8 +53,8 @@ export interface RdaValidationAction {
   accion: string;
   responsable: string;
   fechaLimite: string;
-  estatus: 'Pendiente' | 'En progreso' | 'Completa';
-  esCausaRaiz: 'SI' | 'NO' | 'Pendiente';
+  estatus: "Pendiente" | "En progreso" | "Completa";
+  esCausaRaiz: "SI" | "NO" | "Pendiente";
 }
 
 export interface RdaPreventionAction {
@@ -65,7 +65,7 @@ export interface RdaPreventionAction {
   comentarios: string;
   responsable: string;
   fechaLimite: string;
-  estatus: 'Pendiente' | 'En progreso' | 'Completa';
+  estatus: "Pendiente" | "En progreso" | "Completa";
 }
 
 export interface RdaStandardization {
@@ -138,19 +138,19 @@ export interface Rda {
   status: RdaStatus;
   createdAt: string;
   updatedAt: string;
-  
+
   completedPhases?: string[];
   completedSteps?: string[];
   naSteps?: string[];
   portada?: RdaPortada;
   context: RdaAnomalyContext;
   problemDescription?: RdaProblemDescription;
-  
+
   // Phase 2
   immediateActions?: RdaValidationAction[]; // Reusing validation action shape for simplicity
   observacionesAdicionales?: string;
   timeline?: RdaTimelineEvent[];
-  
+
   // Phase 3
   analizadoEnOtrosReportes?: string;
   participantesRC?: string;
@@ -160,7 +160,7 @@ export interface Rda {
   statistical_analysis_files?: string[];
   rendimientoActualItems?: any[];
   rendimientoActualImage?: string;
-  
+
   // Phase 4
   validationActions?: RdaValidationAction[];
   evidenciasValidacion?: RdaEvidenceItem[];
@@ -170,7 +170,7 @@ export interface Rda {
   checklistEstandarizacion?: Record<string, boolean>;
   pda?: ActionItem[];
   evidenciasEliminacionCausa?: RdaEvidenceItem[];
-  
+
   // Phase 6 & 7
   evaluacionCalidad?: ItfR2d2Evaluation;
   evaluacionEfectividad?: ItfR2d2Evaluation;
@@ -189,43 +189,61 @@ export interface Rda {
 }
 
 export const defaultRda: Rda = {
-  id: '',
-  title: 'Nuevo RDA',
-  status: 'Abierto',
-  createdAt: '',
-  updatedAt: '',
+  id: "",
+  title: "Nuevo RDA",
+  status: "Abierto",
+  createdAt: "",
+  updatedAt: "",
   completedPhases: [],
   completedSteps: [],
   naSteps: [],
   portada: {
-    titulo: 'Nuevo RDA',
-    area: '',
-    fechaLimite: '',
-    autorOriginal: '',
-    autorEmail: '',
+    titulo: "Nuevo RDA",
+    area: "",
+    fechaLimite: "",
+    autorOriginal: "",
+    autorEmail: "",
     usuariosAsignados: [],
-    descripcionProblema: '',
+    descripcionProblema: "",
   },
   context: {
-    planta: 'ZACATECAS', fecha: '', turno: '', iniciadoPor: '', responsable: '',
-    etapa: '', departamento: '', area: '', disparador: '', equiposAfectados: '',
-    folio: '', tiempoParo: '', unidadesTiempoParo: '', perdidas: '', unidadesPerdidas: '',
-    productosNoConformes: '', unidadesNoConformes: ''
+    planta: "ZACATECAS",
+    fecha: "",
+    turno: "",
+    iniciadoPor: "",
+    responsable: "",
+    etapa: "",
+    departamento: "",
+    area: "",
+    disparador: "",
+    equiposAfectados: "",
+    folio: "",
+    tiempoParo: "",
+    unidadesTiempoParo: "",
+    perdidas: "",
+    unidadesPerdidas: "",
+    productosNoConformes: "",
+    unidadesNoConformes: "",
   },
   problemDescription: {
-    que: '', como: '', cuando: '', donde: '', quien: '', cual: ''
+    que: "",
+    como: "",
+    cuando: "",
+    donde: "",
+    quien: "",
+    cual: "",
   },
   immediateActions: [],
-  observacionesAdicionales: '',
+  observacionesAdicionales: "",
   timeline: [],
-  analizadoEnOtrosReportes: 'No',
-  participantesRC: '',
+  analizadoEnOtrosReportes: "No",
+  participantesRC: "",
   ishikawa: [],
   pareto_data_map: {},
   correlaciones: [],
   statistical_analysis_files: [],
   rendimientoActualItems: [],
-  rendimientoActualImage: '',
+  rendimientoActualImage: "",
   validationActions: [],
   evidenciasValidacion: [],
   tablaEstandarizacion: [],
@@ -233,17 +251,24 @@ export const defaultRda: Rda = {
   evidenciasEliminacionCausa: [],
 
   // Legacy initialization
-  analysis: { data: '', images: [] },
+  analysis: { data: "", images: [] },
   evidences: [],
   evidence1: [],
   evidence2: [],
   five_whys_tables: [],
   preventionActions: [],
   standardization: {
-    requiereActualizarMapeo: false, requiereOwd: false, requiereActualizarSop: false,
-    requiereCapacitacion: false, requiereMonitoreoIp: false
+    requiereActualizarMapeo: false,
+    requiereOwd: false,
+    requiereActualizarSop: false,
+    requiereCapacitacion: false,
+    requiereMonitoreoIp: false,
   },
   closure: {
-    eliminoCausaRaiz: false, requiereEscalar: false, necesitaCapex: false, incluyeComoGop: false, fechaFinalizacion: ''
-  }
+    eliminoCausaRaiz: false,
+    requiereEscalar: false,
+    necesitaCapex: false,
+    incluyeComoGop: false,
+    fechaFinalizacion: "",
+  },
 };

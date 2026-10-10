@@ -32,15 +32,22 @@ export const StepperPhaseItem: React.FC<Props> = ({
       onClick={() => onSelect(phase.id as Phase)}
       className={cn(
         "flex flex-1 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors relative group cursor-pointer select-none",
-        getPhaseTabColors(phase.id, isCurrent)
+        getPhaseTabColors(phase.id, isCurrent),
       )}
     >
-      <div className={cn("flex flex-1 items-center min-w-0", (phase.id === "Resumen" || phase.id === "Evaluacion") ? "justify-center text-center" : "gap-2.5")}>
+      <div
+        className={cn(
+          "flex flex-1 items-center min-w-0",
+          phase.id === "Resumen" || phase.id === "Evaluacion"
+            ? "justify-center text-center"
+            : "gap-2.5",
+        )}
+      >
         {phase.id !== "Resumen" && phase.id !== "Evaluacion" && (
           <span
             className={cn(
               "grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold",
-              getPhaseCircleColors(phase.id, isCurrent, isCompleted)
+              getPhaseCircleColors(phase.id, isCurrent, isCompleted),
             )}
           >
             {index}
@@ -54,7 +61,7 @@ export const StepperPhaseItem: React.FC<Props> = ({
             <span
               className={cn(
                 "hidden truncate text-[11px] sm:block",
-                getPhaseSubText(phase.id, isCurrent)
+                getPhaseSubText(phase.id, isCurrent),
               )}
             >
               {phase.sub}
@@ -73,7 +80,7 @@ export const StepperPhaseItem: React.FC<Props> = ({
           title={isCompleted ? "Desmarcar fase como completada" : "Marcar fase como completada"}
           className={cn(
             "shrink-0 size-7 grid place-items-center rounded-full border-2 transition-all cursor-pointer",
-            getPhaseToggleBorder(phase.id, isCurrent, isCompleted)
+            getPhaseToggleBorder(phase.id, isCurrent, isCompleted),
           )}
         >
           <Check className="size-3.5" />

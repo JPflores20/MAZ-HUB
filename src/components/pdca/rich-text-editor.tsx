@@ -62,7 +62,10 @@ export function RichTextEditor({
         {/* Bold */}
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); execCmd("bold"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("bold");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Negrita"
         >
@@ -71,7 +74,10 @@ export function RichTextEditor({
         {/* Italic */}
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); execCmd("italic"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("italic");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Itálica"
         >
@@ -83,7 +89,10 @@ export function RichTextEditor({
         {/* Unordered list */}
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); execCmd("insertUnorderedList"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("insertUnorderedList");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Lista de viñetas"
         >
@@ -92,7 +101,10 @@ export function RichTextEditor({
         {/* Ordered list */}
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); execCmd("insertOrderedList"); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            execCmd("insertOrderedList");
+          }}
           className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Lista numerada"
         >

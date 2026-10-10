@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -17,6 +18,8 @@ export function CajaCategoriaIshikawa({
   alEliminarCausa,
   alCambiarEtiqueta,
 }: PropiedadesCajaCategoria) {
+  const { t } = useTranslation();
+
   const [valorTextoInput, asignarValorTextoInput] = useState("");
 
   const manejarPresionTecla = (eventoTeclado: React.KeyboardEvent<HTMLInputElement>) => {

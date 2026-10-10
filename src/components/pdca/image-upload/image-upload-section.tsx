@@ -53,7 +53,7 @@ export function ImageUploadSection({
   const [estaArrastrando, setEstaArrastrando] = React.useState(false);
 
   const procesarArchivo = async (archivo: File) => {
-    if (!archivo.type.startsWith("image/")) return;
+    if (!archivo.type.startsWith("image/") && archivo.type !== "application/pdf") return;
     try {
       setEstaSubiendo(true);
       const urlDescarga = await subirArchivoAFirebase(archivo);
@@ -94,16 +94,32 @@ export function ImageUploadSection({
       {image ? (
         <div className="w-full flex justify-center mt-2">
           <div className="relative inline-block group">
-            <VisorImagenConZoom urlImagen={image} textoAlternativo={title}>
-              <DialogTrigger asChild>
-                <img
-                  src={image}
-                  alt={title}
-                  className="max-h-[500px] object-contain rounded-md border shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-                  title="Clic para ver imagen completa"
-                />
-              </DialogTrigger>
-            </VisorImagenConZoom>
+            {image.startsWith("data:application/pdf") || image.toLowerCase().includes(".pdf") ? (
+              <div className="flex flex-col items-center justify-center w-64 h-64 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 rounded-md border shadow-sm">
+                <FileText className="size-16 mb-2" />
+                <span className="text-sm font-semibold">Documento PDF</span>
+                <a
+                  href={image}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm underline hover:text-blue-800 mt-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Abrir PDF
+                </a>
+              </div>
+            ) : (
+              <VisorImagenConZoom urlImagen={image} textoAlternativo={title}>
+                <DialogTrigger asChild>
+                  <img
+                    src={image}
+                    alt={title}
+                    className="max-h-[500px] object-contain rounded-md border shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                    title="Clic para ver imagen completa"
+                  />
+                </DialogTrigger>
+              </VisorImagenConZoom>
+            )}
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -120,7 +136,8 @@ export function ImageUploadSection({
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede deshacer.
+                    ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede
+                    deshacer.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -150,7 +167,7 @@ export function ImageUploadSection({
         type="file"
         ref={referenciaInput}
         onChange={manejarCambioInput}
-        accept="image/*"
+        accept="image/*,application/pdf"
         className="hidden"
       />
     </>

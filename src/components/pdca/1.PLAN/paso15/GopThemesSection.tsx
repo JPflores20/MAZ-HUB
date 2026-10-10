@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
@@ -14,12 +15,25 @@ interface PropiedadesSeccionTemasGop {
   onToggleNa?: (() => void) | undefined;
 }
 
-const NOMBRES_MESES = ["Ene", "FEB", "MAR", "Abr", "MAY", "Jun", "JUL", "Ago", "SEP", "OCT", "NOV", "Dic"];
+const NOMBRES_MESES = [
+  "Ene",
+  "FEB",
+  "MAR",
+  "Abr",
+  "MAY",
+  "Jun",
+  "JUL",
+  "Ago",
+  "SEP",
+  "OCT",
+  "NOV",
+  "Dic",
+];
 
 const MAPA_ESTADO_COLORES: Record<string, string> = {
   "Not Started": "bg-gray-300 text-gray-800",
   "In Progress": "bg-amber-400 text-amber-900",
-  "Complete": "bg-emerald-500 text-white",
+  Complete: "bg-emerald-500 text-white",
   "": "bg-transparent text-transparent",
 };
 
@@ -31,6 +45,8 @@ export function GopThemesSection({
   onToggleStep: alAlternarEstadoPaso,
   onToggleNa: alAlternarNoAplica,
 }: PropiedadesSeccionTemasGop) {
+  const { t } = useTranslation();
+
   const manejarAgregarNuevaFila = () => {
     alCambiarRegistros([
       ...registrosTemasGop,
@@ -47,11 +63,23 @@ export function GopThemesSection({
   };
 
   const manejarEliminarFila = (idFilaEliminar: number) => {
-    alCambiarRegistros(registrosTemasGop.filter((registroFiltro) => registroFiltro.id !== idFilaEliminar));
+    alCambiarRegistros(
+      registrosTemasGop.filter((registroFiltro) => registroFiltro.id !== idFilaEliminar),
+    );
   };
 
-  const manejarActualizacionCampo = (idFilaActualizar: number, campoNombre: string, nuevoValorCampo: any) => {
-    alCambiarRegistros(registrosTemasGop.map((registroMapa) => (registroMapa.id === idFilaActualizar ? { ...registroMapa, [campoNombre]: nuevoValorCampo } : registroMapa)));
+  const manejarActualizacionCampo = (
+    idFilaActualizar: number,
+    campoNombre: string,
+    nuevoValorCampo: any,
+  ) => {
+    alCambiarRegistros(
+      registrosTemasGop.map((registroMapa) =>
+        registroMapa.id === idFilaActualizar
+          ? { ...registroMapa, [campoNombre]: nuevoValorCampo }
+          : registroMapa,
+      ),
+    );
   };
 
   // Ciclo de clics: Transparente (false) -> Rojo (true) -> Verde (true) -> Transparente (false)
@@ -97,7 +125,11 @@ export function GopThemesSection({
     );
   };
 
-  const manejarActualizacionValorMes = (idFilaModificar: number, indiceDelMes: number, nuevoValorCaja: string) => {
+  const manejarActualizacionValorMes = (
+    idFilaModificar: number,
+    indiceDelMes: number,
+    nuevoValorCaja: string,
+  ) => {
     alCambiarRegistros(
       registrosTemasGop.map((registroIterado) => {
         if (registroIterado.id === idFilaModificar) {
@@ -126,16 +158,19 @@ export function GopThemesSection({
           <thead>
             <tr className="bg-muted">
               <th className="border border-border p-2 w-10 text-center">#</th>
-              <th className="border border-border p-2 min-w-[300px]">CUMPLIMIENTO DE GOPS APLICABLES</th>
+              <th className="border border-border p-2 min-w-[300px]">{t("pdcaPlan.paso15_gop_section_compliance")}</th>
               {NOMBRES_MESES.map((nombreMesLista) => (
-                <th key={nombreMesLista} className="border border-border p-2 w-10 text-center text-xs bg-[#0070c0] text-white font-bold">
+                <th
+                  key={nombreMesLista}
+                  className="border border-border p-2 w-10 text-center text-xs bg-[#0070c0] text-white font-bold"
+                >
                   {nombreMesLista}
                 </th>
               ))}
-              <th className="border border-border p-2 w-28 text-center text-xs">FECHA COMPROMISO</th>
+              <th className="border border-border p-2 w-28 text-center text-xs">{t("pdcaPlan.paso15_gop_section_commitment_date")}</th>
               <th className="border border-border p-2 w-20 text-center text-xs">% AVANCE</th>
-              <th className="border border-border p-2 w-24 text-center text-xs">FOCUS GOP ITEMS</th>
-              <th className="border border-border p-2 w-32 text-center text-xs">FOCUS GOP STATUS</th>
+              <th className="border border-border p-2 w-24 text-center text-xs">{t("pdcaPlan.paso15_gop_section_focus_items")}</th>
+              <th className="border border-border p-2 w-32 text-center text-xs">{t("pdcaPlan.paso15_gop_section_focus_status")}</th>
               <th className="border border-border p-2 w-10 text-center"></th>
             </tr>
           </thead>
@@ -165,8 +200,7 @@ export function GopThemesSection({
       </div>
       <div className="flex justify-center mt-4">
         <Button onClick={manejarAgregarNuevaFila} variant="outline" size="sm" className="gap-2">
-          <Plus className="size-4" /> Agregar Tema
-        </Button>
+          <Plus className="size-4" />{t("pdcaPlan.paso15_gop_section_add_theme")}</Button>
       </div>
     </StepCard>
   );

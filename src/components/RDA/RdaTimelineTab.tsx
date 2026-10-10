@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { RdaTimelineEvent } from "@/data/rda";
 import { ProblemTimelineSection } from "@/components/pdca/1.PLAN/paso1/problem-timeline-section";
+import { useTranslation } from "react-i18next";
 
 interface RdaTimelineTabProps {
   events: RdaTimelineEvent[];
@@ -8,16 +9,17 @@ interface RdaTimelineTabProps {
 }
 
 export function RdaTimelineTab({ events, onChange }: RdaTimelineTabProps) {
+  const { t } = useTranslation();
   const [timelineOption, setTimelineOption] = useState<"A" | "B">("A");
   const [timelineFilter, setTimelineFilter] = useState<"day" | "week" | "month" | "3months">("day");
 
   const handleEventsChange = (newEvents: { id: string; time: string; description: string }[]) => {
     // Merge existing images if needed, or just cast
-    const merged = newEvents.map(newEv => {
-      const existing = events.find(e => e.id === newEv.id);
+    const merged = newEvents.map((newEv) => {
+      const existing = events.find((e) => e.id === newEv.id);
       return {
         ...newEv,
-        images: existing?.images || []
+        images: existing?.images || [],
       };
     });
     onChange(merged);
@@ -25,10 +27,9 @@ export function RdaTimelineTab({ events, onChange }: RdaTimelineTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-2">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-2">
         <p className="text-sm text-blue-800">
-          Construye una secuencia cronológica de los eventos previos y posteriores a la detección del problema, 
-          apoyándose en horarios, descripciones operativas y registros visuales o pantallazos.
+          {t("rdaInternal.timelineHelp")}
         </p>
       </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ConclusionesKpiData, ConclusionesPiItem } from "@/data/pdca";
 import { StepCard } from "@/components/ui/step-card";
 import {
@@ -46,6 +47,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
   storyboardImage,
   onStoryboardImageChange,
 }) => {
+  const { t } = useTranslation();
   const datosKpi = kpiData || {
     fechaFinalizacion: "",
     mejoroPi: "",
@@ -75,7 +77,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
 
   const actualizarPi = (id: string, campo: keyof ConclusionesPiItem, valor: string) => {
     onPiItemsChange(
-      (piItems || []).map((item) => (item.id === id ? { ...item, [campo]: valor } : item))
+      (piItems || []).map((item) => (item.id === id ? { ...item, [campo]: valor } : item)),
     );
   };
 
@@ -85,7 +87,7 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
 
   return (
     <StepCard
-      title="PASO 33: CONCLUSIONES"
+      title={t("pdcaPhases.resumen.step33.title")}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}
@@ -99,22 +101,17 @@ export const ConclusionesStep: React.FC<ConclusionesStepProps> = ({
                 <div className="h-5 w-5 rounded-full bg-[#e2e3e5] flex items-center justify-center text-xs font-bold text-[#6c757d]">
                   i
                 </div>
-                <span className="font-bold text-sm">Instrucciones</span>
+                <span className="font-bold text-sm">
+                  {t("pdcaPhases.resumen.step33.instructionsTitle")}
+                </span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
-              <p className="font-bold">Instrucciones</p>
+              <p className="font-bold">{t("pdcaPhases.resumen.step33.instructionsTitle")}</p>
               <ol className="list-decimal pl-4 space-y-1">
-                <li>Llene la fecha de finalización</li>
-                <li>
-                  Llene la información general del KPI incluyendo el valor inicial del KPI, el valor
-                  final del KPI. Si un aumento del valor equivale a una mejora del KPI, seleccione
-                  "Más alto". De lo contrario, seleccione "Más bajo".
-                </li>
-                <li>
-                  Si su PDCA tenía un enfoque más limitado en un PI específico, entonces llene la
-                  información del PI para mostrar el PI antes y después del PDCA.
-                </li>
+                <li>{t("pdcaPhases.resumen.step33.inst1")}</li>
+                <li>{t("pdcaPhases.resumen.step33.inst2")}</li>
+                <li>{t("pdcaPhases.resumen.step33.inst3")}</li>
               </ol>
             </AccordionContent>
           </AccordionItem>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
@@ -20,7 +21,7 @@ interface PropiedadesPasoRendimiento {
 }
 
 export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
-  items: registrosIndicadores,
+items: registrosIndicadores,
   onChange: alCambiarRegistros,
   isStepCompleted: pasoEstaCompletado,
   isNa: pasoEsNoAplica,
@@ -28,6 +29,7 @@ export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
   onToggleNa: alAlternarNoAplica,
   title = "PASO 14: PERFORMANCE ACTUAL DEL PROCESO ( ANÁLISIS DE PIS)",
 }) => {
+  const { t } = useTranslation();
   const manejarAgregarRegistroNuevo = () => {
     const registroEstructuraNueva: RendimientoActualPiItem = {
       id: crypto.randomUUID(),
@@ -64,7 +66,7 @@ export const RendimientoActualStep: React.FC<PropiedadesPasoRendimiento> = ({
       <StepInstructions>
         <ol className="list-decimal pl-4 space-y-1">
           <li>Determinar las PI que serán analizadas. Idealmente, estos serán asignados a los Operadores o Técnicos en las estaciones de trabajo de los Operadores relevantes. En algunos casos, puede tener sentido que el equipo pdca/ITF rastree un PI en particular.</li>
-          <li>Enumere los PIs a ser rastreados.</li>
+          <li>{t("pdcaPlan.paso14_rendimiento_step_list_pis", "Enumere los PIs a ser rastreados.")}</li>
           <li>Prepare los gráficos SIC necesarios (ya sea en versión digital o en papel/pizarra).</li>
           <li>Incluya planes de reacción para cualquier PI que deban rastrear los operadores/técnicos. Comunicar los SIC a las estaciones de trabajo impactadas, explicando por qué el equipo necesita la ayuda del Operador/Técnico para rastrear el PI, cómo debe llenarse el SIC, asegurándose de que se entienda el Plan de Reacción, cualquier información adicional que pueda ser útil, etc.</li>
           <li>Incluya fotos o capturas de pantalla de cualquier Carta SIC del Operador/Técnico en el espacio de abajo.</li>

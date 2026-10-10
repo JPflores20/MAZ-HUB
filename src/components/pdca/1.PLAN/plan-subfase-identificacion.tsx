@@ -56,7 +56,9 @@ export type PropiedadesSubfaseIdentificacion = Pick<
 >;
 
 /** Subfase 1: Identificación del Problema (Pasos 1-7) */
-export const SubfaseIdentificacionProblema: React.FC<PropiedadesSubfaseIdentificacion> = (props) => {
+export const SubfaseIdentificacionProblema: React.FC<PropiedadesSubfaseIdentificacion> = (
+  props,
+) => {
   const {
     problem_description,
     vpo_checkpoints,

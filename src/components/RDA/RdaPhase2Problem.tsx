@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";
 import { RdaContextForm } from "./RdaContextForm";
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export function RdaPhase2Problem({ rda, onChange }: Props) {
+  const { t } = useTranslation();
+
   const isStepCompleted = (stepId: string) => rda.completedSteps?.includes(stepId) || false;
   const isStepNa = (stepId: string) => rda.naSteps?.includes(stepId) || false;
 
@@ -20,9 +23,13 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
     const completed = rda.completedSteps || [];
     const na = rda.naSteps || [];
     if (completed.includes(stepId)) {
-      onChange({ ...rda, completedSteps: completed.filter(s => s !== stepId) });
+      onChange({ ...rda, completedSteps: completed.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, completedSteps: [...completed, stepId], naSteps: na.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        completedSteps: [...completed, stepId],
+        naSteps: na.filter((s) => s !== stepId),
+      });
     }
   };
 
@@ -30,17 +37,21 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
     const na = rda.naSteps || [];
     const completed = rda.completedSteps || [];
     if (na.includes(stepId)) {
-      onChange({ ...rda, naSteps: na.filter(s => s !== stepId) });
+      onChange({ ...rda, naSteps: na.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, naSteps: [...na, stepId], completedSteps: completed.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        naSteps: [...na, stepId],
+        completedSteps: completed.filter((s) => s !== stepId),
+      });
     }
   };
 
   return (
     <div className="space-y-8">
       {/* 1. Datos Generales */}
-      <StepCard 
-        title="1. Datos Generales" 
+      <StepCard
+        title={t("rdaInternal.generalData")}
         defaultExpanded={true}
         isStepCompleted={isStepCompleted("rda-step-1")}
         isNa={isStepNa("rda-step-1")}
@@ -55,8 +66,8 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
       </StepCard>
 
       {/* 2. Descripción de Anormalidad (5W + 1H) */}
-      <StepCard 
-        title="2. Descripción de Anormalidad (5W + 1H)" 
+      <StepCard
+        title={t("rdaInternal.abnormalityDescription5w1h")}
         defaultExpanded={true}
         isStepCompleted={isStepCompleted("rda-step-2")}
         isNa={isStepNa("rda-step-2")}
@@ -64,14 +75,23 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
         onToggleNa={() => toggleNa("rda-step-2")}
       >
         <RdaProblemDescriptionTab
-          data={rda.problemDescription || { que: "", como: "", cuando: "", donde: "", quien: "", cual: "" }}
+          data={
+            rda.problemDescription || {
+              que: "",
+              como: "",
+              cuando: "",
+              donde: "",
+              quien: "",
+              cual: "",
+            }
+          }
           onChange={(newData) => onChange({ ...rda, problemDescription: newData })}
         />
       </StepCard>
 
       {/* 3. Acciones Correctivas Inmediatas */}
-      <StepCard 
-        title="3. Acciones Correctivas Inmediatas" 
+      <StepCard
+        title={t("rdaInternal.immediateCorrectiveActions")}
         defaultExpanded={true}
         isStepCompleted={isStepCompleted("rda-step-3")}
         isNa={isStepNa("rda-step-3")}
@@ -82,9 +102,9 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
           {/* Box 1: Acciones correctivas inmediatas */}
           <div className="border border-border rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
             <div className="bg-[#0078D7] border-b border-border px-4 py-2 font-bold text-center text-[10px] text-white uppercase">
-              Acciones correctivas Inmediatas
+              {t("rdaInternal.immediateCorrectiveActionsTitle")}
             </div>
-            <Textarea 
+            <Textarea
               placeholder="Se revisa el reposo que alimentó los BBT's..."
               value={rda.immediateActions?.[0]?.accion || ""}
               onChange={(e) => {
@@ -99,9 +119,9 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
           {/* Box 2: Observaciones */}
           <div className="border border-border rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
             <div className="bg-[#0078D7] border-b border-border px-4 py-2 font-bold text-center text-[10px] text-white uppercase">
-              Observaciones (Información adicional / Detalles)
+              {t("rdaInternal.observationsDetails")}
             </div>
-            <Textarea 
+            <Textarea
               placeholder="Los BBTs llenaron con el reposo 101 que entro desde las 9:30..."
               value={rda.observacionesAdicionales || ""}
               onChange={(e) => onChange({ ...rda, observacionesAdicionales: e.target.value })}
@@ -112,8 +132,8 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
       </StepCard>
 
       {/* 4. Línea de Tiempo */}
-      <StepCard 
-        title="4. Línea de Tiempo" 
+      <StepCard
+        title={t("rdaInternal.timeline")}
         defaultExpanded={true}
         isStepCompleted={isStepCompleted("rda-step-4")}
         isNa={isStepNa("rda-step-4")}

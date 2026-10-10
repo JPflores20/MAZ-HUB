@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,32 +33,25 @@ export const TablaConclusionesPi: React.FC<Props> = ({
   alActualizarPi,
   alEliminarPi,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       <div className="flex justify-end">
         <Button onClick={alAgregarPi} variant="outline" size="sm" className="h-8">
-          <Plus className="size-4 mr-2" /> Agregar PI
+          <Plus className="size-4 mr-2" /> {t('pdcaResumen.addPi')}
         </Button>
       </div>
       <div className="border rounded-md overflow-hidden bg-white shadow-sm">
         <Table className="text-xs">
           <TableHeader>
             <TableRow className="bg-[#0078D7] hover:bg-[#0078D7]">
+              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">{t('pdcaResumen.pi')}</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">{t('pdcaResumen.from')}</TableHead>
+              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">{t('pdcaResumen.to')}</TableHead>
               <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">
-                PI
+                {t('pdcaResumen.greenIs')}
               </TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">
-                De:
-              </TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">
-                A:
-              </TableHead>
-              <TableHead className="font-bold text-white text-center border-r border-white/20 h-10">
-                Verde es:
-              </TableHead>
-              <TableHead className="font-bold text-white text-center h-10">
-                % de Mejora
-              </TableHead>
+              <TableHead className="font-bold text-white text-center h-10">{t('pdcaResumen.improvementPercent')}</TableHead>
               <TableHead className="w-8 h-10"></TableHead>
             </TableRow>
           </TableHeader>
@@ -65,7 +59,7 @@ export const TablaConclusionesPi: React.FC<Props> = ({
             {(!elementosPi || elementosPi.length === 0) && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
-                  No hay PI agregados.
+                  {t('pdcaResumen.noPiAdded')}
                 </TableCell>
               </TableRow>
             )}
@@ -101,8 +95,8 @@ export const TablaConclusionesPi: React.FC<Props> = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Más alto">Más alto</SelectItem>
-                      <SelectItem value="Más bajo">Más bajo</SelectItem>
+                      <SelectItem value="Más alto">{t('pdcaResumen.higher')}</SelectItem>
+                      <SelectItem value="Más bajo">{t('pdcaResumen.lower')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
@@ -118,7 +112,7 @@ export const TablaConclusionesPi: React.FC<Props> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="h-8 w-8 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:bg-red-900/20"
                     onClick={() => alEliminarPi(item.id)}
                   >
                     <Trash2 className="size-4" />

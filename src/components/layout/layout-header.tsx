@@ -1,12 +1,23 @@
 import React from "react";
-import { Menu, Printer, Bell, CheckCircle2, Calendar, ArrowRight } from "lucide-react";
+import {
+  Menu,
+  Printer,
+  Bell,
+  CheckCircle2,
+  Calendar,
+  ArrowRight,
+  CalendarClock,
+  Globe,
+} from "lucide-react";
 import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { cn } from "@/lib/utils";
 import type { UserContextData } from "./layout-types";
 
@@ -33,6 +44,8 @@ export const LayoutHeader: React.FC<Props> = ({
   setDeadlinePickerOpenId,
   handleDeadlineChange,
 }) => {
+  const { i18n } = useTranslation();
+
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-gradient-to-r from-[#0a1428] via-[#0f1c38] to-[#0a1428] text-white px-4 md:px-8 shadow-md relative z-0">
       <div className="flex items-center gap-4">
@@ -56,7 +69,7 @@ export const LayoutHeader: React.FC<Props> = ({
         <div
           className={cn(
             "flex items-center gap-3",
-            desktopSidebarOpen ? "md:hidden" : "hidden md:flex lg:flex"
+            desktopSidebarOpen ? "md:hidden" : "hidden md:flex lg:flex",
           )}
         >
           <img
@@ -64,7 +77,7 @@ export const LayoutHeader: React.FC<Props> = ({
             alt="Logo MAZ"
             className={cn(
               "h-7 w-auto object-contain rounded",
-              desktopSidebarOpen ? "md:hidden" : ""
+              desktopSidebarOpen ? "md:hidden" : "",
             )}
           />
           {!desktopSidebarOpen && (
@@ -76,11 +89,13 @@ export const LayoutHeader: React.FC<Props> = ({
       </div>
 
       <div className="flex items-center gap-3">
-
+        
 
         <ThemeToggle className="text-blue-200/80 hover:bg-white/10 hover:text-white" />
 
-        {/* Notification Bell */}
+        <NotificationBell />
+
+        {/* Admin Notification Bell */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -88,9 +103,9 @@ export const LayoutHeader: React.FC<Props> = ({
               size="icon"
               className="relative text-blue-200/80 hover:bg-white/10 hover:text-white"
             >
-              <Bell className="size-5" />
+              <CalendarClock className="size-5" />
               {currentUser.role === "admin" && pendingDeadlinePdcas.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white shadow-md">
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 dark:bg-red-600 px-1 text-[11px] font-bold text-white shadow-md">
                   {pendingDeadlinePdcas.length}
                 </span>
               )}
@@ -104,11 +119,11 @@ export const LayoutHeader: React.FC<Props> = ({
             <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-muted/40">
               <div className="flex items-center gap-2.5">
                 <div className="flex size-7 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/40">
-                  <Bell className="size-3.5 text-amber-600 dark:text-amber-400" />
+                  <CalendarClock className="size-3.5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm text-foreground leading-none">
-                    Notificaciones
+                    Fechas Límite
                   </h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
                     Panel de administración

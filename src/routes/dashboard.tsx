@@ -1,27 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { useState, useEffect, useMemo } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { subscribeToRdas } from "@/services/rda-service";
 import type { Rda } from "@/data/rda";
-import {
-  ClipboardList,
-  CheckCircle2,
-  Clock,
-  Target,
-  ArrowRight,
-  RefreshCw,
-  FileSpreadsheet,
-  TrendingUp,
-  AlertCircle,
-  Plus,
-} from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import { usePdcas } from "@/context/pdca-context";
 import { useAuth } from "@/context/auth-context";
 import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
 import { type Pdca } from "@/data/pdca";
+
+import { KpiCards } from "@/components/dashboard/kpi-cards";
+import { RecentMovements } from "@/components/dashboard/recent-movements";
+import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 function getRdaComputedProgress(r: Rda): number {
   if (r.status === "Cerrado") return 100;
@@ -146,28 +138,6 @@ function Dashboard() {
     .sort((a, b) => b.id.localeCompare(a.id))
     .slice(0, 5);
 
-  const kpis = [
-    {
-      label: "Proyectos activos",
-      value: activos,
-      icon: ClipboardList,
-      hint: "PDCAs y RDAs en curso",
-    },
-    {
-      label: "Proyectos en cierre",
-      value: cerrados,
-      icon: CheckCircle2,
-      hint: "Listos para estandarizar / cerrar",
-    },
-    { label: "Avance promedio", value: `${avance}%`, icon: Target, hint: "Todos los ciclos" },
-    {
-      label: "Tareas pendientes",
-      value: pendientes,
-      icon: Clock,
-      hint: "Planes de acción abiertos",
-    },
-  ];
-
   return (
     <div className="mx-auto w-full max-w-[1700px] px-6 py-6 sm:px-10 lg:px-12">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -201,98 +171,17 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((k) => (
-          <div
-            key={k.label}
-            className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {k.label}
-              </span>
-              <span className="grid size-8 place-items-center rounded-md bg-primary/10 text-primary">
-                <k.icon className="size-4" />
-              </span>
-            </div>
-            <p className="mt-3 font-display text-4xl font-bold">{k.value}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{k.hint}</p>
-          </div>
-        ))}
-      </div>
+      <ErrorBoundary>
+        <KpiCards activos={activos} cerrados={cerrados} avance={avance} pendientes={pendientes} />
+      </ErrorBoundary>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] lg:col-span-2">
-          <h2 className="font-display text-lg font-semibold uppercase tracking-wide">
-            Movimientos recientes
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {recientes.map((p) => (
-              <li
-                key={p.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 px-4 py-3"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                      {p.type}
-                    </span>
-                    <p className="truncate text-sm font-semibold">{p.title}</p>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {p.area} • actualizado {p.date}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-secondary sm:block">
-                    <span
-                      className="block h-full rounded-full bg-brand-yellow"
-                      style={{ width: `${p.progress}%` }}
-                    />
-                  </span>
-                  {p.type === "PDCA" ? (
-                    <PhaseBadge phase={p.phase as any} />
-                  ) : (
-                    <span className="text-[11px] font-semibold uppercase px-2 py-0.5 rounded border border-current text-blue-600 bg-blue-500/10">
-                      {p.phase}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-            {recientes.length === 0 && (
-              <li className="py-6 text-center text-xs text-muted-foreground">
-                No hay registros para mostrar.
-              </li>
-            )}
-          </ul>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
-          <h2 className="font-display text-lg font-semibold uppercase tracking-wide">
-            Próximos compromisos
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {tareas.slice(0, 6).map((t) => (
-              <li key={t.id} className="border-l-2 border-brand-yellow pl-3 py-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-muted text-muted-foreground">
-                    {t.type}
-                  </span>
-                  <p className="text-sm font-medium truncate">{t.description}</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {t.owner} • {t.deadline}
-                </p>
-              </li>
-            ))}
-            {tareas.length === 0 && (
-              <li className="py-6 text-center text-xs text-muted-foreground">
-                No hay compromisos pendientes.
-              </li>
-            )}
-          </ul>
-        </div>
+        <ErrorBoundary>
+          <RecentMovements recientes={recientes} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <UpcomingTasks tareas={tareas} />
+        </ErrorBoundary>
       </div>
     </div>
   );

@@ -1,22 +1,22 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/routes/dashboard.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/routes/dashboard.tsx", "utf8");
 
 // 1. Add imports
 code = code.replace(
   'import { useMemo, useState } from "react";',
-  'import { useState, useEffect } from "react";\nimport { subscribeToRdas } from "@/services/rda-service";\nimport type { Rda } from "@/data/rda";'
+  'import { useState, useEffect } from "react";\nimport { subscribeToRdas } from "@/services/rda-service";\nimport type { Rda } from "@/data/rda";',
 );
 
 // 2. Add RDA Progress helper
 code = code.replace(
-  'function getComputedProgress(p: Pdca): number {',
+  "function getComputedProgress(p: Pdca): number {",
   `function getRdaComputedProgress(r: Rda): number {
   if (r.status === "Cerrado") return 100;
   if (r.status === "Abierto") return 10;
   if (r.status === "En Progreso") return 50;
   return 0;
 }
-function getComputedProgress(p: Pdca): number {`
+function getComputedProgress(p: Pdca): number {`,
 );
 
 // 3. Update Dashboard Logic
@@ -126,7 +126,10 @@ code = code.replace(oldDashboardStart, newDashboardStart);
 
 // 4. Update KPI Hints
 code = code.replace('hint: "En Plan, Do o Check"', 'hint: "PDCAs y RDAs en curso"');
-code = code.replace('hint: "Listos para estandarizar"', 'hint: "Listos para estandarizar / cerrar"');
+code = code.replace(
+  'hint: "Listos para estandarizar"',
+  'hint: "Listos para estandarizar / cerrar"',
+);
 
 // 5. Replace Recientes <ul> ONLY
 const oldRecientesUl = `<ul className="mt-4 space-y-3">
@@ -243,4 +246,4 @@ const newTareasUl = `<ul className="mt-4 space-y-3">
 
 code = code.replace(oldTareasUl, newTareasUl);
 
-fs.writeFileSync('src/routes/dashboard.tsx', code);
+fs.writeFileSync("src/routes/dashboard.tsx", code);

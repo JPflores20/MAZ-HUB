@@ -37,12 +37,16 @@ export function DialogoImportarPareto({
 
       if (partesTexto.length >= 2) {
         categoriaExtraida = partesTexto[0] ? partesTexto[0].trim() : "";
-        valorExtraido = partesTexto[1] ? parseFloat(partesTexto[1].replace(/,/g, "").trim() || "0") : 0;
+        valorExtraido = partesTexto[1]
+          ? parseFloat(partesTexto[1].replace(/,/g, "").trim() || "0")
+          : 0;
       } else {
         const partesComa = lineaTexto.split(",");
         if (partesComa.length >= 2) {
           categoriaExtraida = partesComa[0] ? partesComa[0].trim() : "";
-          valorExtraido = partesComa[1] ? parseFloat(partesComa[1].replace(/,/g, "").trim() || "0") : 0;
+          valorExtraido = partesComa[1]
+            ? parseFloat(partesComa[1].replace(/,/g, "").trim() || "0")
+            : 0;
         } else {
           categoriaExtraida = lineaTexto.trim();
           valorExtraido = 1;
@@ -61,12 +65,14 @@ export function DialogoImportarPareto({
     datosActuales.forEach((itemExistente) => {
       const areaRecortada = itemExistente.area?.trim();
       if (areaRecortada) {
-        mapaExistente[areaRecortada] = (mapaExistente[areaRecortada] ?? 0) + (itemExistente.gap ?? 0);
+        mapaExistente[areaRecortada] =
+          (mapaExistente[areaRecortada] ?? 0) + (itemExistente.gap ?? 0);
       }
     });
 
     for (const claveCategoria in valoresAgrupados) {
-      mapaExistente[claveCategoria] = (mapaExistente[claveCategoria] ?? 0) + (valoresAgrupados[claveCategoria] ?? 0);
+      mapaExistente[claveCategoria] =
+        (mapaExistente[claveCategoria] ?? 0) + (valoresAgrupados[claveCategoria] ?? 0);
     }
 
     const nuevosElementosPareto = Object.keys(mapaExistente).map(
@@ -96,7 +102,9 @@ export function DialogoImportarPareto({
         <div className="space-y-4 pt-4">
           <Textarea
             value={datosPegadosPegados}
-            onChange={(eventoCambioTextarea) => asignarDatosPegados(eventoCambioTextarea.target.value)}
+            onChange={(eventoCambioTextarea) =>
+              asignarDatosPegados(eventoCambioTextarea.target.value)
+            }
             placeholder={"Ejemplo:\nFalla A\t10\nFalla B\t5"}
             className="min-h-[200px] text-xs font-mono whitespace-pre"
           />

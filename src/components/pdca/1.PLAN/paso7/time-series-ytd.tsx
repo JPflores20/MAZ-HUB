@@ -12,6 +12,7 @@ import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";
 import { TablaSeries } from "./time-series-table";
 import { GraficaSeries } from "./time-series-chart";
+import { useTranslation } from "react-i18next";
 
 interface PropiedadesSeriesTiempo {
   value?: { mes: string; target: number; actual: number | null }[] | undefined;
@@ -50,6 +51,7 @@ export function TimeSeriesYTD({
   yMax: maximoEjeY = "auto",
   onYMaxChange: alCambiarMaximoY,
 }: PropiedadesSeriesTiempo) {
+    const { t } = useTranslation();
   
   const datosSeries = serieActual && serieActual.length > 0 ? serieActual : DEFAULT_TARGET_VS_ACTUAL;
 
@@ -144,44 +146,40 @@ export function TimeSeriesYTD({
       onToggleNa={alAlternarNoAplica}
     >
       <StepInstructions>
-        <p className="mb-1">1. Rellena el campo gris con su problema.</p>
+        <p className="mb-1">{t('pdcaPlan.dynamic.1RellenaElCampoGris')}</p>
         <p className="mb-1">
-          2. Completa el período de tiempo con tu período de tiempo deseado (años, meses, semanas,
-          días, etc.)
-        </p>
-        <p>3. Rellena las columnas "Objetivo" y "Actual" con tus datos.</p>
+          {t('pdcaPlan.dynamic.2CompletaElPerOdo')}</p>
+        <p>{t('pdcaPlan.dynamic.3RellenaLasColumnasObjetivo')}</p>
       </StepInstructions>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Unidad de Medida:
-            </span>
+              {t('pdcaPlan.dynamic.unidadDeMedida2')}</span>
             <Input
               value={unidadMedida}
               onChange={(eventoCambioInput) => alCambiarUnidad?.(eventoCambioInput.target.value)}
-              placeholder="ej. $, %, HL"
+              placeholder={t('pdcaPlan.dynamic.ejHl')}
               className="w-28 h-7 text-xs font-bold"
             />
           </div>
           <div className="flex items-center gap-2 border rounded-md px-3 py-1 bg-muted/20 hidden md:flex">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Eje Y —
-            </span>
-            <span className="text-xs text-muted-foreground">Min:</span>
+              {t('pdcaPlan.dynamic.ejeY')}</span>
+            <span className="text-xs text-muted-foreground">{t('pdcaPlan.dynamic.min')}</span>
             <Input
               type="number"
               value={minimoEjeY}
               onChange={(eventoCambioInput) => alCambiarMinimoY?.(Number(eventoCambioInput.target.value))}
               className="w-20 h-7 text-xs"
             />
-            <span className="text-xs text-muted-foreground">Max:</span>
+            <span className="text-xs text-muted-foreground">{t('pdcaPlan.dynamic.max')}</span>
             <Input
               type="text"
               value={maximoEjeY}
               onChange={(eventoCambioInput) => alCambiarMaximoY?.(eventoCambioInput.target.value)}
-              placeholder="auto"
+              placeholder={t('pdcaPlan.dynamic.auto')}
               className="w-20 h-7 text-xs"
             />
           </div>
@@ -189,8 +187,7 @@ export function TimeSeriesYTD({
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Plantilla Rápida:
-          </span>
+            {t('pdcaPlan.dynamic.plantillaRPida')}</span>
           <Select
             onValueChange={(opcionSeleccionada) => {
               if (window.confirm("Cambiar la plantilla reemplazará los datos actuales en la tabla. ¿Deseas continuar?")) {
@@ -215,22 +212,22 @@ export function TimeSeriesYTD({
             }}
           >
             <SelectTrigger className="h-7 text-xs w-[180px] bg-secondary/30">
-              <SelectValue placeholder="Elegir..." />
+              <SelectValue placeholder={t('pdcaPlan.dynamic.elegir')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="meses">12 Meses (Anual)</SelectItem>
-              <SelectItem value="sem-Ene">Enero (Semanas)</SelectItem>
-              <SelectItem value="sem-Feb">Febrero (Semanas)</SelectItem>
-              <SelectItem value="sem-Mar">Marzo (Semanas)</SelectItem>
-              <SelectItem value="sem-Abr">Abril (Semanas)</SelectItem>
-              <SelectItem value="sem-May">Mayo (Semanas)</SelectItem>
-              <SelectItem value="sem-Jun">Junio (Semanas)</SelectItem>
-              <SelectItem value="sem-Jul">Julio (Semanas)</SelectItem>
-              <SelectItem value="sem-Ago">Agosto (Semanas)</SelectItem>
-              <SelectItem value="sem-Sep">Septiembre (Semanas)</SelectItem>
-              <SelectItem value="sem-Oct">Octubre (Semanas)</SelectItem>
-              <SelectItem value="sem-Nov">Noviembre (Semanas)</SelectItem>
-              <SelectItem value="sem-Dic">Diciembre (Semanas)</SelectItem>
+              <SelectItem value="meses">{t('pdcaPlan.dynamic.12MesesAnual')}</SelectItem>
+              <SelectItem value="sem-Ene">{t('pdcaPlan.dynamic.eneroSemanas')}</SelectItem>
+              <SelectItem value="sem-Feb">{t('pdcaPlan.dynamic.febreroSemanas')}</SelectItem>
+              <SelectItem value="sem-Mar">{t('pdcaPlan.dynamic.marzoSemanas')}</SelectItem>
+              <SelectItem value="sem-Abr">{t('pdcaPlan.dynamic.abrilSemanas')}</SelectItem>
+              <SelectItem value="sem-May">{t('pdcaPlan.dynamic.mayoSemanas')}</SelectItem>
+              <SelectItem value="sem-Jun">{t('pdcaPlan.dynamic.junioSemanas')}</SelectItem>
+              <SelectItem value="sem-Jul">{t('pdcaPlan.dynamic.julioSemanas')}</SelectItem>
+              <SelectItem value="sem-Ago">{t('pdcaPlan.dynamic.agostoSemanas')}</SelectItem>
+              <SelectItem value="sem-Sep">{t('pdcaPlan.dynamic.septiembreSemanas')}</SelectItem>
+              <SelectItem value="sem-Oct">{t('pdcaPlan.dynamic.octubreSemanas')}</SelectItem>
+              <SelectItem value="sem-Nov">{t('pdcaPlan.dynamic.noviembreSemanas')}</SelectItem>
+              <SelectItem value="sem-Dic">{t('pdcaPlan.dynamic.diciembreSemanas')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

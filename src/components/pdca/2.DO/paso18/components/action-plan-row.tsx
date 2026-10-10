@@ -18,11 +18,13 @@ import type { ActionItem } from "@/data/pdca";
 import {
   CLAVES_FACTORES,
   OPCIONES_PUNTAJE,
+  OPCIONES_PUNTAJE_COSTO,
   OPCIONES_ESTADO,
   COLOR_POR_ESTADO,
   obtenerColorDropdown,
   obtenerVisualesImpacto,
 } from "../utils/action-plan-utils";
+import { useTranslation } from "react-i18next";
 
 interface PropiedadesFilaAccion {
   fila: ActionItem;
@@ -87,6 +89,7 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
   alActualizar,
   alEliminar,
 }) => {
+  const { t } = useTranslation();
   const actualizarCampo = (campo: keyof ActionItem) => (valor: string) =>
     alActualizar(fila.id, campo, valor);
 
@@ -94,9 +97,21 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
 
   return (
     <TableRow className="hover:bg-muted/30">
-      <CeldaTextarea valor={fila.tema || ""} placeholder="Tema..." alCambiar={actualizarCampo("tema")} />
-      <CeldaTextarea valor={fila.causaRaiz || ""} placeholder="Causa raíz..." alCambiar={actualizarCampo("causaRaiz")} />
-      <CeldaTextarea valor={fila.accion || ""} placeholder="Acción..." alCambiar={actualizarCampo("accion")} />
+      <CeldaTextarea
+        valor={fila.tema || ""}
+        placeholder={t("pdcaTables.actionPlan.placeholders.topic")}
+        alCambiar={actualizarCampo("tema")}
+      />
+      <CeldaTextarea
+        valor={fila.causaRaiz || ""}
+        placeholder={t("pdcaTables.actionPlan.placeholders.rootCause")}
+        alCambiar={actualizarCampo("causaRaiz")}
+      />
+      <CeldaTextarea
+        valor={fila.accion || ""}
+        placeholder={t("pdcaTables.actionPlan.placeholders.action")}
+        alCambiar={actualizarCampo("accion")}
+      />
 
       {/* Factores numéricos de impacto */}
       {CLAVES_FACTORES.map((clave) => {
@@ -117,9 +132,14 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
                   <SelectValue placeholder="-" />
                 </SelectTrigger>
                 <SelectContent>
-                  {OPCIONES_PUNTAJE.map((opt) => (
+                  {(clave === "costo" ? OPCIONES_PUNTAJE_COSTO : OPCIONES_PUNTAJE).map((opt) => (
                     <SelectItem key={opt.value || "-"} value={opt.value || "-"}>
-                      {opt.label}
+                      {opt.label === "5 - Alto" ? t("pdcaDropdowns.alto", "5 - Alto") :
+                       opt.label === "3 - Medio" ? t("pdcaDropdowns.medio", "3 - Medio") :
+                       opt.label === "1 - Bajo" ? t("pdcaDropdowns.bajo", "1 - Bajo") :
+                       opt.label === "5 - Menor costo" ? t("pdcaDropdowns.menorCosto", "5 - Menor costo") :
+                       opt.label === "1 - Mayor costo" ? t("pdcaDropdowns.mayorCosto", "1 - Mayor costo") :
+                       opt.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -145,7 +165,10 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
 
       <CeldaSiNo valor={fila.priorizar || ""} alCambiar={actualizarCampo("priorizar")} />
       <CeldaSiNo valor={fila.quickWin || ""} alCambiar={actualizarCampo("quickWin")} />
-      <CeldaSiNo valor={fila.technologyRequired || ""} alCambiar={actualizarCampo("technologyRequired")} />
+      <CeldaSiNo
+        valor={fila.technologyRequired || ""}
+        alCambiar={actualizarCampo("technologyRequired")}
+      />
 
       {/* Comentarios */}
       <TableCell className="p-1 border-r min-w-[180px]">
@@ -153,7 +176,7 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
           minRows={1}
           value={fila.comentarios || ""}
           onChange={(e) => alActualizar(fila.id, "comentarios", e.target.value)}
-          placeholder="Comentarios..."
+          placeholder={t("pdcaTables.actionPlan.placeholders.comments")}
           className="w-full text-xs p-2 bg-transparent border-0 resize-none outline-none focus:ring-1 focus:ring-primary rounded"
         />
       </TableCell>
@@ -163,7 +186,7 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
         <Input
           value={fila.responsable || ""}
           onChange={(e) => alActualizar(fila.id, "responsable", e.target.value)}
-          placeholder="Responsable..."
+          placeholder={t("pdcaTables.actionPlan.placeholders.responsible")}
           className="h-8 text-[11px] bg-transparent border-0 shadow-none px-2 focus-visible:ring-1 rounded"
         />
       </TableCell>
@@ -190,11 +213,14 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {OPCIONES_ESTADO.map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ))}
+            {OPCIONES_ESTADO.map((opt) => {
+              const statusKey = opt === "Pendiente" ? "pending" : opt === "En progreso" ? "inProgress" : opt === "Retrasado" ? "delayed" : "completed";
+              return (
+                <SelectItem key={opt} value={opt}>
+                  {t(`pdcaTables.actionPlan.statusOptions.${statusKey}`)}
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </TableCell>
@@ -204,7 +230,7 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
         <Input
           value={fila.herramientaSdca || ""}
           onChange={(e) => alActualizar(fila.id, "herramientaSdca", e.target.value)}
-          placeholder="SDCA..."
+          placeholder={t("pdcaTables.actionPlan.placeholders.sdca")}
           className="h-8 text-[11px] bg-transparent border-0 shadow-none px-2 focus-visible:ring-1 rounded"
         />
       </TableCell>

@@ -13,6 +13,7 @@ export const EvidenciasRendimientoActual: React.FC<PropiedadesEvidenciasRendimie
   registrosIndicadores,
   alActualizarRegistro,
 }) => {
+  const { t } = useTranslation();
   const [archivosSubiendoActualmente, asignarArchivosSubiendoActualmente] = useState<Set<string>>(new Set());
 
   const manejarSubidaArchivoLocal = async (eventoInputFile: React.ChangeEvent<HTMLInputElement>, idRegistroAsociado: string) => {
@@ -40,7 +41,7 @@ export const EvidenciasRendimientoActual: React.FC<PropiedadesEvidenciasRendimie
 
   return (
     <div className="mt-8 border-t pt-6">
-      <h4 className="text-sm font-bold text-slate-700 uppercase mb-4">EVIDENCIAS POR INDICADOR</h4>
+      <h4 className="text-sm font-bold text-slate-700 uppercase mb-4">{t("pdcaPlan.paso14_rendimiento_evidences", "EVIDENCIAS POR INDICADOR")}</h4>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {elementosFiltradosPorNombre.map((registroVisible, indiceCicloLista) => {
           const evidenciaYaCargada = registroVisible.evidencia;
@@ -75,7 +76,7 @@ export const EvidenciasRendimientoActual: React.FC<PropiedadesEvidenciasRendimie
                 ) : estaSubiendoBandera ? (
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <RefreshCw className="size-6 mb-1 animate-spin" />
-                    <span className="text-[10px] uppercase font-semibold">Subiendo...</span>
+                    <span className="text-[10px] uppercase font-semibold">{t("pdcaPlan.paso14_rendimiento_uploading", "Subiendo...")}</span>
                   </div>
                 ) : (
                   <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-slate-400 hover:text-primary transition hover:bg-slate-100/50">

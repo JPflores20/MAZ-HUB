@@ -1,5 +1,6 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -46,10 +47,11 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
   is_admin_user,
   is_editable,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-xl border border-border/80 bg-card/60">
       <div className="space-y-1.5 sm:col-span-2">
-        <Label className="text-xs font-semibold">TÃTULO DEL PROYECTO</Label>
+        <Label className="text-xs font-semibold">{t("pdcaDialog.projectTitle")}</Label>
         <Input
           value={title_value}
           onChange={(e) => on_title_change(e.target.value)}
@@ -60,10 +62,10 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">ÃREA OPERATIVA</Label>
+        <Label className="text-xs font-semibold">{t("pdcaDialog.operativeArea")}</Label>
         <Select value={area_value} onValueChange={on_area_change} disabled={!is_editable}>
           <SelectTrigger className="h-9 text-xs">
-            <SelectValue placeholder="Seleccionar área" />
+            <SelectValue placeholder={t("pdcaDialog.selectArea")} />
           </SelectTrigger>
           <SelectContent>
             {AREAS.map((a) => (
@@ -76,7 +78,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">FECHA LÃMITE</Label>
+        <Label className="text-xs font-semibold">{t("pdcaDialog.deadline")}</Label>
         <DatePicker
           date={deadline_date}
           setDate={on_deadline_change}
@@ -89,7 +91,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
       {is_admin_user && (
         <>
           <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-xs font-semibold">AUTOR PRINCIPAL</Label>
+            <Label className="text-xs font-semibold">{t("pdcaDialog.mainAuthor")}</Label>
             <Select
               value={author_email}
               onValueChange={(selected_email) => {
@@ -98,7 +100,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
               }}
             >
               <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Seleccionar autor" />
+                <SelectValue placeholder={t("pdcaDialog.selectAuthor")} />
               </SelectTrigger>
               <SelectContent>
                 {available_users.map((user_item) => (
@@ -111,7 +113,9 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
           </div>
 
           <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-xs font-semibold">CO-RESPONSABLES ASIGNADOS</Label>
+            <Label className="text-xs font-semibold">
+              {t("pdcaDialog.assignedCoResponsibles")}
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -119,7 +123,9 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
                   className="w-full justify-start text-left font-normal min-h-[36px] h-auto p-2"
                 >
                   {assigned_users.length === 0 ? (
-                    <span className="text-xs text-muted-foreground">Asignar colaboradores...</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("pdcaDialog.assignCollaborators")}
+                    </span>
                   ) : (
                     <div className="flex flex-wrap gap-1">
                       {assigned_users.map((assigned_item) => (
@@ -150,7 +156,7 @@ export const PdcaMetaFields: React.FC<MetaFieldsProps> = ({
                         <span>{user_item.name}</span>
                         {is_currently_assigned && (
                           <Badge variant="outline" className="text-[10px]">
-                            Asignado
+                            {t("pdcaDialog.assigned")}
                           </Badge>
                         )}
                       </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -31,6 +32,8 @@ export function RdaClosureSection({
   closure = defaultClosure,
   onChange,
 }: RdaClosureSectionProps) {
+  const { t } = useTranslation();
+
   const updateStd = (field: keyof RdaStandardization, value: boolean) => {
     onChange({ ...standardization, [field]: value }, closure);
   };
@@ -47,7 +50,7 @@ export function RdaClosureSection({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Standardization */}
       <div className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="text-lg font-semibold border-b pb-2">Estandarización</h3>
+        <h3 className="text-lg font-semibold border-b pb-2">{t('rdaInternal.standardizationTitle')}</h3>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -55,7 +58,9 @@ export function RdaClosureSection({
               checked={standardization.requiereActualizarMapeo}
               onCheckedChange={(checked) => updateStd("requiereActualizarMapeo", !!checked)}
             />
-            <Label htmlFor="req-mapeo" className="font-normal cursor-pointer">¿Requiere actualizar Mapeo de Riesgos?</Label>
+            <Label htmlFor="req-mapeo" className="font-normal cursor-pointer">
+              {t('rdaInternal.reqMapeoLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -63,7 +68,9 @@ export function RdaClosureSection({
               checked={standardization.requiereOwd}
               onCheckedChange={(checked) => updateStd("requiereOwd", !!checked)}
             />
-            <Label htmlFor="req-owd" className="font-normal cursor-pointer">¿Requiere OWD?</Label>
+            <Label htmlFor="req-owd" className="font-normal cursor-pointer">
+              {t('rdaInternal.reqOwdLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -71,7 +78,9 @@ export function RdaClosureSection({
               checked={standardization.requiereActualizarSop}
               onCheckedChange={(checked) => updateStd("requiereActualizarSop", !!checked)}
             />
-            <Label htmlFor="req-sop" className="font-normal cursor-pointer">¿Requiere actualizar / crear SOP?</Label>
+            <Label htmlFor="req-sop" className="font-normal cursor-pointer">
+              {t('rdaInternal.reqSopLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -79,7 +88,9 @@ export function RdaClosureSection({
               checked={standardization.requiereCapacitacion}
               onCheckedChange={(checked) => updateStd("requiereCapacitacion", !!checked)}
             />
-            <Label htmlFor="req-cap" className="font-normal cursor-pointer">¿Requiere Capacitación (OPL, LUP)?</Label>
+            <Label htmlFor="req-cap" className="font-normal cursor-pointer">
+              {t('rdaInternal.reqCapacitacionLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -87,14 +98,16 @@ export function RdaClosureSection({
               checked={standardization.requiereMonitoreoIp}
               onCheckedChange={(checked) => updateStd("requiereMonitoreoIp", !!checked)}
             />
-            <Label htmlFor="req-monitoreo" className="font-normal cursor-pointer">¿Requiere Monitoreo de IP / MCRS?</Label>
+            <Label htmlFor="req-monitoreo" className="font-normal cursor-pointer">
+              {t('rdaInternal.reqMonitoreoLabel')}
+            </Label>
           </div>
         </div>
       </div>
 
       {/* Closure */}
       <div className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="text-lg font-semibold border-b pb-2">Cierre de Anomalía</h3>
+        <h3 className="text-lg font-semibold border-b pb-2">{t('rdaInternal.closureTitle')}</h3>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -102,7 +115,9 @@ export function RdaClosureSection({
               checked={closure.eliminoCausaRaiz}
               onCheckedChange={(checked) => updateClosureBool("eliminoCausaRaiz", !!checked)}
             />
-            <Label htmlFor="clo-raiz" className="font-normal cursor-pointer">¿Se eliminó la causa raíz?</Label>
+            <Label htmlFor="clo-raiz" className="font-normal cursor-pointer">
+              {t('rdaInternal.cloRaizLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -110,7 +125,9 @@ export function RdaClosureSection({
               checked={closure.requiereEscalar}
               onCheckedChange={(checked) => updateClosureBool("requiereEscalar", !!checked)}
             />
-            <Label htmlFor="clo-escalar" className="font-normal cursor-pointer">¿El problema requiere escalar a otro nivel?</Label>
+            <Label htmlFor="clo-escalar" className="font-normal cursor-pointer">
+              {t('rdaInternal.cloEscalarLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -118,7 +135,9 @@ export function RdaClosureSection({
               checked={closure.necesitaCapex}
               onCheckedChange={(checked) => updateClosureBool("necesitaCapex", !!checked)}
             />
-            <Label htmlFor="clo-capex" className="font-normal cursor-pointer">¿Necesita CAPEX / Presupuesto?</Label>
+            <Label htmlFor="clo-capex" className="font-normal cursor-pointer">
+              {t('rdaInternal.cloCapexLabel')}
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -126,11 +145,15 @@ export function RdaClosureSection({
               checked={closure.incluyeComoGop}
               onCheckedChange={(checked) => updateClosureBool("incluyeComoGop", !!checked)}
             />
-            <Label htmlFor="clo-gop" className="font-normal cursor-pointer">¿El problema se incluye como tema GOP?</Label>
+            <Label htmlFor="clo-gop" className="font-normal cursor-pointer">
+              {t('rdaInternal.cloGopLabel')}
+            </Label>
           </div>
-          
+
           <div className="pt-4 space-y-2">
-            <Label htmlFor="fecha-fin" className="font-semibold text-sm">Fecha de Finalización del RDA</Label>
+            <Label htmlFor="fecha-fin" className="font-semibold text-sm">
+              {t('rdaInternal.fechaFinLabel')}
+            </Label>
             <Input
               id="fecha-fin"
               type="date"

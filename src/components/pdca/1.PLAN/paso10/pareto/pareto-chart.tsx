@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bar,
   ComposedChart,
@@ -30,6 +31,8 @@ export function GraficaPareto({
   tituloGrafica,
   tamanoMaximoBarra = 40,
 }: PropiedadesGraficaPareto) {
+  const { t } = useTranslation();
+
   const margenInferior = Math.max(100, 40 + filasPareto.length * 5);
 
   return (
@@ -56,7 +59,9 @@ export function GraficaPareto({
             yAxisId="left"
             tick={{ fontSize: 11 }}
             stroke="hsl(var(--muted-foreground))"
-            tickFormatter={(valorParaFormatear) => formatearValorPareto(valorParaFormatear, unidadMedida)}
+            tickFormatter={(valorParaFormatear) =>
+              formatearValorPareto(valorParaFormatear, unidadMedida)
+            }
             domain={[minimoEjeY, maximoEjeY]}
             allowDataOverflow={true}
           />
@@ -71,7 +76,9 @@ export function GraficaPareto({
           <RTooltip
             contentStyle={{ borderRadius: 8, fontSize: 12, padding: "8px 12px" }}
             formatter={(valorTooltip: number, nombreSerie: string) => [
-              nombreSerie === "Acumulado" ? valorTooltip.toFixed(2) + "%" : formatearValorPareto(valorTooltip, unidadMedida),
+              nombreSerie === "Acumulado"
+                ? valorTooltip.toFixed(2) + "%"
+                : formatearValorPareto(valorTooltip, unidadMedida),
               nombreSerie,
             ]}
           />
@@ -87,7 +94,9 @@ export function GraficaPareto({
                 alHacerClicEnBarra(payloadDatos.area);
               }
             }}
-            className={alHacerClicEnBarra ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+            className={
+              alHacerClicEnBarra ? "cursor-pointer hover:opacity-80 transition-opacity" : ""
+            }
           />
           <Line
             yAxisId="right"

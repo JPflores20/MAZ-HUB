@@ -21,6 +21,8 @@ export function FiveWhysSection({
   onToggleStep,
   onToggleNa,
 }: PropiedadesFiveWhysSection) {
+  const { t } = useTranslation();
+
   const agregarTabla = () => {
     const nuevaId = `fivewhys-${Date.now()}`;
     onChange([
@@ -31,8 +33,16 @@ export function FiveWhysSection({
         rows: [
           {
             id: Date.now(),
-            q1: "", q2: "", q3: "", q4: "", q5: "",
-            w1: "", w2: "", w3: "", w4: "", w5: "",
+            q1: "",
+            q2: "",
+            q3: "",
+            q4: "",
+            q5: "",
+            w1: "",
+            w2: "",
+            w3: "",
+            w4: "",
+            w5: "",
             accion: "",
           },
         ],
@@ -41,11 +51,15 @@ export function FiveWhysSection({
   };
 
   const actualizarFilasTabla = (idTabla: string, nuevasFilas: any[]) => {
-    onChange(tables.map((tabla) => (tabla.id === idTabla ? { ...tabla, rows: nuevasFilas } : tabla)));
+    onChange(
+      tables.map((tabla) => (tabla.id === idTabla ? { ...tabla, rows: nuevasFilas } : tabla)),
+    );
   };
 
   const actualizarTituloTabla = (idTabla: string, nuevoTitulo: string) => {
-    onChange(tables.map((tabla) => (tabla.id === idTabla ? { ...tabla, title: nuevoTitulo } : tabla)));
+    onChange(
+      tables.map((tabla) => (tabla.id === idTabla ? { ...tabla, title: nuevoTitulo } : tabla)),
+    );
   };
 
   const eliminarTabla = (idTabla: string) => {
@@ -84,8 +98,7 @@ export function FiveWhysSection({
           onClick={agregarTabla}
           className="border-dashed border-2 hover:border-primary hover:bg-primary/5"
         >
-          <Plus className="size-4 mr-2" /> Agregar otra tabla 5 Whys
-        </Button>
+          <Plus className="size-4 mr-2" />{t("pdcaPlan.paso17_five_whys_add_table")}</Button>
       </div>
     </StepCard>
   );

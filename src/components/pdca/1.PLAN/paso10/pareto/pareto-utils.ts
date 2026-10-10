@@ -13,7 +13,7 @@ export function construirDatosPareto(datosCrudos: ParetoItem[]): {
   const datosSeguros = datosCrudos || [];
   const listaOrdenada = [...datosSeguros].sort((a, b) => (b.gap ?? 0) - (a.gap ?? 0));
   const gapTotal = listaOrdenada.reduce((suma, item) => suma + (item.gap ?? 0), 0);
-  
+
   let acumulado = 0;
   const filasPareto: FilaPareto[] = listaOrdenada.map((item) => {
     const gap = item.gap ?? 0;
@@ -21,11 +21,14 @@ export function construirDatosPareto(datosCrudos: ParetoItem[]): {
     acumulado += porcentajeIndividual;
     return { ...item, porcentajeIndividual, porcentajeAcumulado: acumulado };
   });
-  
+
   return { listaOrdenada, gapTotal, filasPareto };
 }
 
-export function formatearValorPareto(valor: number | undefined | null, unidadMedida?: string): string {
+export function formatearValorPareto(
+  valor: number | undefined | null,
+  unidadMedida?: string,
+): string {
   if (valor === null || valor === undefined || isNaN(valor)) return "";
   const textoNumerico = Number(valor).toLocaleString("en-US", {
     minimumFractionDigits: 2,

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StepCard } from "@/components/ui/step-card";
 import type { ColeccionDatosItem } from "@/data/pdca";
+import { useTranslation } from "react-i18next";
 
 interface PropiedadesTablaColeccionDatos {
   items: ColeccionDatosItem[];
@@ -26,6 +27,7 @@ export const ColeccionDatosTable: React.FC<PropiedadesTablaColeccionDatos> = ({
   isNa: pasoEsNoAplica,
   onToggleNa: alAlternarNoAplica,
 }) => {
+    const { t } = useTranslation();
   const manejarAgregarRegistro = () => {
     const nuevoRegistro: ColeccionDatosItem = {
       id: crypto.randomUUID(),
@@ -54,7 +56,7 @@ export const ColeccionDatosTable: React.FC<PropiedadesTablaColeccionDatos> = ({
 
   return (
     <StepCard
-      title="PASO 9: PLAN DE RECOPILACIÓN DE DATOS"
+      title={t('pdcaPlan.dynamic.paso9PlanDeRecopilaci')}
       isStepCompleted={pasoEstaCompletado}
       onToggleStep={alAlternarEstadoPaso}
       isNa={pasoEsNoAplica}
@@ -63,8 +65,7 @@ export const ColeccionDatosTable: React.FC<PropiedadesTablaColeccionDatos> = ({
       <div className="space-y-3">
         <div className="flex items-center justify-end">
           <Button onClick={manejarAgregarRegistro} variant="outline" size="sm">
-            <Plus className="size-4 mr-2" /> Agregar Fila
-          </Button>
+            <Plus className="size-4 mr-2" /> {t('pdcaPlan.dynamic.agregarFila')}</Button>
         </div>
 
         <div className="border rounded-md overflow-x-auto shadow-sm">
@@ -73,29 +74,26 @@ export const ColeccionDatosTable: React.FC<PropiedadesTablaColeccionDatos> = ({
               {/* Fila 1: Encabezados de grupo */}
               <tr>
                 <th colSpan={4} className={`${FONDO_GRUPO} border border-white/30 py-2 px-3`}>
-                  ¿QUÉ MEDIR?
-                </th>
+                  {t('pdcaPlan.dynamic.quMedir')}</th>
                 <th colSpan={3} className={`${FONDO_GRUPO} border border-white/30 py-2 px-3`}>
-                  ¿CÓMO MEDIRLO?
-                </th>
+                  {t('pdcaPlan.dynamic.cMoMedirlo')}</th>
                 <th colSpan={4} className={`${FONDO_GRUPO} border border-white/30 py-2 px-3`}>
-                  PLAN DE MUESTREO
-                </th>
+                  {t('pdcaPlan.dynamic.planDeMuestreo')}</th>
                 <th className="border border-white/30 bg-[#005A9E] w-10" />
               </tr>
               {/* Fila 2: Encabezados de columnas */}
               <tr>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[70px]`}>X'S O Y'S</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[100px]`}>VARIABLE</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>TIPO DE DATO</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>DEFINICIÓN OPERACIONAL</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>MÉTODO DE MEDICIÓN</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>ESTRATIFICACIÓN</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>MÉTODO DE RECOLECCIÓN</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>QUIÉN</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>TIPO DE MUESTREO</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[70px]`}>CUÁNTOS</th>
-                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>CADA CUÁNDO</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[70px]`}>{t('pdcaPlan.dynamic.xSOYS')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[100px]`}>{t('pdcaPlan.dynamic.variable')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>{t('pdcaPlan.dynamic.tipoDeDato')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>{t('pdcaPlan.dynamic.definiciNOperacional')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>{t('pdcaPlan.dynamic.mTodoDeMediciN')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>{t('pdcaPlan.dynamic.estratificaciN')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[150px]`}>{t('pdcaPlan.dynamic.mTodoDeRecolecciN')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>{t('pdcaPlan.dynamic.quiN')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>{t('pdcaPlan.dynamic.tipoDeMuestreo')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[70px]`}>{t('pdcaPlan.dynamic.cuNtos')}</th>
+                <th className={`${FONDO_ENCABEZADO} border border-white/20 py-1.5 px-2 min-w-[90px]`}>{t('pdcaPlan.dynamic.cadaCuNdo')}</th>
                 <th className="bg-[#0078D7] border border-white/20 w-10" />
               </tr>
             </thead>
@@ -103,8 +101,7 @@ export const ColeccionDatosTable: React.FC<PropiedadesTablaColeccionDatos> = ({
               {(!registrosColeccion || registrosColeccion.length === 0) && (
                 <tr>
                   <td colSpan={12} className="text-center py-6 text-muted-foreground">
-                    No hay registros en la colección de datos. Agrega uno.
-                  </td>
+                    {t('pdcaPlan.dynamic.noHayRegistrosEnLa')}</td>
                 </tr>
               )}
               {registrosColeccion?.map((registroIteracion, indiceArray) => (

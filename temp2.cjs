@@ -1,8 +1,8 @@
-const fs = require('fs');
-const f = 'src/components/pdca_dialog/pdca_phase_act.tsx';
-let c = fs.readFileSync(f, 'utf8');
+const fs = require("fs");
+const f = "src/components/pdca_dialog/pdca_phase_act.tsx";
+let c = fs.readFileSync(f, "utf8");
 
-const returnStart = c.indexOf('return (');
+const returnStart = c.indexOf("return (");
 const returnStr = `return (
     <div className="space-y-6">
       {/* ── PASO 28: Estandarización de Procesos ── */}
@@ -104,4 +104,4 @@ const returnStr = `return (
 `;
 
 c = c.substring(0, returnStart) + returnStr;
-fs.writeFileSync(f, c, 'utf8');
+fs.writeFileSync(f, c, "utf8");

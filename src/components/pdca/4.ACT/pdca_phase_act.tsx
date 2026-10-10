@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { TablaEstandarizacion } from "./paso27/tabla-estandarizacion";
 import { AnalisisRiesgosProcesoTable } from "../1.PLAN/paso6/analisis-riesgos-proceso-table";
 import { StepCard } from "@/components/ui/step-card";
@@ -46,7 +47,10 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
   on_tabla_estandarizacion_change,
   analisis_riesgos_estandarizacion,
   on_analisis_riesgos_estandarizacion_change,
-  completed_steps, na_steps, on_toggle_step, on_toggle_na,
+  completed_steps,
+  na_steps,
+  on_toggle_step,
+  on_toggle_na,
   is_editable,
   sops_documentos_image,
   on_sops_documentos_image_change,
@@ -65,14 +69,16 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
   conclusiones_pi_items,
   on_conclusiones_pi_items_change,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       {/* ── PASO 27: Estandarización de Procesos ── */}
       <StepCard
-        title="PASO 27: ESTANDARIZACIÓN DE PROCESOS"
+        title={t("pdcaPhases.act.step27.title")}
         isStepCompleted={completed_steps.has("step-28")}
         onToggleStep={() => on_toggle_step("step-28")}
-        isNa={na_steps?.has("step-28")} onToggleNa={() => on_toggle_na?.("step-28")}
+        isNa={na_steps?.has("step-28")}
+        onToggleNa={() => on_toggle_na?.("step-28")}
       >
         <TablaEstandarizacion
           items={tabla_estandarizacion || []}
@@ -82,10 +88,11 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
 
       {/* ── PASO 28: Análisis de Riesgos ── */}
       <StepCard
-        title="PASO 28: ANÁLISIS DE RIESGOS DEL PROCESO"
+        title={t("pdcaPhases.act.step28.title")}
         isStepCompleted={completed_steps.has("step-29")}
         onToggleStep={() => on_toggle_step("step-29")}
-        isNa={na_steps?.has("step-29")} onToggleNa={() => on_toggle_na?.("step-29")}
+        isNa={na_steps?.has("step-29")}
+        onToggleNa={() => on_toggle_na?.("step-29")}
       >
         <AnalisisRiesgosProcesoTable
           items={analisis_riesgos_estandarizacion || []}
@@ -97,48 +104,52 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
       <ImageUploadSection
         image={sops_documentos_image || null}
         onChange={(img) => on_sops_documentos_image_change?.(img || undefined)}
-        title="PASO 29: SOPS & DOCUMENTOS"
-        subtitle="Sube una imagen o documento de los SOPs"
+        title={t("pdcaPhases.act.step29.title")}
+        subtitle={t("pdcaPhases.act.step29.subtitle")}
         isStepCompleted={completed_steps.has("step-30")}
         onToggleStep={() => on_toggle_step("step-30")}
-        isNa={na_steps?.has("step-30")} onToggleNa={() => on_toggle_na?.("step-30")}
+        isNa={na_steps?.has("step-30")}
+        onToggleNa={() => on_toggle_na?.("step-30")}
       />
 
       {/* ── PASO 30: Plan de Entrenamiento ── */}
       <ImageUploadSection
         image={plan_entrenamiento_image || null}
         onChange={(img) => on_plan_entrenamiento_image_change?.(img || undefined)}
-        title="PASO 30: PLAN DE ENTRENAMIENTO"
-        subtitle="Sube una imagen del plan de entrenamiento"
+        title={t("pdcaPhases.act.step30.title")}
+        subtitle={t("pdcaPhases.act.step30.subtitle")}
         isStepCompleted={completed_steps.has("step-31")}
         onToggleStep={() => on_toggle_step("step-31")}
-        isNa={na_steps?.has("step-31")} onToggleNa={() => on_toggle_na?.("step-31")}
+        isNa={na_steps?.has("step-31")}
+        onToggleNa={() => on_toggle_na?.("step-31")}
       />
 
       {/* ── PASO 31: Plan de Control ── */}
       <ImageUploadSection
         image={plan_control_image || null}
         onChange={(img) => on_plan_control_image_change?.(img || undefined)}
-        title="PASO 31: PLAN DE CONTROL"
-        subtitle="Sube una imagen del plan de control"
+        title={t("pdcaPhases.act.step31.title")}
+        subtitle={t("pdcaPhases.act.step31.subtitle")}
         isStepCompleted={completed_steps.has("step-32")}
         onToggleStep={() => on_toggle_step("step-32")}
-        isNa={na_steps?.has("step-32")} onToggleNa={() => on_toggle_na?.("step-32")}
+        isNa={na_steps?.has("step-32")}
+        onToggleNa={() => on_toggle_na?.("step-32")}
       />
 
       {/* ── PASO 32: Lecciones Aprendidas ── */}
       <StepCard
-        title="PASO 32: LECCIONES APRENDIDAS"
+        title={t("pdcaPhases.act.step32.title")}
         isStepCompleted={completed_steps.has("step-33")}
         onToggleStep={() => on_toggle_step("step-33")}
-        isNa={na_steps?.has("step-33")} onToggleNa={() => on_toggle_na?.("step-33")}
+        isNa={na_steps?.has("step-33")}
+        onToggleNa={() => on_toggle_na?.("step-33")}
       >
         <div className="p-4 space-y-3">
           <RichTextEditor
             value={lecciones_aprendidas || ""}
             onChange={(v) => on_lecciones_aprendidas_change?.(v)}
             disabled={!is_editable}
-            placeholder="Documenta las lecciones aprendidas durante el proyecto PDCA..."
+            placeholder={t("pdcaPhases.act.step32.placeholder")}
             minHeight="140px"
           />
         </div>

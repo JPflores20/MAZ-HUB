@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { format, parseISO, isValid } from "date-fns";
 import TextareaAutosize from "react-textarea-autosize";
+import { useTranslation } from "react-i18next";
 
 interface PropiedadesParticipantes {
   value: ParticipantesData;
@@ -16,6 +17,7 @@ export function PdcaParticipants({
   onChange: alCambiarParticipantes,
   readOnly: modoSoloLectura = false,
 }: PropiedadesParticipantes) {
+    const { t } = useTranslation();
   
   const actualizarCampoParticipante = (
     nombreCampo: keyof ParticipantesData, 
@@ -47,16 +49,14 @@ export function PdcaParticipants({
                 colSpan={4}
                 className="p-1.5 font-bold uppercase tracking-widest text-[11px] border border-[#174373]"
               >
-                PARTICIPANTES
-              </th>
+                {t('pdcaPlan.dynamic.participantes')}</th>
             </tr>
           </thead>
           <tbody>
             {/* Participantes Locales */}
             <tr>
               <td className="bg-[#174373] text-white font-bold p-2 w-[20%] border border-white/20 align-middle text-justify">
-                PARTICIPANTES LOCALES
-              </td>
+                {t('pdcaPlan.dynamic.participantesLocales')}</td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-0 w-[30%] border border-[#174373]/20">
                 <TextareaAutosize
                   value={participantesActuales.localesNombres}
@@ -65,16 +65,13 @@ export function PdcaParticipants({
                   }
                   disabled={modoSoloLectura}
                   className="min-h-[100px] w-full resize-none border-none shadow-none bg-transparent font-medium text-xs text-center focus-visible:ring-1 focus-visible:ring-black/20 p-2"
-                  placeholder="Ej. Axel Guillén Ramírez"
+                  placeholder={t('pdcaPlan.dynamic.ejAxelGuillNRam')}
                 />
               </td>
               <td className="bg-[#174373] text-white p-3 w-[20%] text-[10px] leading-tight text-left border border-white/20">
-                <strong className="block mb-1 text-justify">PAPEL/RESPONSABILIDAD EN ESTE EQUIPO:</strong>
+                <strong className="block mb-1 text-justify">{t('pdcaPlan.dynamic.papelResponsabilidadEnEsteEquipo')}</strong>
                 <span className="text-white/80 text-justify block">
-                  (No el título del trabajo de la persona... ¿cuál es su rol en el equipo?
-                  Ejemplos... facilitador, analista de datos/experto en Excel, experto en la
-                  materia, perspectiva de primera línea, ojos externos, etc.)
-                </span>
+                  {t('pdcaPlan.dynamic.noElTTuloDel')}</span>
               </td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-0 w-[30%] border border-[#174373]/20">
                 <TextareaAutosize
@@ -84,7 +81,7 @@ export function PdcaParticipants({
                   }
                   disabled={modoSoloLectura}
                   className="min-h-[100px] w-full resize-none border-none shadow-none bg-transparent font-medium text-xs text-center focus-visible:ring-1 focus-visible:ring-black/20 p-2"
-                  placeholder="Ej. GERENTE DE ELABORACIÓN"
+                  placeholder={t('pdcaPlan.dynamic.ejGerenteDeElaboraciN')}
                 />
               </td>
             </tr>
@@ -92,8 +89,7 @@ export function PdcaParticipants({
             {/* Recursos Externos */}
             <tr>
               <td className="bg-[#174373] text-white font-bold p-2 border border-white/20 align-middle text-justify">
-                RECURSOS EXTERNOS
-              </td>
+                {t('pdcaPlan.dynamic.recursosExternos')}</td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-0 border border-[#174373]/20">
                 <TextareaAutosize
                   value={participantesActuales.externosNombres}
@@ -102,16 +98,13 @@ export function PdcaParticipants({
                   }
                   disabled={modoSoloLectura}
                   className="min-h-[100px] w-full resize-none border-none shadow-none bg-transparent font-medium text-xs text-center focus-visible:ring-1 focus-visible:ring-black/20 p-2"
-                  placeholder="Ej. Manuel Pérez"
+                  placeholder={t('pdcaPlan.dynamic.ejManuelPRez')}
                 />
               </td>
               <td className="bg-[#174373] text-white p-3 text-[10px] leading-tight text-left border border-white/20">
-                <strong className="block mb-1 text-justify">PAPEL/RESPONSABILIDAD EN ESTE EQUIPO:</strong>
+                <strong className="block mb-1 text-justify">{t('pdcaPlan.dynamic.papelResponsabilidadEnEsteEquipo')}</strong>
                 <span className="text-white/80 text-justify block">
-                  (No el título del trabajo de la persona... ¿cuál es su papel en el equipo?
-                  Ejemplos... Consultor, Fabricante Equipo Original, experto técnico para el tema
-                  xx, entrenador del método PDCA, etc)
-                </span>
+                  {t('pdcaPlan.dynamic.noElTTuloDel2')}</span>
               </td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-0 border border-[#174373]/20">
                 <TextareaAutosize
@@ -121,7 +114,7 @@ export function PdcaParticipants({
                   }
                   disabled={modoSoloLectura}
                   className="min-h-[100px] w-full resize-none border-none shadow-none bg-transparent font-medium text-xs text-center focus-visible:ring-1 focus-visible:ring-black/20 p-2"
-                  placeholder="Ej. REGIONAL"
+                  placeholder={t('pdcaPlan.dynamic.ejRegional')}
                 />
               </td>
             </tr>
@@ -129,22 +122,20 @@ export function PdcaParticipants({
             {/* Fechas Reuniones */}
             <tr>
               <td className="bg-[#174373] text-white font-bold p-2 border border-white/20 align-middle uppercase text-justify">
-                Fecha de la reunión inicial
-              </td>
+                {t('pdcaPlan.dynamic.fechaDeLaReuniN')}</td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-2 border border-[#174373]/20">
                 <DatePicker
                   date={analizarFechaValida(participantesActuales.fechaReunionInicial)}
                   setDate={(nuevaFecha) => 
                     actualizarCampoParticipante("fechaReunionInicial", formatearFechaGuardado(nuevaFecha))
                   }
-                  placeholder="Seleccionar"
+                  placeholder={t('pdcaPlan.dynamic.seleccionar')}
                   disabled={modoSoloLectura}
                   className="h-8 w-full text-xs font-bold justify-center shadow-none focus-visible:ring-1 focus-visible:ring-black/20 bg-transparent border-black/10 hover:bg-transparent"
                 />
               </td>
               <td className="bg-[#174373] text-white font-bold p-2 border border-white/20 align-middle uppercase text-justify">
-                Reunión de revisión de rutina
-              </td>
+                {t('pdcaPlan.dynamic.reuniNDeRevisiN')}</td>
               <td className="bg-[#F2F8FC] dark:bg-secondary p-0 border border-[#174373]/20">
                 <Input
                   value={participantesActuales.reunionRutina}
@@ -153,14 +144,13 @@ export function PdcaParticipants({
                   }
                   disabled={modoSoloLectura}
                   className="h-9 w-full text-xs font-bold text-center border-none shadow-none bg-transparent focus-visible:ring-1 focus-visible:ring-black/20"
-                  placeholder="Ej. Semanal Miércoles 14:00 Hrs"
+                  placeholder={t('pdcaPlan.dynamic.ejSemanalMiRcoles14')}
                 />
               </td>
             </tr>
             <tr>
               <td className="bg-[#174373] text-white font-bold p-2 border border-white/20 align-middle uppercase text-justify">
-                Fecha de la reunión final
-              </td>
+                {t('pdcaPlan.dynamic.fechaDeLaReuniN2')}</td>
               <td colSpan={3} className="bg-[#F2F8FC] dark:bg-secondary p-2 border border-[#174373]/20 text-center">
                 <DatePicker
                   date={
@@ -170,7 +160,7 @@ export function PdcaParticipants({
                   setDate={(nuevaFecha) => 
                     actualizarCampoParticipante("fechaReunionFinal", formatearFechaGuardado(nuevaFecha))
                   }
-                  placeholder="Seleccionar"
+                  placeholder={t('pdcaPlan.dynamic.seleccionar')}
                   disabled={modoSoloLectura}
                   className="h-8 w-[50%] mx-auto text-xs font-bold justify-center shadow-none focus-visible:ring-1 focus-visible:ring-black/20 bg-transparent border-black/10 hover:bg-transparent"
                 />

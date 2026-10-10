@@ -20,8 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { ParetoChartProps } from "./pareto_types";
 
-
-
 export function ParetoChart({
   chart_data,
   chart_title,

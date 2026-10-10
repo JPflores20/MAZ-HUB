@@ -1,9 +1,9 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 code = code.replace(
-    /<div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">[\s\S]*?<div className="mb-6 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">/,
-    `<div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+  /<div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">[\s\S]*?<div className="mb-6 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">/,
+  `<div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {['Abierto', 'En Progreso', 'Cerrado'].map(status => {
           const color = status === 'Abierto' ? 'border-t-phase-plan' : status === 'En Progreso' ? 'border-t-phase-do' : 'border-t-phase-check';
           const bgDot = status === 'Abierto' ? 'bg-phase-plan' : status === 'En Progreso' ? 'bg-phase-do' : 'bg-phase-check';
@@ -22,7 +22,7 @@ code = code.replace(
         })}
       </div>
 
-      <div className="mb-6 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">`
+      <div className="mb-6 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">`,
 );
 
-fs.writeFileSync('src/routes/rda.tsx', code);
+fs.writeFileSync("src/routes/rda.tsx", code);

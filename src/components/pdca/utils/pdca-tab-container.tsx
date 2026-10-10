@@ -10,5 +10,5 @@ export const TabContainer = React.memo(
     // When it becomes active again, it will re-render with the latest props.
     if (!prev.isActive && !next.isActive) return true;
     return false;
-  }
+  },
 );

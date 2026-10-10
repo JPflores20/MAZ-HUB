@@ -1,4 +1,5 @@
-﻿import React from "react";
+import { useTranslation } from "react-i18next";
+import React from "react";
 import type { Rda } from "@/data/rda";
 import { IshikawaInteractivo } from "@/components/pdca/1.PLAN/paso16/ishikawa-interactive";
 import { ParetoInteractive } from "@/components/pdca/1.PLAN/paso10/pareto/pareto_interactive";
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export function RdaPhase3Analysis({ rda, onChange }: Props) {
+  const { t } = useTranslation();
+
   const isStepCompleted = (stepId: string) => rda.completedSteps?.includes(stepId) || false;
   const isStepNa = (stepId: string) => rda.naSteps?.includes(stepId) || false;
 
@@ -25,9 +28,13 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
     const completed = rda.completedSteps || [];
     const na = rda.naSteps || [];
     if (completed.includes(stepId)) {
-      onChange({ ...rda, completedSteps: completed.filter(s => s !== stepId) });
+      onChange({ ...rda, completedSteps: completed.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, completedSteps: [...completed, stepId], naSteps: na.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        completedSteps: [...completed, stepId],
+        naSteps: na.filter((s) => s !== stepId),
+      });
     }
   };
 
@@ -35,9 +42,13 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
     const na = rda.naSteps || [];
     const completed = rda.completedSteps || [];
     if (na.includes(stepId)) {
-      onChange({ ...rda, naSteps: na.filter(s => s !== stepId) });
+      onChange({ ...rda, naSteps: na.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, naSteps: [...na, stepId], completedSteps: completed.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        naSteps: [...na, stepId],
+        completedSteps: completed.filter((s) => s !== stepId),
+      });
     }
   };
   // Setup Ishikawa adapter logic
@@ -46,9 +57,16 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
     // initialize at least one
     ishikawas.push({
       id: crypto.randomUUID(),
-      title: "Problema Principal",
+      title: t("rdaInternal.mainProblem"),
       effect: rda.title || "",
-      causes: { machine: [""], method: [""], material: [""], man: [""], measurement: [""], environment: [""] },
+      causes: {
+        machine: [""],
+        method: [""],
+        material: [""],
+        man: [""],
+        measurement: [""],
+        environment: [""],
+      },
       prioritizedCauses: [],
       customLabels: {},
     });
@@ -66,24 +84,29 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
     <div className="space-y-8">
       {/* 5. Ishikawa */}
       <IshikawaInteractivo
-        tituloPersonalizado="5. Diagrama de Ishikawa"
+        tituloPersonalizado={t("rdaInternal.ishikawaDiagram")}
         causasRegistradas={currentIshikawa.causes || {}}
         alCambiarCausas={(newCausesOrUpdater) => {
-            const resolved = typeof newCausesOrUpdater === 'function' 
+          const resolved =
+            typeof newCausesOrUpdater === "function"
               ? newCausesOrUpdater(currentIshikawa.causes)
               : newCausesOrUpdater;
-            handleIshikawaChange(0, { ...currentIshikawa, causes: resolved });
+          handleIshikawaChange(0, { ...currentIshikawa, causes: resolved });
         }}
         efectoPrincipal={currentIshikawa.effect || ""}
         alCambiarEfecto={(effect) => handleIshikawaChange(0, { ...currentIshikawa, effect })}
+        hidePrioritizationTable={true}
         causasPriorizadas={currentIshikawa.prioritizedCauses || []}
-        alCambiarCausasPriorizadas={(prioritizedCauses) => handleIshikawaChange(0, { ...currentIshikawa, prioritizedCauses })}
+        alCambiarCausasPriorizadas={(prioritizedCauses) =>
+          handleIshikawaChange(0, { ...currentIshikawa, prioritizedCauses })
+        }
         etiquetasPersonalizadas={currentIshikawa.customLabels || {}}
         alCambiarEtiquetas={(labelsOrUpdater) => {
-            const resolved = typeof labelsOrUpdater === 'function'
+          const resolved =
+            typeof labelsOrUpdater === "function"
               ? labelsOrUpdater(currentIshikawa.customLabels)
               : labelsOrUpdater;
-            handleIshikawaChange(0, { ...currentIshikawa, customLabels: resolved });
+          handleIshikawaChange(0, { ...currentIshikawa, customLabels: resolved });
         }}
         isStepCompleted={isStepCompleted("rda-step-5")}
         isNa={isStepNa("rda-step-5")}
@@ -93,8 +116,8 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
 
       {/* 6. Paretos (Opcional) */}
       <ParetoInteractive
-        title="6. Paretos (Opcional)"
-        
+        title={t("rdaInternal.paretosOptional")}
+
         level={0}
         pareto_items={rda.pareto_data_map?.["pareto_0"] || []}
         on_items_change={(items) => {
@@ -110,11 +133,11 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
 
       {/* 7. Correlaciones (Opcional) */}
       <FlavorCorrelationSection
-        title="7. Correlaciones (Opcional)"
-        data={{ 
+        title={t("rdaInternal.correlationsOptional")}
+        data={{
           seriesList: rda.correlaciones || [],
-          positiveTitle: "Correlación Positiva",
-          negativeTitle: "Correlación Negativa" 
+          positiveTitle: t("rdaInternal.positiveCorrelation"),
+          negativeTitle: t("rdaInternal.negativeCorrelation"),
         }}
         onChange={(newData) => onChange({ ...rda, correlaciones: newData.seriesList })}
         isStepCompleted={isStepCompleted("rda-step-7")}
@@ -125,9 +148,9 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
 
       {/* 8. Análisis Estadístico (Opcional) */}
       <MultiImageUploadSection
-        title="8. Análisis Estadístico (Opcional)"
-        
-        description="Adjunta fotos o documentos de análisis estadísticos (Minitab, Excel, etc)."
+        title={t("rdaInternal.statisticalAnalysisOptional")}
+
+        description={t("rdaInternal.statisticalAnalysisDesc")}
         images={rda.statistical_analysis_files || []}
         onChange={(files) => onChange({ ...rda, statistical_analysis_files: files })}
         maxImages={10}

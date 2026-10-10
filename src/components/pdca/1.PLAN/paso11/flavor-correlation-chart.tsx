@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   ResponsiveContainer,
@@ -10,7 +11,11 @@ import {
   ZAxis,
   ReferenceArea,
 } from "recharts";
-import { calcularCorrelacionPearson, type SerieCorrelacion, type PuntoCorrelacion } from "./flavor-correlation-utils";
+import {
+  calcularCorrelacionPearson,
+  type SerieCorrelacion,
+  type PuntoCorrelacion,
+} from "./flavor-correlation-utils";
 
 interface PropiedadesGraficaCorrelacion {
   tituloGrafica: string;
@@ -25,6 +30,8 @@ export function GraficaCorrelacion({
   seriesDeDatos,
   tipoGrafica,
 }: PropiedadesGraficaCorrelacion) {
+  const { t } = useTranslation();
+
   // Las áreas de referencia cambian de color dependiendo de si es positivo o negativo.
   const coloresArea = {
     cuadrante1: tipoGrafica === "positive" ? "#f8d7da" : "#fff3cd", // Inferior Izquierdo
@@ -49,10 +56,38 @@ export function GraficaCorrelacion({
             <ZAxis type="number" range={[100, 100]} />
             <RTooltip cursor={{ strokeDasharray: "3 3" }} />
 
-            <ReferenceArea x1={0} x2={40} y1={6.0} y2={7.5} fill={coloresArea.cuadrante1} fillOpacity={0.5} />
-            <ReferenceArea x1={40} x2={180} y1={6.0} y2={7.5} fill={coloresArea.cuadrante2} fillOpacity={0.5} />
-            <ReferenceArea x1={0} x2={40} y1={7.5} y2={8.5} fill={coloresArea.cuadrante3} fillOpacity={0.5} />
-            <ReferenceArea x1={40} x2={180} y1={7.5} y2={8.5} fill={coloresArea.cuadrante4} fillOpacity={0.5} />
+            <ReferenceArea
+              x1={0}
+              x2={40}
+              y1={6.0}
+              y2={7.5}
+              fill={coloresArea.cuadrante1}
+              fillOpacity={0.5}
+            />
+            <ReferenceArea
+              x1={40}
+              x2={180}
+              y1={6.0}
+              y2={7.5}
+              fill={coloresArea.cuadrante2}
+              fillOpacity={0.5}
+            />
+            <ReferenceArea
+              x1={0}
+              x2={40}
+              y1={7.5}
+              y2={8.5}
+              fill={coloresArea.cuadrante3}
+              fillOpacity={0.5}
+            />
+            <ReferenceArea
+              x1={40}
+              x2={180}
+              y1={7.5}
+              y2={8.5}
+              fill={coloresArea.cuadrante4}
+              fillOpacity={0.5}
+            />
 
             {seriesDeDatos.map((serieItem: SerieCorrelacion) => (
               <Scatter
@@ -77,19 +112,25 @@ export function GraficaCorrelacion({
             <span className="flex items-center gap-1 text-xs font-semibold">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: serieLeyenda.fill, borderColor: serieLeyenda.stroke, borderWidth: 1 }}
+                style={{
+                  backgroundColor: serieLeyenda.fill,
+                  borderColor: serieLeyenda.stroke,
+                  borderWidth: 1,
+                }}
               ></div>
               {serieLeyenda.name}
             </span>
             <span className="bg-amber-400 font-bold px-3 py-0.5 text-black mt-1 rounded-sm">
-              {calcularCorrelacionPearson((Array.isArray(serieLeyenda.points) ? serieLeyenda.points : Object.values(serieLeyenda.points || {})) as PuntoCorrelacion[])}
+              {calcularCorrelacionPearson(
+                (Array.isArray(serieLeyenda.points)
+                  ? serieLeyenda.points
+                  : Object.values(serieLeyenda.points || {})) as PuntoCorrelacion[],
+              )}
             </span>
           </div>
         ))}
         {seriesDeDatos.length === 0 && (
-          <span className="text-muted-foreground text-xs italic mb-1">
-            No hay series creadas
-          </span>
+          <span className="text-muted-foreground text-xs italic mb-1">{t("pdcaPlan.paso11_flavor_chart_no_series")}</span>
         )}
       </div>
     </div>

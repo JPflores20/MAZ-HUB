@@ -1,17 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { primaryAuth, db } from "@/lib/firebase";
+import { primaryAuth } from "@/lib/firebase";
+import { userService, UserRole, UserProfile } from "@/services/user-service";
 
-export type UserRole = "admin" | "user";
-
-export interface UserProfile {
-  uid: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  area: string;
-}
+export type { UserRole, UserProfile };
 
 interface AuthContextType {
   currentUser: UserProfile | null;
@@ -79,17 +71,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userProfile = await userService.getUser(user.uid);
           const isAutoAdmin = isAdminEmail(user.email || "");
-          if (userDoc.exists()) {
-            const data = userDoc.data() as Omit<UserProfile, "uid">;
-            const role: UserRole = isAutoAdmin ? "admin" : data.role || "user";
+          if (userProfile) {
+            const role: UserRole = isAutoAdmin ? "admin" : userProfile.role || "user";
             persistSession({
               uid: user.uid,
-              name: data.name || user.displayName || "Usuario",
+              name: userProfile.name || user.displayName || "Usuario",
               email: user.email || "",
               role,
-              area: data.area || "Usuario",
+              area: userProfile.area || "Usuario",
             });
           } else {
             const autoProfile: UserProfile = {
@@ -132,26 +123,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let unsub: (() => void) | undefined;
 
     if (currentUser?.role === "admin") {
-      import("firebase/firestore").then(({ collection, onSnapshot }) => {
-        unsub = onSnapshot(
-          collection(db, "users"),
-          (snapshot) => {
-            const list: { name: string; email: string }[] = [];
-            snapshot.forEach((docSnap) => {
-              const d = docSnap.data();
-              list.push({
-                name: (d as any).name || "Usuario",
-                email: (d as any).email || "",
-              });
-            });
-            setUsersList(list);
-          },
-          (error) => {
-            console.error("Error fetching users snapshot:", error);
-            setUsersList([]);
-          },
-        );
-      });
+      unsub = userService.subscribeToUsers(
+        (users) => {
+          setUsersList(users.map((u) => ({ name: u.name, email: u.email })));
+        },
+        (error) => {
+          console.error("Error fetching users snapshot:", error);
+          setUsersList([]);
+        },
+      );
     } else {
       setUsersList([]);
     }
@@ -197,14 +177,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const uid = firebaseUser.uid;
 
     // Obtener perfil de Firestore
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (userDoc.exists()) {
-      const data = userDoc.data() as Omit<UserProfile, "uid">;
-      const role: UserRole = isAutoAdmin ? "admin" : data.role || "user";
-      if (isAutoAdmin && data.role !== "admin") {
-        await setDoc(doc(db, "users", uid), { role: "admin" }, { merge: true });
+    const userProfile = await userService.getUser(uid);
+    if (userProfile) {
+      const role: UserRole = isAutoAdmin ? "admin" : userProfile.role || "user";
+      if (isAutoAdmin && userProfile.role !== "admin") {
+        await userService.updateUserRole(uid, "admin");
       }
-      persistSession({ uid, ...data, role, email: emailLower });
+      persistSession({ ...userProfile, role, email: emailLower });
     } else {
       // El perfil no existía en Firestore (posible fallo durante registro).
       // Lo creamos automáticamente con los datos disponibles.
@@ -215,7 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role: isAutoAdmin ? "admin" : "user",
         area: "Usuario",
       };
-      await setDoc(doc(db, "users", uid), {
+      await userService.createUser(uid, {
         name: autoProfile.name,
         email: autoProfile.email,
         role: autoProfile.role,

@@ -1,10 +1,10 @@
-const fs = require('fs');
-let code = fs.readFileSync('src/components/rda_dialog/RdaDialog.tsx', 'utf8');
+const fs = require("fs");
+let code = fs.readFileSync("src/components/rda_dialog/RdaDialog.tsx", "utf8");
 
-if (!code.includes('RdaValidationTable')) {
+if (!code.includes("RdaValidationTable")) {
   code = code.replace(
     'import { ArrowLeft, Save, UploadCloud, Check } from "lucide-react";',
-    'import { RdaValidationTable } from "./RdaValidationTable";\nimport { RdaPreventionTable } from "./RdaPreventionTable";\nimport { ArrowLeft, Save, UploadCloud, Check } from "lucide-react";'
+    'import { RdaValidationTable } from "./RdaValidationTable";\nimport { RdaPreventionTable } from "./RdaPreventionTable";\nimport { ArrowLeft, Save, UploadCloud, Check } from "lucide-react";',
   );
 
   const oldValidation = `<div className="p-4 border rounded-md border-dashed text-muted-foreground">
@@ -25,5 +25,5 @@ if (!code.includes('RdaValidationTable')) {
               />`;
   code = code.replace(oldPrevention, newPrevention);
 
-  fs.writeFileSync('src/components/rda_dialog/RdaDialog.tsx', code);
+  fs.writeFileSync("src/components/rda_dialog/RdaDialog.tsx", code);
 }

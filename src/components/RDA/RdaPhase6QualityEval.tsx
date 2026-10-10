@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda, RdaQualityEval } from "@/data/rda";
 import { StepCard } from "@/components/ui/step-card";
@@ -7,7 +8,6 @@ interface Props {
   rda: Rda;
   onChange: (rda: Rda) => void;
 }
-
 
 const ScoreSelector = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
   return (
@@ -30,6 +30,8 @@ const ScoreSelector = ({ value, onChange }: { value: number; onChange: (v: numbe
 };
 
 export function RdaPhase6QualityEval({ rda, onChange }: Props) {
+  const { t } = useTranslation();
+
   const isStepCompleted = (stepId: string) => rda.completedSteps?.includes(stepId) || false;
   const isStepNa = (stepId: string) => rda.naSteps?.includes(stepId) || false;
 
@@ -37,9 +39,13 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
     const completed = rda.completedSteps || [];
     const na = rda.naSteps || [];
     if (completed.includes(stepId)) {
-      onChange({ ...rda, completedSteps: completed.filter(s => s !== stepId) });
+      onChange({ ...rda, completedSteps: completed.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, completedSteps: [...completed, stepId], naSteps: na.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        completedSteps: [...completed, stepId],
+        naSteps: na.filter((s) => s !== stepId),
+      });
     }
   };
 
@@ -47,9 +53,13 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
     const na = rda.naSteps || [];
     const completed = rda.completedSteps || [];
     if (na.includes(stepId)) {
-      onChange({ ...rda, naSteps: na.filter(s => s !== stepId) });
+      onChange({ ...rda, naSteps: na.filter((s) => s !== stepId) });
     } else {
-      onChange({ ...rda, naSteps: [...na, stepId], completedSteps: completed.filter(s => s !== stepId) });
+      onChange({
+        ...rda,
+        naSteps: [...na, stepId],
+        completedSteps: completed.filter((s) => s !== stepId),
+      });
     }
   };
 
@@ -59,20 +69,25 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
     causaRaiz: 4,
     accionesCorrectivas: 5,
     validacionEfectividad: 5,
-    conclusion: ""
+    conclusion: "",
   };
 
   const updateData = (updates: Partial<RdaQualityEval>) => {
     onChange({ ...rda, calidadRda: { ...evalData, ...updates } });
   };
 
-  const totalScore = evalData.definicionProblema + evalData.evidencia + evalData.causaRaiz + evalData.accionesCorrectivas + evalData.validacionEfectividad;
+  const totalScore =
+    evalData.definicionProblema +
+    evalData.evidencia +
+    evalData.causaRaiz +
+    evalData.accionesCorrectivas +
+    evalData.validacionEfectividad;
   const percentage = Math.round((totalScore / 25) * 100);
 
   return (
     <div className="space-y-8">
-      <StepCard 
-        title="14. Evaluación de Calidad RDA" 
+      <StepCard
+        title={t("rdaInternal.rdaQualityEval")}
         defaultExpanded={true}
         isStepCompleted={isStepCompleted("rda-step-14")}
         isNa={isStepNa("rda-step-14")}
@@ -80,62 +95,91 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
         onToggleNa={() => toggleNa("rda-step-14")}
       >
         <div className="flex flex-col space-y-6">
-          <h3 className="font-bold text-lg uppercase">Calificación</h3>
-          
+          <h3 className="font-bold text-lg uppercase">{t("rdaInternal.rating")}</h3>
+
           <div className="overflow-hidden rounded-md border border-border">
             <table className="w-full text-sm text-left">
               <thead className="bg-[#0078D7] text-white">
                 <tr>
-                  <th className="px-4 py-3 w-[70%] font-bold uppercase text-[10px] tracking-wider text-left border-r border-white/20">Elemento</th>
-                  <th className="px-4 py-3 w-[30%] font-bold uppercase text-[10px] tracking-wider text-center">Evaluación</th>
+                  <th className="px-4 py-3 w-[70%] font-bold uppercase text-[10px] tracking-wider text-left border-r border-white/20">
+                    {t("rdaInternal.element")}
+                  </th>
+                  <th className="px-4 py-3 w-[30%] font-bold uppercase text-[10px] tracking-wider text-center">
+                    {t("rdaInternal.evaluation")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 <tr>
-                  <td className="px-4 py-3 text-muted-foreground">Definición del problema</td>
-                  <td className="px-4 py-3"><div className="flex justify-center w-full">
-                    <ScoreSelector value={evalData.definicionProblema} onChange={v => updateData({ definicionProblema: v })} />
-                  </div></td>
+                  <td className="px-4 py-3 text-muted-foreground">{t("rdaInternal.problemDefinition")}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center w-full">
+                      <ScoreSelector
+                        value={evalData.definicionProblema}
+                        onChange={(v) => updateData({ definicionProblema: v })}
+                      />
+                    </div>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-muted-foreground">Evidencia</td>
-                  <td className="px-4 py-3"><div className="flex justify-center w-full">
-                    <ScoreSelector value={evalData.evidencia} onChange={v => updateData({ evidencia: v })} />
-                  </div></td>
+                  <td className="px-4 py-3 text-muted-foreground">{t("rdaInternal.evidence")}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center w-full">
+                      <ScoreSelector
+                        value={evalData.evidencia}
+                        onChange={(v) => updateData({ evidencia: v })}
+                      />
+                    </div>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-muted-foreground">Causa raíz</td>
-                  <td className="px-4 py-3"><div className="flex justify-center w-full">
-                    <ScoreSelector value={evalData.causaRaiz} onChange={v => updateData({ causaRaiz: v })} />
-                  </div></td>
+                  <td className="px-4 py-3 text-muted-foreground">{t("rdaInternal.rootCause")}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center w-full">
+                      <ScoreSelector
+                        value={evalData.causaRaiz}
+                        onChange={(v) => updateData({ causaRaiz: v })}
+                      />
+                    </div>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-muted-foreground">Acciones correctivas</td>
-                  <td className="px-4 py-3"><div className="flex justify-center w-full">
-                    <ScoreSelector value={evalData.accionesCorrectivas} onChange={v => updateData({ accionesCorrectivas: v })} />
-                  </div></td>
+                  <td className="px-4 py-3 text-muted-foreground">{t("rdaInternal.correctiveActions")}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center w-full">
+                      <ScoreSelector
+                        value={evalData.accionesCorrectivas}
+                        onChange={(v) => updateData({ accionesCorrectivas: v })}
+                      />
+                    </div>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-muted-foreground">Validación de efectividad</td>
-                  <td className="px-4 py-3"><div className="flex justify-center w-full">
-                    <ScoreSelector value={evalData.validacionEfectividad} onChange={v => updateData({ validacionEfectividad: v })} />
-                  </div></td>
+                  <td className="px-4 py-3 text-muted-foreground">{t("rdaInternal.effectivenessValidation")}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center w-full">
+                      <ScoreSelector
+                        value={evalData.validacionEfectividad}
+                        onChange={(v) => updateData({ validacionEfectividad: v })}
+                      />
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <div className="font-semibold">
-            Resultado global: {totalScore}/25 ({percentage}%)
+            {t("rdaInternal.globalResult")} {totalScore}/25 ({percentage}%)
           </div>
 
           <div className="space-y-4 pt-4">
-            <h3 className="font-bold text-lg">Conclusión</h3>
-            <RichTextEditor 
+            <h3 className="font-bold text-lg">{t("rdaInternal.conclusion")}</h3>
+            <RichTextEditor
               className="w-full bg-background border border-border rounded-md text-sm"
-              placeholder="Escribe la conclusión..."
+              placeholder={t("rdaInternal.writeConclusion")}
               value={evalData.conclusion}
-              onChange={val => updateData({ conclusion: val })}
+              onChange={(val) => updateData({ conclusion: val })}
             />
           </div>
         </div>

@@ -1,4 +1,8 @@
-export function comprimirImagen(archivoImagen: File, anchoMaximo = 2048, calidadCompresion = 0.85): Promise<Blob> {
+export function comprimirImagen(
+  archivoImagen: File,
+  anchoMaximo = 2048,
+  calidadCompresion = 0.85,
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const lectorArchivo = new FileReader();
     lectorArchivo.readAsDataURL(archivoImagen);
@@ -10,9 +14,12 @@ export function comprimirImagen(archivoImagen: File, anchoMaximo = 2048, calidad
         const escalaImagen = Math.min(1, anchoMaximo / objetoImagen.width);
         elementoCanvas.width = objetoImagen.width * escalaImagen;
         elementoCanvas.height = objetoImagen.height * escalaImagen;
-        elementoCanvas.getContext("2d")!.drawImage(objetoImagen, 0, 0, elementoCanvas.width, elementoCanvas.height);
+        elementoCanvas
+          .getContext("2d")!
+          .drawImage(objetoImagen, 0, 0, elementoCanvas.width, elementoCanvas.height);
         elementoCanvas.toBlob(
-          (blobResultado) => (blobResultado ? resolve(blobResultado) : reject(new Error("Compresión fallida"))),
+          (blobResultado) =>
+            blobResultado ? resolve(blobResultado) : reject(new Error("Compresión fallida")),
           "image/jpeg",
           calidadCompresion,
         );

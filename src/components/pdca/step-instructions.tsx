@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Accordion,
   AccordionContent,
@@ -7,12 +8,12 @@ import {
 } from "@/components/ui/accordion";
 
 export function StepInstructions({
-  title = "Instrucciones",
+  title,
   children,
 }: {
   title?: string;
   children: React.ReactNode;
-}) {
+}) { const { t } = useTranslation(); const displayTitle = title || t("pdcaGlobal.instrucciones"); 
   return (
     <Accordion
       type="single"
@@ -25,7 +26,7 @@ export function StepInstructions({
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-xs">
               i
             </span>
-            {title}
+            {displayTitle}
           </span>
         </AccordionTrigger>
         <AccordionContent className="text-muted-foreground text-xs leading-relaxed pb-4">

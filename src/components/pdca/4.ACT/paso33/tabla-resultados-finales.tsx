@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,24 +17,34 @@ interface TablaResultadosFinalesProps {
   onChange: (data: ResultadosFinalesData) => void;
 }
 
-export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ data, onChange }) => {
+export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({
+  data,
+  onChange,
+}) => {
+  const { t } = useTranslation();
   const updateData = (updates: Partial<ResultadosFinalesData>) => {
     onChange({ ...data, ...updates });
   };
 
   const updateKpi = (field: keyof NonNullable<ResultadosFinalesData["kpi"]>, value: string) => {
-    const newKpi = { ...(data.kpi || { de: "", a: "", verdeEs: "", mejoraPct: "" }), [field]: value };
+    const newKpi = {
+      ...(data.kpi || { de: "", a: "", verdeEs: "", mejoraPct: "" }),
+      [field]: value,
+    };
     updateData({ kpi: newKpi });
   };
 
   const addPiRow = () => {
-    const newRows = [...(data.piRows || []), { id: crypto.randomUUID(), pi: "", de: "", a: "", verdeEs: "", mejoraPct: "" }];
+    const newRows = [
+      ...(data.piRows || []),
+      { id: crypto.randomUUID(), pi: "", de: "", a: "", verdeEs: "", mejoraPct: "" },
+    ];
     updateData({ piRows: newRows });
   };
 
   const updatePiRow = (id: string, field: string, value: string) => {
     const newRows = (data.piRows || []).map((row) =>
-      row.id === id ? { ...row, [field]: value } : row
+      row.id === id ? { ...row, [field]: value } : row,
     );
     updateData({ piRows: newRows });
   };
@@ -50,7 +61,9 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
           <table className="w-full text-xs">
             <tbody>
               <tr>
-                <td className="bg-[#cc0000] text-white font-bold p-2 w-[40%] border-r border-[#cc0000]">Fecha de finalización:</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 w-[40%] border-r border-[#cc0000]">
+                  {t('pdcaAct.fechaFinalizacionLabel')}
+                </td>
                 <td className="p-0 border-b border-[#cc0000]">
                   <Input
                     type="date"
@@ -59,12 +72,17 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     className="border-0 shadow-none h-8 w-full rounded-none"
                   />
                 </td>
-                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">KPI</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">
+                  KPI
+                </td>
                 <td className="border-b border-[#cc0000] p-0 w-[25%] bg-white"></td>
               </tr>
               <tr>
-                <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000] border-b">
-                  ¿Este pdca/ITF mejoró los PI?
+                <td
+                  rowSpan={2}
+                  className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000] border-b"
+                >
+                  {t('pdcaAct.mejoroPi')}
                 </td>
                 <td rowSpan={2} className="p-0 border-b border-[#cc0000]">
                   <Select
@@ -72,18 +90,24 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     onValueChange={(v) => updateData({ mejoroPI: v === "-" ? "" : v })}
                   >
                     <SelectTrigger
-                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroPI === 'Sí' ? 'text-green-700 font-bold' : data.mejoroPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
+                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroPI === "Sí" ? "text-green-700 font-bold" : data.mejoroPI === "No" ? "text-red-700 dark:text-red-300 font-bold" : "text-slate-900 font-medium"}`}
                     >
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="Sí" className="text-green-700 font-bold">Sí</SelectItem>
-                      <SelectItem value="No" className="text-red-700 font-bold">No</SelectItem>
+                      <SelectItem value="Sí" className="text-green-700 font-bold">
+                        {t('pdcaAct.si')}
+                      </SelectItem>
+                      <SelectItem value="No" className="text-red-700 dark:text-red-300 font-bold">
+                        {t('pdcaAct.no')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
-                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">De:</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">
+                  {t('pdcaAct.de')}
+                </td>
                 <td className="p-0 border-b border-[#cc0000]">
                   <Input
                     value={data.kpi?.de || ""}
@@ -93,7 +117,9 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                 </td>
               </tr>
               <tr>
-                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">A:</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">
+                  {t('pdcaAct.a')}
+                </td>
                 <td className="p-0 border-b border-[#cc0000]">
                   <Input
                     value={data.kpi?.a || ""}
@@ -103,8 +129,11 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                 </td>
               </tr>
               <tr>
-                <td rowSpan={2} className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000]">
-                  ¿Este pdca/ITF mejoró los KPI(s)?
+                <td
+                  rowSpan={2}
+                  className="bg-[#cc0000] text-white font-bold p-2 text-center border-r border-[#cc0000]"
+                >
+                  {t('pdcaAct.mejoroKpi')}
                 </td>
                 <td rowSpan={2} className="p-0">
                   <Select
@@ -112,39 +141,45 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                     onValueChange={(v) => updateData({ mejoroKPI: v === "-" ? "" : v })}
                   >
                     <SelectTrigger
-                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroKPI === 'Sí' ? 'text-green-700 font-bold' : data.mejoroKPI === 'No' ? 'text-red-700 font-bold' : 'text-slate-900 font-medium'}`}
+                      className={`w-full h-full min-h-[60px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center focus:ring-0 [&>span]:text-center [&>span]:w-full ${data.mejoroKPI === "Sí" ? "text-green-700 font-bold" : data.mejoroKPI === "No" ? "text-red-700 dark:text-red-300 font-bold" : "text-slate-900 font-medium"}`}
                     >
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="Sí" className="text-green-700 font-bold">Sí</SelectItem>
-                      <SelectItem value="No" className="text-red-700 font-bold">No</SelectItem>
+                      <SelectItem value="Sí" className="text-green-700 font-bold">
+                        {t('pdcaAct.si')}
+                      </SelectItem>
+                      <SelectItem value="No" className="text-red-700 dark:text-red-300 font-bold">
+                        {t('pdcaAct.no')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
-                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">Verde es:</td>
+                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-b border-[#cc0000] text-center">
+                  {t('pdcaAct.verdeEs')}
+                </td>
                 <td className="p-0 border-b border-[#cc0000]">
                   <Select
                     value={data.kpi?.verdeEs || "-"}
                     onValueChange={(v) => updateKpi("verdeEs", v === "-" ? "" : v)}
                   >
-                    <SelectTrigger
-                      className="w-full h-full min-h-[30px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center text-slate-900 font-medium focus:ring-0 [&>span]:text-center [&>span]:w-full"
-                    >
+                    <SelectTrigger className="w-full h-full min-h-[30px] rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center text-slate-900 font-medium focus:ring-0 [&>span]:text-center [&>span]:w-full">
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="-">-</SelectItem>
-                      <SelectItem value="Más alto">Más alto</SelectItem>
-                      <SelectItem value="Lower">Más bajo</SelectItem>
+                      <SelectItem value="Más alto">{t('pdcaAct.masAlto')}</SelectItem>
+                      <SelectItem value="Lower">{t('pdcaAct.masBajo')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
               </tr>
               <tr>
-                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-[#cc0000] text-center">% de Mejora</td>
-                <td className="p-0 bg-green-500/20">
+                <td className="bg-[#cc0000] text-white font-bold p-2 border-l border-[#cc0000] text-center">
+                  {t('pdcaAct.pctMejora')}
+                </td>
+                <td className="p-0 bg-green-500/20 dark:bg-green-900/30">
                   <Input
                     value={data.kpi?.mejoraPct || ""}
                     onChange={(e) => updateKpi("mejoraPct", e.target.value)}
@@ -163,19 +198,30 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
             <table className="w-full text-xs">
               <thead className="bg-[#cc0000] text-white">
                 <tr>
-                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">PI</th>
-                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">DE:</th>
-                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">A:</th>
-                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">VERDE ES:</th>
-                  <th className="font-bold p-2 text-center uppercase">% DE MEJORA</th>
+                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">
+                    PI
+                  </th>
+                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">
+                    {t('pdcaAct.deUpper')}
+                  </th>
+                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">
+                    {t('pdcaAct.aUpper')}
+                  </th>
+                  <th className="font-bold p-2 border-r border-white/20 text-center uppercase">
+                    {t('pdcaAct.verdeEsUpper')}
+                  </th>
+                  <th className="font-bold p-2 text-center uppercase">{t('pdcaAct.pctMejoraUpper')}</th>
                   <th className="w-8"></th>
                 </tr>
               </thead>
               <tbody>
                 {(data.piRows || []).length === 0 && (
                   <tr>
-                    <td colSpan={6} className="text-center p-4 text-muted-foreground border-b border-[#cc0000]">
-                      No hay PIs registrados.
+                    <td
+                      colSpan={6}
+                      className="text-center p-4 text-muted-foreground border-b border-[#cc0000]"
+                    >
+                      {t('pdcaAct.noPiRegistrados')}
                     </td>
                   </tr>
                 )}
@@ -207,19 +253,17 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
                         value={row.verdeEs || "-"}
                         onValueChange={(v) => updatePiRow(row.id, "verdeEs", v === "-" ? "" : v)}
                       >
-                        <SelectTrigger
-                          className="w-full h-8 rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center text-slate-900 font-medium focus:ring-0 [&>span]:text-center [&>span]:w-full"
-                        >
+                        <SelectTrigger className="w-full h-8 rounded-none border-0 shadow-none hover:bg-black/5 flex justify-center text-center text-slate-900 font-medium focus:ring-0 [&>span]:text-center [&>span]:w-full">
                           <SelectValue placeholder="-" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="-">-</SelectItem>
-                          <SelectItem value="Más alto">Más alto</SelectItem>
-                          <SelectItem value="Lower">Más bajo</SelectItem>
+                          <SelectItem value="Más alto">{t('pdcaAct.masAlto')}</SelectItem>
+                          <SelectItem value="Lower">{t('pdcaAct.masBajo')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-0 bg-green-500/10">
+                    <td className="p-0 bg-green-500/10 dark:bg-green-900/20">
                       <Input
                         value={row.mejoraPct}
                         onChange={(e) => updatePiRow(row.id, "mejoraPct", e.target.value)}
@@ -248,7 +292,7 @@ export const TablaResultadosFinales: React.FC<TablaResultadosFinalesProps> = ({ 
             onClick={addPiRow}
             className="w-full rounded-none h-8 text-xs text-[#cc0000] hover:bg-[#cc0000]/10"
           >
-            <Plus className="size-3 mr-2" /> Agregar PI
+            <Plus className="size-3 mr-2" /> {t('pdcaAct.agregarPi')}
           </Button>
         </div>
       </div>

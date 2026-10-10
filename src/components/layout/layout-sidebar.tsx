@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { NavItem, UserContextData } from "./layout-types";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   desktopSidebarOpen: boolean;
@@ -22,20 +23,18 @@ export const LayoutSidebar: React.FC<Props> = ({
   userInitials,
   handleLogout,
 }) => {
+  const { t, i18n } = useTranslation();
+
   return (
     <aside
       className={cn(
         "hidden flex-col bg-gradient-to-b from-[#0a1428] via-[#0f1c38] to-[#080e1e] text-white border-r border-slate-800/80 shadow-xl z-10 transition-all duration-300 md:flex",
-        desktopSidebarOpen ? "w-[280px]" : "w-[72px]"
+        desktopSidebarOpen ? "w-[280px]" : "w-[72px]",
       )}
     >
       <div className="flex flex-col items-center justify-center pt-6 pb-3 px-3 text-center shrink-0">
         <div className="size-12 rounded-2xl bg-white/10 p-1 flex items-center justify-center border border-white/15 shadow-md mb-2 hover:scale-105 transition-transform">
-          <img
-            src="/logos/MAZ.webp"
-            alt="Logo MAZ"
-            className="h-10 w-10 object-cover rounded-xl"
-          />
+          <img src="/logos/MAZ.webp" alt="Logo MAZ" className="h-10 w-10 object-cover rounded-xl" />
         </div>
         {desktopSidebarOpen && (
           <>
@@ -69,7 +68,7 @@ export const LayoutSidebar: React.FC<Props> = ({
                 desktopSidebarOpen ? "gap-3.5 px-4 py-3" : "justify-center p-3",
                 isActive
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-600/35"
-                  : "text-blue-100/75 hover:bg-white/10 hover:text-white"
+                  : "text-blue-100/75 hover:bg-white/10 hover:text-white",
               )}
               title={!desktopSidebarOpen ? item.label : undefined}
             >
@@ -81,10 +80,16 @@ export const LayoutSidebar: React.FC<Props> = ({
               <span
                 className={cn(
                   "truncate transition-all duration-300",
-                  desktopSidebarOpen ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 hidden"
+                  desktopSidebarOpen ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 hidden",
                 )}
               >
-                {item.label}
+                {t(
+                  item.label
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, ""),
+                  { defaultValue: item.label },
+                )}
               </span>
               {isActive && desktopSidebarOpen && (
                 <div className="ml-auto size-1.5 rounded-full bg-white/60 shrink-0" />
@@ -99,7 +104,7 @@ export const LayoutSidebar: React.FC<Props> = ({
         <div
           className={cn(
             "flex items-center gap-3 rounded-xl bg-white/5 border border-white/8 transition-all",
-            desktopSidebarOpen ? "px-2 py-2.5" : "p-0 justify-center border-transparent"
+            desktopSidebarOpen ? "px-2 py-2.5" : "p-0 justify-center border-transparent",
           )}
         >
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-600 font-bold text-white text-sm shadow-md ring-2 ring-blue-500/30">
@@ -117,7 +122,7 @@ export const LayoutSidebar: React.FC<Props> = ({
                 className={`shrink-0 inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full ${
                   currentUser.role === "admin"
                     ? "bg-amber-400/20 text-amber-300 border border-amber-400/30"
-                    : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                    : "bg-blue-500/20 dark:bg-blue-900/30 text-blue-300 border border-blue-500/30"
                 }`}
               >
                 {currentUser.role === "admin" ? "Admin" : "User"}
@@ -127,15 +132,15 @@ export const LayoutSidebar: React.FC<Props> = ({
         </div>
         <Button
           variant="ghost"
-          title={!desktopSidebarOpen ? "Cerrar Sesión" : undefined}
+          title={!desktopSidebarOpen ? t("logout") : undefined}
           className={cn(
-            "w-full text-blue-200/70 hover:bg-red-500/15 hover:text-red-300 h-9 text-sm font-medium rounded-xl gap-3 transition-all",
-            desktopSidebarOpen ? "justify-start" : "justify-center px-0"
+            "w-full text-blue-200/70 hover:bg-red-500 dark:bg-red-600/15 hover:text-red-300 h-9 text-sm font-medium rounded-xl gap-3 transition-all",
+            desktopSidebarOpen ? "justify-start" : "justify-center px-0",
           )}
           onClick={handleLogout}
         >
           <LogOut className="size-4 shrink-0" />
-          {desktopSidebarOpen && <span>Cerrar Sesión</span>}
+          {desktopSidebarOpen && <span>{t("logout")}</span>}
         </Button>
       </div>
     </aside>

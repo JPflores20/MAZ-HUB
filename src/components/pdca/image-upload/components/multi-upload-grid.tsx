@@ -65,7 +65,9 @@ export const GrillaMultiUpload: React.FC<PropiedadesGrillaMultiUpload> = ({
                 title={`Clic para abrir ${infoArchivo.etiqueta} en nueva pestaña`}
               >
                 <IconoTipoArchivo tipoArchivo={infoArchivo.tipo} className="size-12 mb-2" />
-                <span className="text-xs font-semibold text-foreground">{infoArchivo.etiqueta}</span>
+                <span className="text-xs font-semibold text-foreground">
+                  {infoArchivo.etiqueta}
+                </span>
               </div>
             ) : (
               <VisorImagenConZoom
@@ -99,8 +101,8 @@ export const GrillaMultiUpload: React.FC<PropiedadesGrillaMultiUpload> = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    ¿Estás seguro de que deseas eliminar esta imagen de evidencia? Esta acción no
-                    se puede deshacer.
+                    ¿Estás seguro de que deseas eliminar esta imagen de evidencia? Esta acción no se
+                    puede deshacer.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

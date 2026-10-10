@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,18 +27,23 @@ interface RdaValidationTableProps {
   onChange: (items: RdaValidationAction[]) => void;
 }
 
-
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "En progreso": return "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200";
-    case "Completa": return "bg-green-100 text-green-800 border-green-200 hover:bg-green-200";
-    case "Retrasado": return "bg-red-100 text-red-800 border-red-200 hover:bg-red-200";
-    case "Pendiente": 
-    default: return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
+    case "En progreso":
+      return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 border-blue-200 dark:border-blue-800 hover:bg-blue-200";
+    case "Completa":
+      return "bg-green-100 text-green-800 border-green-200 hover:bg-green-200";
+    case "Retrasado":
+      return "bg-red-100 text-red-800 border-red-200 hover:bg-red-200";
+    case "Pendiente":
+    default:
+      return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
   }
 };
 
 export function RdaValidationTable({ items, onChange }: RdaValidationTableProps) {
+  const { t } = useTranslation();
+
   const addRow = () => {
     onChange([
       ...items,
@@ -69,13 +75,27 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
           <Table>
             <TableHeader className="bg-[#0078D7] [&_th]:text-white">
               <TableRow className="hover:bg-[#0078D7]">
-                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Categoría M</TableHead>
-                <TableHead className="w-[200px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Causa Potencial</TableHead>
-                <TableHead className="w-[250px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Acción de Validación</TableHead>
-                <TableHead className="w-[120px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">¿Es Causa Raíz?</TableHead>
-                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Responsable</TableHead>
-                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">Fecha Límite</TableHead>
-                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white">Estatus</TableHead>
+                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rdaInternal.categoryM")}
+                </TableHead>
+                <TableHead className="w-[200px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rda.potentialCause")}
+                </TableHead>
+                <TableHead className="w-[250px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rdaInternal.validationAction")}
+                </TableHead>
+                <TableHead className="w-[120px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rdaInternal.isRootCause")}
+                </TableHead>
+                <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rdaInternal.responsible")}
+                </TableHead>
+                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                  {t("rda.deadline")}
+                </TableHead>
+                <TableHead className="w-[130px] font-bold uppercase text-[10px] tracking-wider text-white">
+                  {t("rda.status")}
+                </TableHead>
                 <TableHead className="w-[50px] text-white"></TableHead>
               </TableRow>
             </TableHeader>
@@ -91,12 +111,12 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Mano de obra">Mano de obra</SelectItem>
-                        <SelectItem value="Medio ambiente">Medio ambiente</SelectItem>
-                        <SelectItem value="Máquina">Máquina</SelectItem>
-                        <SelectItem value="Método">Método</SelectItem>
-                        <SelectItem value="Medición">Medición</SelectItem>
-                        <SelectItem value="Material">Material</SelectItem>
+                        <SelectItem value="Mano de obra">{t("rdaInternal.manpower")}</SelectItem>
+                        <SelectItem value="Medio ambiente">{t("rdaInternal.environment")}</SelectItem>
+                        <SelectItem value="Máquina">{t("rdaInternal.machine")}</SelectItem>
+                        <SelectItem value="Método">{t("rdaInternal.method")}</SelectItem>
+                        <SelectItem value="Medición">{t("rdaInternal.measurement")}</SelectItem>
+                        <SelectItem value="Material">{t("rdaInternal.material")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -123,9 +143,9 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="SI">Sí</SelectItem>
-                        <SelectItem value="NO">No</SelectItem>
-                        <SelectItem value="Pendiente">Por determinar</SelectItem>
+                        <SelectItem value="SI">{t("rdaInternal.yes")}</SelectItem>
+                        <SelectItem value="NO">{t("rdaInternal.no")}</SelectItem>
+                        <SelectItem value="Pendiente">{t("rdaInternal.toDetermine")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -139,7 +159,9 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                   <TableCell className="align-top p-2">
                     <DatePicker
                       date={row.fechaLimite ? new Date(row.fechaLimite) : undefined}
-                      setDate={(date) => updateRow(row.id, "fechaLimite", date ? date.toISOString() : "")}
+                      setDate={(date) =>
+                        updateRow(row.id, "fechaLimite", date ? date.toISOString() : "")
+                      }
                       className="h-9 w-full"
                     />
                   </TableCell>
@@ -152,10 +174,10 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Pendiente">Pendiente</SelectItem>
-                        <SelectItem value="En progreso">En progreso</SelectItem>
-                        <SelectItem value="Completa">Completada</SelectItem>
-                        <SelectItem value="Retrasado">Retrasado</SelectItem>
+                        <SelectItem value="Pendiente">{t("rdaInternal.pending")}</SelectItem>
+                        <SelectItem value="En progreso">{t("rdaInternal.inProgress")}</SelectItem>
+                        <SelectItem value="Completa">{t("rdaInternal.completed")}</SelectItem>
+                        <SelectItem value="Retrasado">{t("rdaInternal.delayed")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -174,7 +196,7 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
               {items.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                    No hay acciones de validación registradas.
+                    {t("rdaInternal.noValidationActions")}
                   </TableCell>
                 </TableRow>
               )}
@@ -184,7 +206,7 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
       </div>
       <Button variant="outline" size="sm" onClick={addRow} className="gap-2">
         <Plus className="h-4 w-4" />
-        Agregar Acción de Validación
+        {t("rdaInternal.addValidationAction")}
       </Button>
     </div>
   );

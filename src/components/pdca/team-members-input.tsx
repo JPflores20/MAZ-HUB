@@ -100,7 +100,8 @@ import {
 } from "@/data/pdca";
 import {
   PdcaGoalDefinition,
-  DEFAULT_DEFINICION_META} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
+  DEFAULT_DEFINICION_META,
+} from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { KpiTreeInteractive } from "../kpi-tree";
 import { ActionKanban } from "../action-kanban";

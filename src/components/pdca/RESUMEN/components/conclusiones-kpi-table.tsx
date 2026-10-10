@@ -1,13 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -23,23 +19,30 @@ interface Props {
 }
 
 export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo }) => {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-md overflow-hidden bg-white shadow-sm">
       <Table className="text-xs">
         <TableBody>
           <TableRow>
             <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center w-1/3">
-              Fecha de finalización:
+              {t('pdcaResumen.finishDate')}
             </TableCell>
             <TableCell className="p-0 border-r border-border w-1/3">
               <DatePicker
-                date={datosKpi.fechaFinalizacion ? new Date(datosKpi.fechaFinalizacion + "T12:00:00") : undefined}
-                setDate={(d) => alCambiarCampo("fechaFinalizacion", d ? format(d, "yyyy-MM-dd") : "")}
+                date={
+                  datosKpi.fechaFinalizacion
+                    ? new Date(datosKpi.fechaFinalizacion + "T12:00:00")
+                    : undefined
+                }
+                setDate={(d) =>
+                  alCambiarCampo("fechaFinalizacion", d ? format(d, "yyyy-MM-dd") : "")
+                }
                 className="h-10 text-xs shadow-none border-0 rounded-none w-full bg-transparent border-transparent hover:bg-transparent"
               />
             </TableCell>
             <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center w-1/6">
-              KPI
+              {t('pdcaResumen.kpi')}
             </TableCell>
             <TableCell className="p-0 w-1/6">
               <Input
@@ -51,7 +54,7 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
           </TableRow>
           <TableRow>
             <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-              ¿Este pdca/ITF mejoró los PI?
+              {t('pdcaResumen.improvedPi')}
             </TableCell>
             <TableCell className="p-0 border-r border-border">
               <textarea
@@ -60,9 +63,7 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
                 className="w-full h-full min-h-[60px] resize-none text-xs p-2 focus-visible:outline-none border-0"
               />
             </TableCell>
-            <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-              De:
-            </TableCell>
+            <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">{t('pdcaResumen.from')}</TableCell>
             <TableCell className="p-0">
               <Input
                 value={datosKpi.kpiDe}
@@ -72,8 +73,11 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell rowSpan={3} className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center">
-              ¿Este pdca/ITF mejoró los KPI(s)?
+            <TableCell
+              rowSpan={3}
+              className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center"
+            >
+              ¿Este pdca/ITF mejoró los {t('pdcaResumen.kpi')}(s)?
             </TableCell>
             <TableCell rowSpan={3} className="p-0 border-r border-border">
               <textarea
@@ -82,9 +86,7 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
                 className="w-full h-full min-h-[100px] resize-none text-xs p-2 focus-visible:outline-none border-0"
               />
             </TableCell>
-            <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center h-10">
-              A:
-            </TableCell>
+            <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center h-10">{t('pdcaResumen.to')}</TableCell>
             <TableCell className="p-0">
               <Input
                 value={datosKpi.kpiA}
@@ -95,7 +97,7 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
           </TableRow>
           <TableRow>
             <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center h-10">
-              Verde es:
+              {t('pdcaResumen.greenIs')}
             </TableCell>
             <TableCell className="p-0">
               <Select
@@ -106,15 +108,15 @@ export const TablaConclusionesKpi: React.FC<Props> = ({ datosKpi, alCambiarCampo
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Más alto">Más alto</SelectItem>
-                  <SelectItem value="Más bajo">Más bajo</SelectItem>
+                  <SelectItem value="Más alto">{t('pdcaResumen.higher')}</SelectItem>
+                  <SelectItem value="Más bajo">{t('pdcaResumen.lower')}</SelectItem>
                 </SelectContent>
               </Select>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="bg-[#0078D7] text-white font-bold border-r border-white/20 p-2 text-center h-10">
-              % de Mejora
+              {t('pdcaResumen.improvementPercent')}
             </TableCell>
             <TableCell className="p-0 bg-[#00B050]">
               <Input

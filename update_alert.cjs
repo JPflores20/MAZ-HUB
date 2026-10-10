@@ -1,9 +1,9 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let f = fs.readFileSync('src/routes/rda.tsx', 'utf8');
+let f = fs.readFileSync("src/routes/rda.tsx", "utf8");
 
 // 1. Add AlertDialog imports
-if (!f.includes('AlertDialog')) {
+if (!f.includes("AlertDialog")) {
   f = f.replace(
     'import { Rda, defaultRda } from "@/data/rda";',
     `import { Rda, defaultRda } from "@/data/rda";
@@ -16,15 +16,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";`
+} from "@/components/ui/alert-dialog";`,
   );
 }
 
 // 2. Add state
-if (!f.includes('rdaToDelete')) {
+if (!f.includes("rdaToDelete")) {
   f = f.replace(
-    'const [isDialogOpen, setIsDialogOpen] = useState(false);',
-    'const [isDialogOpen, setIsDialogOpen] = useState(false);\n  const [rdaToDelete, setRdaToDelete] = useState<string | null>(null);'
+    "const [isDialogOpen, setIsDialogOpen] = useState(false);",
+    "const [isDialogOpen, setIsDialogOpen] = useState(false);\n  const [rdaToDelete, setRdaToDelete] = useState<string | null>(null);",
   );
 }
 
@@ -40,7 +40,7 @@ f = f.replace(
       await deleteRda(rdaToDelete);
       setRdaToDelete(null);
     }
-  };`
+  };`,
 );
 
 // 4. Inject the AlertDialog at the end of the return statement in RdaPage (which returns the main dashboard)
@@ -69,8 +69,8 @@ const alertDialogJSX = `      <AlertDialog open={!!rdaToDelete} onOpenChange={(o
   );
 }`;
 
-if (!f.includes('<AlertDialog open={!!rdaToDelete}')) {
+if (!f.includes("<AlertDialog open={!!rdaToDelete}")) {
   f = f.replace(dashboardEndTag, alertDialogJSX);
 }
 
-fs.writeFileSync('src/routes/rda.tsx', f);
+fs.writeFileSync("src/routes/rda.tsx", f);

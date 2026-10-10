@@ -1,18 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 function walkDir(dir, callback) {
-  fs.readdirSync(dir).forEach(f => {
+  fs.readdirSync(dir).forEach((f) => {
     let dirPath = path.join(dir, f);
     let isDirectory = fs.statSync(dirPath).isDirectory();
-    isDirectory ? 
-      walkDir(dirPath, callback) : callback(path.join(dir, f));
+    isDirectory ? walkDir(dirPath, callback) : callback(path.join(dir, f));
   });
 }
 
 let changedFiles = 0;
-walkDir('src', function(filePath) {
-  if (filePath.endsWith('.tsx')) {
-    let content = fs.readFileSync(filePath, 'utf8');
+walkDir("src", function (filePath) {
+  if (filePath.endsWith(".tsx")) {
+    let content = fs.readFileSync(filePath, "utf8");
     let newContent = content.replace(/<TableHead([^>]*)>([^<]+)<\/TableHead>/g, (match, p1, p2) => {
       // Don't uppercase if there are JSX elements inside (handled by the regex already to some extent since it uses [^<]+)
       // but just to be safe:
@@ -25,10 +24,10 @@ walkDir('src', function(filePath) {
     // And StepCard titles? wait, StepCard titles are passed as props: title="PASO 5: ..."
     // Let's only do TableHead and Label for now
     if (content !== newContent) {
-      fs.writeFileSync(filePath, newContent, 'utf8');
+      fs.writeFileSync(filePath, newContent, "utf8");
       changedFiles++;
-      console.log('Updated', filePath);
+      console.log("Updated", filePath);
     }
   }
 });
-console.log('Changed', changedFiles, 'files');
+console.log("Changed", changedFiles, "files");

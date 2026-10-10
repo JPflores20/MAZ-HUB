@@ -20,6 +20,13 @@ export const OPCIONES_PUNTAJE = [
   { value: "1", label: "1 - Bajo" },
 ];
 
+export const OPCIONES_PUNTAJE_COSTO = [
+  { value: "", label: "-" },
+  { value: "5", label: "5 - Menor costo" },
+  { value: "3", label: "3 - Medio" },
+  { value: "1", label: "1 - Mayor costo" },
+];
+
 export const ETIQUETAS_FACTORES = [
   "SEGURIDAD (S)",
   "CALIDAD (C)",
@@ -61,18 +68,30 @@ export function obtenerVisualesImpacto(fila: ActionItem): { texto: string; color
   if (producto === 0)
     return { texto: "-", color: "bg-transparent text-muted-foreground border-border" };
   if (producto <= 1)
-    return { texto: producto.toString(), color: "bg-[#e6f4ea] text-[#137333] border-[#137333]/30 font-bold" };
+    return {
+      texto: producto.toString(),
+      color: "bg-[#e6f4ea] text-[#137333] border-[#137333]/30 font-bold",
+    };
   if (producto < 25)
-    return { texto: producto.toString(), color: "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30 font-bold" };
-  return { texto: producto.toString(), color: "bg-[#fce8e6] text-[#c5221f] border-[#c5221f]/30 font-bold" };
+    return {
+      texto: producto.toString(),
+      color: "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30 font-bold",
+    };
+  return {
+    texto: producto.toString(),
+    color: "bg-[#fce8e6] text-[#c5221f] border-[#c5221f]/30 font-bold",
+  };
 }
 
 /** Devuelve clases CSS de color para un dropdown de puntaje de factor */
 export const obtenerColorDropdown = (valor: unknown): string => {
   if (valor === "" || valor == null) return "bg-transparent text-muted-foreground border-border";
-  if (String(valor).includes("5")) return "bg-[#fce8e6] text-[#c5221f] border-[#c5221f]/30 font-bold";
-  if (String(valor).includes("3")) return "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30 font-bold";
-  if (String(valor).includes("1")) return "bg-[#e6f4ea] text-[#137333] border-[#137333]/30 font-bold";
+  if (String(valor).includes("5"))
+    return "bg-[#fce8e6] text-[#c5221f] border-[#c5221f]/30 font-bold";
+  if (String(valor).includes("3"))
+    return "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30 font-bold";
+  if (String(valor).includes("1"))
+    return "bg-[#e6f4ea] text-[#137333] border-[#137333]/30 font-bold";
   return "bg-transparent text-muted-foreground";
 };
 

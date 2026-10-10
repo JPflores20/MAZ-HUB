@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ListChecks } from "lucide-react";
@@ -17,20 +18,21 @@ interface Props {
 }
 
 export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
+  const { t } = useTranslation();
   return (
     <Card className="border-emerald-500/30 shadow-sm overflow-hidden">
       <CardHeader className="pb-3 pt-4 px-4 flex flex-row items-center justify-between border-b bg-emerald-50/40 dark:bg-emerald-950/20">
         <div className="flex items-center gap-2">
           <ListChecks className="size-4 text-emerald-600 dark:text-emerald-400" />
           <CardTitle className="text-sm font-bold uppercase tracking-wide text-foreground">
-            Tabla Completa del Paso 18 · Plan de Acción
+            {t('pdcaResumen.step18TableTitle')}
           </CardTitle>
         </div>
         <Badge
           variant="outline"
           className="text-xs border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
         >
-          {displayActions.length} acciones registradas
+          {displayActions.length} {t('pdcaResumen.actionsRegistered')}
         </Badge>
       </CardHeader>
       <CardContent className="p-0">
@@ -39,12 +41,12 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
             <thead>
               <tr className="border-b bg-muted/60 text-muted-foreground text-left">
                 <th className="py-2.5 px-3 font-semibold w-10 text-center">#</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[150px]">Issue / Problema</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[180px]">Causa Raíz</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[240px]">Acción de Mejora</th>
-                <th className="py-2.5 px-3 font-semibold text-center w-24">Priorizar</th>
-                <th className="py-2.5 px-3 font-semibold text-center w-24">Quick Win</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[120px]">SDCA / SOP</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[150px]">{t('pdcaResumen.issueProblem')}</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[180px]">{t('pdcaResumen.rootCause')}</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[240px]">{t('pdcaResumen.improvementAction')}</th>
+                <th className="py-2.5 px-3 font-semibold text-center w-24">{t('pdcaResumen.prioritize')}</th>
+                <th className="py-2.5 px-3 font-semibold text-center w-24">{t('pdcaResumen.quickWin')}</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[120px]">{t('pdcaResumen.sdcaSop')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -67,16 +69,12 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
                     <td className="py-2.5 px-3 font-medium text-foreground">{act.accion}</td>
                     <td className="py-2.5 px-3 text-center">
                       {act.priorizar === "SI" ? (
-                        <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] py-0 px-2 font-bold">
-                          SÍ
-                        </Badge>
+                        <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] py-0 px-2 font-bold">{t('pdcaResumen.yes')}</Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="text-[10px] py-0 px-2 text-muted-foreground"
-                        >
-                          NO
-                        </Badge>
+                        >{t('pdcaResumen.no')}</Badge>
                       )}
                     </td>
                     <td className="py-2.5 px-3 text-center">
@@ -85,7 +83,7 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
                           variant="secondary"
                           className="text-amber-700 bg-amber-100 dark:bg-amber-900/30 text-[10px] py-0 px-2 font-medium"
                         >
-                          Quick Win
+                          {t('pdcaResumen.quickWin')}
                         </Badge>
                       ) : (
                         <span className="text-muted-foreground">-</span>
@@ -98,7 +96,7 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
               {displayActions.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-muted-foreground">
-                    No hay acciones registradas en el Paso 18.
+                    No hay {t('pdcaResumen.actionsRegistered')} en el Paso 18.
                   </td>
                 </tr>
               )}

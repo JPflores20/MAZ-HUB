@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback, useState, useEffect, startTransition } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { use_pdca_dialog_state } from "./hooks/use_pdca_dialog_state";
@@ -18,6 +19,7 @@ export const PdcaDialog: React.FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }> = ({ pdca, onOpenChange }) => {
+  const { t } = useTranslation();
   const current_pdca = useMemo(() => pdca ?? create_empty_pdca_draft(), [pdca]);
   const { currentUser: auth_user, usersList: available_users } = useAuth();
   const is_admin = auth_user?.role === "admin";
@@ -29,7 +31,8 @@ export const PdcaDialog: React.FC<{
 
   const valid_steps = ALL_STEP_IDS.filter((id) => !state.na_steps.has(id));
   const completed_count = valid_steps.filter((id) => state.completed_steps.has(id)).length;
-  const computed_progress = valid_steps.length > 0 ? Math.round((completed_count / valid_steps.length) * 100) : 0;
+  const computed_progress =
+    valid_steps.length > 0 ? Math.round((completed_count / valid_steps.length) * 100) : 0;
 
   const get_current_pdca_payload = useConstruirPayloadPdca(current_pdca, state, computed_progress);
 
@@ -56,7 +59,7 @@ export const PdcaDialog: React.FC<{
   const handle_toggle_step = useCallback(
     (step_id: string) => {
       if (!is_admin) {
-        toast.error("Solo administradores pueden marcar pasos completados.");
+        toast.error(t("pdcaDialog.adminOnlyCompleted"));
         return;
       }
       state.set_completed_steps((prev) => {
@@ -67,13 +70,13 @@ export const PdcaDialog: React.FC<{
       });
       autosave.mark_as_modified();
     },
-    [is_admin, state, autosave],
+    [is_admin, state, autosave, t],
   );
 
   const handle_toggle_na = useCallback(
     (step_id: string) => {
       if (!is_admin) {
-        toast.error("Solo administradores pueden marcar pasos como N/A.");
+        toast.error(t("pdcaDialog.adminOnlyNA"));
         return;
       }
       state.set_na_steps((prev) => {
@@ -84,20 +87,20 @@ export const PdcaDialog: React.FC<{
       });
       autosave.mark_as_modified();
     },
-    [is_admin, state, autosave],
+    [is_admin, state, autosave, t],
   );
 
   const handle_proceed_next_phase = async () => {
     if (!is_editable) return;
-    const phase_order: Phase[] = is_admin 
+    const phase_order: Phase[] = is_admin
       ? ["Resumen", "Plan", "Do", "Check", "Act", "Evaluacion"]
       : ["Resumen", "Plan", "Do", "Check", "Act"];
-      
+
     const current_idx = phase_order.indexOf(state.active_tab);
-    
+
     if ((state.active_tab === "Act" && !is_admin) || state.active_tab === "Evaluacion") {
       await autosave.handle_save_to_firestore();
-      toast.success("¡PDCA finalizado!");
+      toast.success(t("pdcaDialog.finished"));
       onOpenChange(false);
     } else if (current_idx >= 0 && current_idx < phase_order.length - 1) {
       const next_phase = phase_order[current_idx + 1]!;
@@ -116,7 +119,7 @@ export const PdcaDialog: React.FC<{
       <PdcaDialogHeader
         current_phase={state.active_tab}
         document_identifier={current_pdca.id}
-        pdca_title={state.title_value || "PDCA Sin Título"}
+        pdca_title={state.title_value || t("pdcaDialog.untitled")}
         last_updated={current_pdca.actualizado}
         deadline_string={current_pdca.fechaFinalizacion ?? null}
         completed_steps={state.completed_steps}

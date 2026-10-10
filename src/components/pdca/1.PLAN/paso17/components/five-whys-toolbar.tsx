@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, MinusCircle, X, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,8 @@ export function BarraHerramientasTabla({
   alAgregarCausa,
   alEliminarTabla,
 }: PropiedadesBarraHerramientas) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex justify-between items-center px-2 py-1 bg-white dark:bg-background border-b border-[#0078D7]">
       <input
@@ -55,8 +58,7 @@ export function BarraHerramientasTabla({
             className="h-6 px-2 text-[10px] text-[#0078D7] hover:bg-blue-50 dark:hover:bg-blue-950 font-bold"
             onClick={alAgregarPorque}
           >
-            <Plus className="mr-1 size-3" /> Añadir Por Qué
-          </Button>
+            <Plus className="mr-1 size-3" />{t("pdcaPlan.paso17_five_whys_add_why")}</Button>
           {cantidadPorques > 5 && (
             <Button
               variant="ghost"
@@ -64,8 +66,7 @@ export function BarraHerramientasTabla({
               className="h-6 px-2 text-[10px] text-destructive hover:bg-destructive/10 font-bold"
               onClick={alQuitarPorque}
             >
-              <MinusCircle className="mr-1 size-3" /> Quitar Por Qué
-            </Button>
+              <MinusCircle className="mr-1 size-3" />{t("pdcaPlan.paso17_five_whys_remove_why")}</Button>
           )}
         </div>
         <Button
@@ -74,8 +75,7 @@ export function BarraHerramientasTabla({
           className="h-6 px-2 text-[10px] text-[#0078D7] hover:bg-blue-50 dark:hover:bg-blue-950 font-bold"
           onClick={alAgregarCausa}
         >
-          <Plus className="mr-1 size-3" /> Añadir Causa
-        </Button>
+          <Plus className="mr-1 size-3" />{t("pdcaPlan.paso17_five_whys_add_cause")}</Button>
         {alEliminarTabla && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -84,8 +84,7 @@ export function BarraHerramientasTabla({
                 size="sm"
                 className="h-6 px-2 text-[10px] text-destructive hover:bg-destructive/10 font-bold"
               >
-                <X className="mr-1 size-3" /> Eliminar Tabla
-              </Button>
+                <X className="mr-1 size-3" />{t("pdcaPlan.paso17_five_whys_delete_table")}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -96,13 +95,11 @@ export function BarraHerramientasTabla({
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>{t("pdcaPlan.paso16_ishikawa_cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={alEliminarTabla}
                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                >
-                  Eliminar
-                </AlertDialogAction>
+                >{t("pdcaPlan.paso17_five_whys_delete")}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -114,8 +111,7 @@ export function BarraHerramientasTabla({
             className="h-6 px-2 text-[10px] text-[#0078D7] hover:bg-blue-50 dark:hover:bg-blue-950 font-bold"
             onClick={alExpandir}
           >
-            <Maximize2 className="mr-1 size-3" /> Expandir
-          </Button>
+            <Maximize2 className="mr-1 size-3" />{t("pdcaPlan.paso17_five_whys_expand")}</Button>
         )}
         <span className="text-[11px] font-bold text-[#0078D7] uppercase">
           TEMA {String(indice + 1).padStart(2, "0")}
