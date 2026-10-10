@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { X, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TextareaAutosize from "react-textarea-autosize";
@@ -25,6 +25,8 @@ import {
   obtenerVisualesImpacto,
 } from "../utils/action-plan-utils";
 import { useTranslation } from "react-i18next";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface PropiedadesFilaAccion {
   fila: ActionItem;
@@ -95,8 +97,38 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
 
   const visualesImpacto = obtenerVisualesImpacto(fila);
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: fila.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    ...(isDragging ? { position: 'relative' as const, zIndex: 9999, backgroundColor: 'rgba(255, 255, 255, 0.9)' } : {})
+  };
+
   return (
-    <TableRow className="hover:bg-muted/30">
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      className={cn("hover:bg-muted/30", isDragging && "opacity-50")}
+    >
+      <TableCell className="p-1 border-r w-8 align-middle">
+        <div
+          ref={setActivatorNodeRef}
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing flex justify-center items-center h-full p-2"
+        >
+          <GripVertical className="size-4 text-muted-foreground" />
+        </div>
+      </TableCell>
       <CeldaTextarea
         valor={fila.tema || ""}
         placeholder={t("pdcaTables.actionPlan.placeholders.topic")}

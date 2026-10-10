@@ -6,12 +6,18 @@ import type {
   ImpactMatrixRow,
   ActionItem,
 } from "@/data/pdca";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PdcaPdfDocument from "./pdca-pdf-document";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ResumenMetricsCards } from "./components/resumen-metrics-cards";
 import { ResumenCharts } from "./components/resumen-charts";
 import { ResumenActionTable } from "./components/resumen-action-table";
 import { ResumenDetailsAccordion } from "./components/resumen-details-accordion";
 
 interface PhaseResumenProps {
+  pdca_title?: string;
+  document_identifier?: string;
   goal_definition: DefinicionMeta | undefined;
   vpo_checkpoints: VpoCheckpointItem[] | undefined;
   pareto_data_map: Record<string, ParetoItem[]> | undefined;
@@ -27,6 +33,8 @@ interface PhaseResumenProps {
  * Muestra KPIs, estado de avance, métricas, tabla de acciones e información base de forma consolidada.
  */
 export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
+  pdca_title,
+  document_identifier,
   goal_definition,
   vpo_checkpoints,
   pareto_data_map,
@@ -91,8 +99,41 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
     gapText = `${diff > 0 ? "+" : ""}${diff} ${unidad}`.trim();
   }
 
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="space-y-5 pb-6">
+      {/* ── BOTÓN EXPORTAR A PDF ── */}
+      <div className="flex justify-end">
+        {isClient && (
+          <PDFDownloadLink
+            document={
+              <PdcaPdfDocument
+                pdca_title={pdca_title}
+                document_identifier={document_identifier}
+                goal_definition={goal_definition}
+                vpo_checkpoints={vpo_checkpoints}
+                impact_matrix={impact_matrix}
+                action_items={action_items}
+                progreso={progreso}
+              />
+            }
+            fileName={`PDCA_${document_identifier || "Reporte"}.pdf`}
+          >
+            {({ loading }) => (
+              <Button disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 h-9 text-xs">
+                <Download className="size-4" />
+                {loading ? "Generando PDF..." : "Descargar PDF Ejecutivo"}
+              </Button>
+            )}
+          </PDFDownloadLink>
+        )}
+      </div>
+
       {/* ── FILA 1: Métricas Principales ── */}
       <ResumenMetricsCards
         kpiLabel={kpiLabel}
