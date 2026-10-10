@@ -98,8 +98,7 @@ export function ParetoInteractive({
   return (
     <StepCard
       className="col-span-full animate-in fade-in zoom-in-95"
-      isStepCompleted={is_step_completed}
-      onToggleStep={on_toggle_step}
+
       isNa={is_na}
       onToggleNa={on_toggle_na}
       title={

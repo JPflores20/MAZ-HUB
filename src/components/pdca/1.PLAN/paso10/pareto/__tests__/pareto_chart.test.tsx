@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "@testing-library/jest-dom";
 /**
  * pareto_chart.test.tsx

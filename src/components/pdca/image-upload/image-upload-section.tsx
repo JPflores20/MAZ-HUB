@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { X } from "lucide-react";
+import { X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
 import {

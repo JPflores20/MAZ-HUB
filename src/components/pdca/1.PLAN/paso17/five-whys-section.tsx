@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";

@@ -44,7 +44,7 @@ interface ProjectTableProps {
   setQuery: (val: string) => void;
   filter: Phase | "Todas";
   setFilter: (phase: Phase | "Todas") => void;
-  current_user: User | null;
+  current_user: UserProfile | null;
   is_admin: boolean;
   set_selected_id: (id: string) => void;
   request_delete: (e: React.MouseEvent, id: string) => void;
@@ -185,7 +185,7 @@ export function ProjectTable({
             {virtualizer.getVirtualItems().length > 0 && (
               <TableRow>
                 <TableCell
-                  style={{ height: `${virtualizer.getVirtualItems()[0].start}px`, padding: 0 }}
+                  style={{ height: `${virtualizer.getVirtualItems()[0]?.start || 0}px`, padding: 0 }}
                   colSpan={7}
                 />
               </TableRow>
@@ -378,7 +378,7 @@ export function ProjectTable({
               <TableRow>
                 <TableCell
                   style={{
-                    height: `${virtualizer.getTotalSize() - virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1].end}px`,
+                    height: `${virtualizer.getTotalSize() - (virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.end || 0)}px`,
                     padding: 0,
                   }}
                   colSpan={7}

@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { UploadCloud, X, FileText } from "lucide-react";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";
@@ -34,7 +34,7 @@ export const EvidenciasSolucionStep: React.FC<EvidenciasSolucionStepProps> = ({
     const index = newEvidencias.findIndex((e) => e.actionId === actionId);
 
     if (image) {
-      if (index >= 0) {
+      if (index >= 0 && newEvidencias[index]) {
         newEvidencias[index].image = image;
       } else {
         newEvidencias.push({ actionId, image });

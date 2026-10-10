@@ -76,7 +76,7 @@ export function parse_excel_paste(raw_text: string, existing_items: ParetoItem[]
   }
 
   for (const category in aggregated) {
-    existing_aggregated[category] = (existing_aggregated[category] ?? 0) + aggregated[category];
+    existing_aggregated[category] = (existing_aggregated[category] ?? 0) + (aggregated[category] ?? 0);
   }
 
   return Object.keys(existing_aggregated).map((category) => ({

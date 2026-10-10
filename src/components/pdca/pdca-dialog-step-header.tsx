@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, useRef, Fragment } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   UploadCloud,
@@ -133,6 +134,7 @@ export function StepHeader({
   onToggleStep: (stepId: string) => void;
   children?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   const isCompleted = completedSteps.has(stepId);
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 w-full">

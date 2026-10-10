@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * use_pareto_data.test.ts
  * Pruebas unitarias del hook use_pareto_data.

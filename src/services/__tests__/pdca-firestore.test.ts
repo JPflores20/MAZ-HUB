@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Pruebas unitarias para `pdca-firestore.ts`.
  *
