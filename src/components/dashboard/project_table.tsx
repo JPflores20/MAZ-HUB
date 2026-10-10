@@ -192,6 +192,7 @@ export function ProjectTable({
             )}
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const p = rows[virtualItem.index];
+              if (!p) return null;
               return (
                 <TableRow
                   key={p.id}

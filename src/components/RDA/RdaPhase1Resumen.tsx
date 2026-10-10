@@ -195,7 +195,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
               <td className={tdClass}>{val.responsable}</td>
               <td className={tdClass}>{val.fechaLimite}</td>
               <td
-                className={`${tdClass} ${val.estatus === "Completado" ? "bg-green-400 text-black" : ""}`}
+                className={`${tdClass} ${val.estatus === "Completa" ? "bg-green-400 text-black" : ""}`}
               >
                 {val.estatus}
               </td>

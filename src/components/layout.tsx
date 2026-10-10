@@ -87,7 +87,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     .substring(0, 2)
     .toUpperCase();
 
-  const userContextData: UserContextData = currentUser as UserContextData;
+  const userContextData: UserContextData = currentUser as unknown as UserContextData;
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">

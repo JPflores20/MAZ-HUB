@@ -1,16 +1,13 @@
-import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from "react";
 import { fetchPdcasFromFirestore } from "@/services/pdca-service";
 import { type Pdca } from "@/data/pdca";
 import { useAuth } from "@/context/auth-context";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface PdcaContextValue {
-  /** PDCAs filtered by the current user role/ownership. */
   pdcaList: Pdca[];
-  /** All raw PDCAs unfiltered — for admin-level views. */
   allPdcas: Pdca[];
-  /** True until the first batch arrives from Firestore. */
   loading: boolean;
-  /** Function to manually refresh the list from Firestore. */
   refresh: () => Promise<void>;
 }
 
@@ -21,42 +18,21 @@ const PdcaContext = createContext<PdcaContextValue>({
   refresh: async () => {},
 });
 
-/**
- * Place ONCE near the root (inside AuthProvider, above all routes).
- *
- * Fetches data ONCE per load to save massive read quotas.
- */
 export function PdcaProvider({ children }: { children: ReactNode }) {
   const { currentUser } = useAuth();
-  const [rawPdcas, setRawPdcas] = useState<Pdca[]>([]);
-  const [loading, setLoading] = useState(true);
-  const initialLoadDone = useRef(false);
+  const queryClient = useQueryClient();
 
-  const loadData = async () => {
-    try {
-      const pdcas = await fetchPdcasFromFirestore();
-      setRawPdcas(pdcas);
-    } catch (error) {
-      console.error("Error fetching pdcas:", error);
-    } finally {
-      if (!initialLoadDone.current) {
-        initialLoadDone.current = true;
-        setLoading(false);
-      }
-    }
+  const { data: rawPdcas = [], isLoading } = useQuery({
+    queryKey: ["pdcas"],
+    queryFn: () => fetchPdcasFromFirestore(), // Do not pass React Query context as max_limit
+    enabled: !!currentUser, // Only fetch if user is logged in
+    staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes (no background fetch)
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+  });
+
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["pdcas"] });
   };
-
-  useEffect(() => {
-    if (!currentUser) {
-      setRawPdcas([]);
-      setLoading(false);
-      initialLoadDone.current = false;
-      return;
-    }
-
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser?.uid]);
 
   const pdcaList: Pdca[] = (() => {
     if (!currentUser) return [];
@@ -77,7 +53,7 @@ export function PdcaProvider({ children }: { children: ReactNode }) {
   })();
 
   return (
-    <PdcaContext.Provider value={{ pdcaList, allPdcas: rawPdcas, loading, refresh: loadData }}>
+    <PdcaContext.Provider value={{ pdcaList, allPdcas: rawPdcas, loading: isLoading, refresh }}>
       {children}
     </PdcaContext.Provider>
   );
