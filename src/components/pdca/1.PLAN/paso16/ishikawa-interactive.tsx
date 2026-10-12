@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Maximize2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -66,35 +66,19 @@ export function IshikawaInteractivo({
 }: PropiedadesIshikawaInteractivo) {
   const { t } = useTranslation();
 
+  // Las etiquetas guardadas antes podían incluir el prefijo "Concepto de:"; se quita al mostrar.
+  const etiqueta = (id: string, porDefecto: string) =>
+    (etiquetasPersonalizadas[id] ?? porDefecto).replace(/^\s*concepto de:\s*/i, "");
+
   const arregloCategorias = [
-    {
-      id: "machine",
-      label: etiquetasPersonalizadas["machine"] ?? "Concepto de: Máquina",
-      position: "top" as const,
-    },
-    {
-      id: "method",
-      label: etiquetasPersonalizadas["method"] ?? "Concepto de: Método",
-      position: "top" as const,
-    },
-    {
-      id: "material",
-      label: etiquetasPersonalizadas["material"] ?? "Concepto de: Material",
-      position: "top" as const,
-    },
-    {
-      id: "manpower",
-      label: etiquetasPersonalizadas["manpower"] ?? "Concepto de: Mano de Obra",
-      position: "bottom" as const,
-    },
-    {
-      id: "measurement",
-      label: etiquetasPersonalizadas["measurement"] ?? "Concepto de: Medición",
-      position: "bottom" as const,
-    },
+    { id: "machine", label: etiqueta("machine", "Máquina"), position: "top" as const },
+    { id: "method", label: etiqueta("method", "Método"), position: "top" as const },
+    { id: "material", label: etiqueta("material", "Material"), position: "top" as const },
+    { id: "manpower", label: etiqueta("manpower", "Mano de Obra"), position: "bottom" as const },
+    { id: "measurement", label: etiqueta("measurement", "Medición"), position: "bottom" as const },
     {
       id: "environment",
-      label: etiquetasPersonalizadas["environment"] ?? "Concepto de: Medio Amb.",
+      label: etiqueta("environment", "Medio Amb."),
       position: "bottom" as const,
     },
   ];
@@ -216,7 +200,9 @@ export function IshikawaInteractivo({
                   size="sm"
                   className="h-8 px-2.5 text-[11px] font-bold uppercase shadow-sm gap-1"
                 >
-                  <X className="size-3.5" />{t("pdcaPlan.paso16_ishikawa_delete")}</Button>
+                  <X className="size-3.5" />
+                  {t("pdcaPlan.paso16_ishikawa_delete")}
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -231,7 +217,9 @@ export function IshikawaInteractivo({
                   <AlertDialogAction
                     onClick={alEliminarIshikawa}
                     className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                  >{t("pdcaPlan.paso17_five_whys_delete")}</AlertDialogAction>
+                  >
+                    {t("pdcaPlan.paso17_five_whys_delete")}
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -240,7 +228,9 @@ export function IshikawaInteractivo({
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-2">
-                <Maximize2 className="size-3.5" />{t("pdcaPlan.paso16_ishikawa_expand")}</Button>
+                <Maximize2 className="size-3.5" />
+                {t("pdcaPlan.paso16_ishikawa_expand")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[95vw] w-full p-6">
               <h3 className="text-lg font-bold uppercase mb-4">
