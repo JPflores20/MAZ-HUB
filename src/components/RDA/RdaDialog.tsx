@@ -14,6 +14,7 @@ import { RdaPhase2Problem } from "./RdaPhase2Problem";
 import { RdaPhase3Analysis } from "./RdaPhase3Analysis";
 import { RdaPhase6QualityEval } from "./RdaPhase6QualityEval";
 import { RdaPhase7EffectivenessEval } from "./RdaPhase7EffectivenessEval";
+import { normalizeRdaName } from "./rda-name";
 
 interface RdaDialogProps {
   open: boolean;
@@ -74,7 +75,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
   useEffect(() => {
     if (rda && open) {
-      setLocalRda({ ...rda });
+      setLocalRda(normalizeRdaName({ ...rda }));
       lastSavedJson.current = JSON.stringify(rda);
       setSaveState("idle");
       setActiveTab("1. Resumen");

@@ -6,6 +6,7 @@ import { ParetoInteractive } from "@/components/pdca/1.PLAN/paso10/pareto/pareto
 import { FlavorCorrelationSection } from "@/components/pdca/1.PLAN/paso11/flavor-correlation-section";
 import { MultiImageUploadSection } from "@/components/pdca/image-upload/index";
 import { RdaPhase3ValidationSteps } from "./RdaPhase3ValidationSteps";
+import { getRdaName, withRdaName } from "./rda-name";
 
 // Phase 3: Analisis de Causas Raiz
 // 5. Ishikawa
@@ -72,7 +73,7 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
     });
   }
 
-  const handleIshikawaChange = (idx: number, newIshikawa: any) => {
+  const handleIshikawaChange = (idx: number, newIshikawa: NonNullable<Rda["ishikawa"]>[number]) => {
     const updated = [...ishikawas];
     updated[idx] = newIshikawa;
     onChange({ ...rda, ishikawa: updated });
@@ -93,8 +94,8 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
               : newCausesOrUpdater;
           handleIshikawaChange(0, { ...currentIshikawa, causes: resolved });
         }}
-        efectoPrincipal={currentIshikawa.effect || ""}
-        alCambiarEfecto={(effect) => handleIshikawaChange(0, { ...currentIshikawa, effect })}
+        efectoPrincipal={getRdaName(rda)}
+        alCambiarEfecto={(name) => onChange(withRdaName(rda, name))}
         hidePrioritizationTable={true}
         causasPriorizadas={currentIshikawa.prioritizedCauses || []}
         alCambiarCausasPriorizadas={(prioritizedCauses) =>

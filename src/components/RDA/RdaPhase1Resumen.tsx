@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";
 import { IshikawaInteractivo } from "@/components/pdca/1.PLAN/paso16/ishikawa-interactive";
+import { getRdaName } from "./rda-name";
 
 interface Props {
   rda: Rda;
@@ -164,7 +165,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
           tituloPersonalizado={t("rdaInternal.causeEffectDiagram")}
           causasRegistradas={currentIshikawa.causes || {}}
           alCambiarCausas={() => {}}
-          efectoPrincipal={currentIshikawa.effect || ""}
+          efectoPrincipal={getRdaName(rda)}
           alCambiarEfecto={() => {}}
           defaultExpanded={true}
           hidePrioritizationTable={true}
