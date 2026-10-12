@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Save, UploadCloud, Check } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { ArrowLeft, Save, UploadCloud, Check, AlertTriangle, CircleDot } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { Rda } from "@/data/rda";
 import { cn } from "@/lib/utils";
+import { DocumentTooLargeError } from "@/services/inline-media";
 
 import { RdaPhase1Resumen } from "./RdaPhase1Resumen";
 import { RdaPhase2Problem } from "./RdaPhase2Problem";
@@ -17,7 +19,27 @@ interface RdaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rda: Rda | null;
-  onSave?: (rda: Rda) => void;
+  /** Debe persistir el RDA y devolver la versión guardada; debe lanzar error si falla. */
+  onSave?: (rda: Rda) => Promise<Rda>;
+}
+
+const AUTOSAVE_DELAY_MS = 2500;
+
+function describeSaveError(error: unknown): string {
+  if (error instanceof DocumentTooLargeError) {
+    return `${error.message} Elimina o reduce algunas imágenes y vuelve a intentar.`;
+  }
+  const code = (error as { code?: string } | null)?.code;
+  if (code === "permission-denied" || code === "unauthenticated") {
+    return "No tienes permiso para guardar este RDA. Cierra sesión y vuelve a entrar.";
+  }
+  if (code === "unavailable" || code === "deadline-exceeded") {
+    return "Sin conexión con el servidor. Revisa tu internet; tus cambios siguen en pantalla.";
+  }
+  if (code === "storage/unauthorized" || code?.startsWith("storage/")) {
+    return "No se pudo subir una de las imágenes del RDA. Inténtalo de nuevo.";
+  }
+  return "No se pudieron guardar los cambios del RDA. Tus cambios siguen en pantalla; inténtalo de nuevo.";
 }
 
 type RdaPhase =
@@ -40,24 +62,121 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
   const [localRda, setLocalRda] = useState<Rda | null>(null);
   const [activeTab, setActiveTab] = useState<RdaPhase>("1. Resumen");
-  const [isSaving, setIsSaving] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "error">("idle");
+
+  // JSON de la última versión confirmada por Firestore (para detectar cambios sin guardar).
+  const lastSavedJson = useRef<string>("");
+  // Siempre apunta a la versión más reciente del RDA en edición.
+  const latestRda = useRef<Rda | null>(null);
+  latestRda.current = localRda;
+  // Guardado en curso (los guardados se serializan para no pisarse).
+  const inFlight = useRef<Promise<boolean> | null>(null);
 
   useEffect(() => {
     if (rda && open) {
       setLocalRda({ ...rda });
+      lastSavedJson.current = JSON.stringify(rda);
+      setSaveState("idle");
       setActiveTab("1. Resumen");
     }
   }, [rda, open]);
 
+  const isDirty = localRda ? JSON.stringify(localRda) !== lastSavedJson.current : false;
+
+  const persist = useCallback(async (): Promise<boolean> => {
+    if (!onSave) return true;
+    while (inFlight.current) await inFlight.current;
+
+    const snapshot = latestRda.current;
+    if (!snapshot) return true;
+    const snapshotJson = JSON.stringify(snapshot);
+    if (snapshotJson === lastSavedJson.current) return true;
+
+    setSaveState("saving");
+    const task = (async () => {
+      try {
+        const saved = await onSave(snapshot);
+        if (latestRda.current === snapshot) {
+          // Nadie editó mientras guardábamos: adoptamos la versión guardada
+          // (trae URLs de Storage en lugar de base64 y el nuevo updatedAt).
+          lastSavedJson.current = JSON.stringify(saved);
+          setLocalRda(saved);
+        } else {
+          lastSavedJson.current = snapshotJson;
+        }
+        setSaveState("idle");
+        return true;
+      } catch (error) {
+        setSaveState("error");
+        toast.error(describeSaveError(error), { id: "rda-save-error", duration: 10000 });
+        return false;
+      }
+    })();
+
+    inFlight.current = task;
+    try {
+      return await task;
+    } finally {
+      inFlight.current = null;
+    }
+  }, [onSave]);
+
+  // Autoguardado: unos segundos después del último cambio.
+  useEffect(() => {
+    if (!localRda || !isDirty) return;
+    const timer = setTimeout(() => void persist(), AUTOSAVE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [localRda, isDirty, persist]);
+
+  // Si el usuario navega a otra sección (sidebar) con cambios pendientes, se guardan igual.
+  const persistRef = useRef(persist);
+  persistRef.current = persist;
+  useEffect(() => () => void persistRef.current(), []);
+
+  // Aviso del navegador al cerrar/recargar la pestaña con cambios sin guardar.
+  useEffect(() => {
+    if (!isDirty && saveState !== "saving") return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty, saveState]);
+
   if (!localRda) return null;
 
   const handleSave = async () => {
-    if (onSave) {
-      setIsSaving(true);
-      await onSave(localRda);
-      setIsSaving(false);
+    const ok = await persist();
+    if (ok) {
+      toast.success(t("rda.savedOk", "RDA guardado correctamente"));
+      onOpenChange(false);
     }
   };
+
+  const handleBack = async () => {
+    const ok = await persist();
+    if (
+      ok ||
+      window.confirm(
+        t(
+          "rda.leaveWithoutSaving",
+          "No se pudieron guardar los cambios. ¿Salir de todos modos y perderlos?",
+        ),
+      )
+    ) {
+      onOpenChange(false);
+    }
+  };
+
+  const status: "saving" | "error" | "dirty" | "saved" =
+    saveState === "saving"
+      ? "saving"
+      : saveState === "error"
+        ? "error"
+        : isDirty
+          ? "dirty"
+          : "saved";
 
   const togglePhaseComplete = (e: React.MouseEvent, phaseId: RdaPhase) => {
     e.stopPropagation();
@@ -130,7 +249,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
       <div className="space-y-4">
         <button
           type="button"
-          onClick={() => onOpenChange(false)}
+          onClick={handleBack}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
@@ -151,10 +270,20 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 pr-2">
-              {isSaving ? (
+            <div className="flex items-center gap-2 pr-2" aria-live="polite">
+              {status === "saving" ? (
                 <span className="inline-flex items-center gap-1.5 text-xs text-primary font-medium animate-pulse">
                   <UploadCloud className="size-3.5 animate-bounce" /> {t("rda.saving")}
+                </span>
+              ) : status === "error" ? (
+                <span className="inline-flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-semibold">
+                  <AlertTriangle className="size-3.5" />
+                  {t("rda.saveError", "Error al guardar")}
+                </span>
+              ) : status === "dirty" ? (
+                <span className="inline-flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  <CircleDot className="size-3.5" />
+                  {t("rda.unsavedChanges", "Cambios sin guardar")}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
@@ -166,7 +295,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={isSaving}
+              disabled={status === "saving"}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-8 gap-1.5 shadow-sm"
             >
               <UploadCloud className="size-3.5" />

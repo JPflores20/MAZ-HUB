@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { UploadCloud, X } from "lucide-react";
+import { Loader2, UploadCloud, X } from "lucide-react";
+import { toast } from "sonner";
 import type { RdaEvidenceItem, RdaValidationAction } from "@/data/rda";
+import { subirArchivoAFirebase } from "@/components/pdca/image-upload/utils/upload-utils";
 
 interface RdaEvidenceTabProps {
   validationActions?: RdaValidationAction[];
@@ -21,8 +23,15 @@ export function RdaEvidenceTab({
 }: RdaEvidenceTabProps) {
   const { t } = useTranslation();
 
+  // Refs con los valores más recientes: la subida es asíncrona y, al terminar,
+  // no debe sobrescribir cambios hechos mientras tanto con datos viejos.
+  const itemsRef = useRef(items);
+  const onChangeRef = useRef(onChange);
+  itemsRef.current = items;
+  onChangeRef.current = onChange;
+
   const handleImageChange = (actionId: string, image: string | undefined) => {
-    const newItems = [...items];
+    const newItems = [...itemsRef.current];
     const index = newItems.findIndex((e) => e.id === actionId);
 
     if (image) {
@@ -38,20 +47,25 @@ export function RdaEvidenceTab({
       }
     }
 
-    onChange(newItems);
+    onChangeRef.current(newItems);
   };
 
-  const handleFileChange = (actionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  const handleFileChange = async (actionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === "string") {
-        handleImageChange(actionId, event.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
     e.target.value = "";
+    if (!file) return;
+    setUploadingId(actionId);
+    try {
+      const url = await subirArchivoAFirebase(file, "rda_images");
+      handleImageChange(actionId, url);
+    } catch (error) {
+      console.error("[RdaEvidenceTab] Error subiendo evidencia:", error);
+      toast.error("No se pudo subir la evidencia. Revisa tu conexión e inténtalo de nuevo.");
+    } finally {
+      setUploadingId(null);
+    }
   };
 
   return (
@@ -64,12 +78,12 @@ export function RdaEvidenceTab({
       <div className="space-y-4">
         {validationActions.length === 0 ? (
           <p className="text-xs text-muted-foreground italic">
-            {t('rdaInternal.noValidationActions')}
+            {t("rdaInternal.noValidationActions")}
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {validationActions.map((action, i) => {
-              const label = `${action.causaPotencial || t('rdaInternal.noCause')} - ${action.accion || t('rdaInternal.noAction')}`;
+              const label = `${action.causaPotencial || t("rdaInternal.noCause")} - ${action.accion || t("rdaInternal.noAction")}`;
               const existing = items.find((e) => e.id === action.id)?.images?.[0];
 
               const esCausaRaiz = action.esCausaRaiz === "SI";
@@ -115,7 +129,7 @@ export function RdaEvidenceTab({
                         ) : (
                           <img
                             src={existing}
-                            alt={`${t('rdaInternal.evidence')} ${i + 1}`}
+                            alt={`${t("rdaInternal.evidence")} ${i + 1}`}
                             className="w-full h-full object-contain"
                           />
                         )}
@@ -130,16 +144,25 @@ export function RdaEvidenceTab({
                           className={`absolute bottom-0 left-0 right-0 py-1 text-center text-[9px] font-bold text-white uppercase ${esCausaRaiz ? "bg-red-600" : esNoCausaRaiz ? "bg-green-600" : "bg-slate-600"}`}
                         >
                           {esCausaRaiz
-                            ? t('rdaInternal.rootCauseValidated')
+                            ? t("rdaInternal.rootCauseValidated")
                             : esNoCausaRaiz
-                              ? t('rdaInternal.notRootCause')
-                              : t('rdaInternal.pending')}
+                              ? t("rdaInternal.notRootCause")
+                              : t("rdaInternal.pending")}
                         </div>
                       </>
+                    ) : uploadingId === action.id ? (
+                      <div className="flex flex-col items-center justify-center w-full h-full text-primary">
+                        <Loader2 className="size-6 mb-1 animate-spin" />
+                        <span className="text-[10px] uppercase font-semibold">
+                          {t("rda.saving")}
+                        </span>
+                      </div>
                     ) : (
                       <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-slate-400 hover:text-primary transition hover:bg-slate-100/50">
                         <UploadCloud className="size-6 mb-1" />
-                        <span className="text-[10px] uppercase font-semibold">{t('rdaInternal.uploadPhoto')}</span>
+                        <span className="text-[10px] uppercase font-semibold">
+                          {t("rdaInternal.uploadPhoto")}
+                        </span>
                         <input
                           type="file"
                           accept="image/*,application/pdf"

@@ -4,13 +4,18 @@ import {
   setDoc,
   deleteDoc,
   onSnapshot,
-  updateDoc,
   query,
   limit,
   collection,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Rda } from "@/data/rda";
+import {
+  DocumentTooLargeError,
+  FIRESTORE_SAFE_DOC_BYTES,
+  estimateDocBytes,
+  externalizeInlineMedia,
+} from "@/services/inline-media";
 
 const RDA_COLLECTION = "rdas";
 
@@ -54,11 +59,28 @@ export async function createRda(rda: Rda): Promise<void> {
   }
 }
 
-export async function updateRda(rda: Rda): Promise<void> {
+/**
+ * Guarda el RDA completo.
+ * - Sube a Storage cualquier evidencia embebida como base64 (evita el límite de 1 MiB).
+ * - Actualiza `updatedAt`.
+ * - Escribe el documento completo (sin `merge`) para que también se persistan
+ *   los elementos que el usuario BORRÓ dentro de objetos anidados.
+ * Devuelve el RDA tal como quedó guardado.
+ */
+export async function updateRda(rda: Rda): Promise<Rda> {
   try {
-    const docRef = doc(db, RDA_COLLECTION, rda.id);
-    const cleanRda = JSON.parse(JSON.stringify(rda));
-    await setDoc(docRef, cleanRda, { merge: true });
+    const { value: withUrls } = await externalizeInlineMedia(rda, "rda_images");
+    const cleanRda: Rda = JSON.parse(
+      JSON.stringify({ ...withUrls, updatedAt: new Date().toISOString() }),
+    );
+
+    const bytes = estimateDocBytes(cleanRda);
+    if (bytes > FIRESTORE_SAFE_DOC_BYTES) {
+      throw new DocumentTooLargeError(bytes);
+    }
+
+    await setDoc(doc(db, RDA_COLLECTION, rda.id), cleanRda);
+    return cleanRda;
   } catch (error) {
     console.error("[rda-service] Error al actualizar RDA:", error);
     throw error;

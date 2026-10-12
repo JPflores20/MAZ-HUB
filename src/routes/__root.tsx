@@ -136,6 +136,7 @@ import { AuthProvider } from "@/context/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PdcaProvider } from "@/context/pdca-context";
 import "@/lib/i18n";
+import { Toaster } from "@/components/ui/sonner";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -150,6 +151,7 @@ function RootComponent() {
               <Outlet />
             </AppLayout>
           </PdcaProvider>
+          <Toaster richColors position="top-right" />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

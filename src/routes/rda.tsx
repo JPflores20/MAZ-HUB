@@ -77,17 +77,9 @@ function RdaPage() {
     }
   };
 
-  const handleSave = async (rda: Rda) => {
-    try {
-      // If it's a new RDA (we don't know if it exists in DB yet, but updateRda uses setDoc with merge)
-      // Actually we can just call updateRda which creates or updates it.
-      await updateRda(rda);
-      setIsDialogOpen(false);
-      setSelectedRda(null);
-    } catch (error) {
-      console.error("Error saving RDA", error);
-    }
-  };
+  // Persiste y devuelve la versión guardada. Los errores se propagan al diálogo,
+  // que es quien los muestra al usuario y decide si cerrar.
+  const handleSave = (rda: Rda) => updateRda(rda);
 
   if (selectedRda || isDialogOpen) {
     return (
