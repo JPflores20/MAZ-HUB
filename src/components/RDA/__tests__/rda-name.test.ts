@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Rda } from "@/data/rda";
-import { getRdaName, normalizeRdaName, withRdaName } from "../rda-name";
+import { getRdaDisplayName, getRdaName, normalizeRdaName, withRdaName } from "../rda-name";
 
 const base = (over: Partial<Rda>): Rda =>
   ({
@@ -40,5 +40,21 @@ describe("rda-name", () => {
       ishikawa: [{ id: "i", effect: "Otro", causes: {} }] as NonNullable<Rda["ishikawa"]>,
     });
     expect(normalizeRdaName(named)).toBe(named);
+  });
+
+  it("la lista muestra la cabeza del Ishikawa aunque el RDA no se haya reabierto", () => {
+    const legacy = base({
+      ishikawa: [{ id: "i", effect: "Incremento en filtración", causes: {} }] as NonNullable<
+        Rda["ishikawa"]
+      >,
+    });
+    expect(getRdaDisplayName(legacy)).toBe("Incremento en filtración");
+  });
+
+  it("si ni el título ni la cabeza tienen nombre, muestra el texto por defecto", () => {
+    const empty = base({
+      ishikawa: [{ id: "i", effect: "Nuevo RDA", causes: {} }] as NonNullable<Rda["ishikawa"]>,
+    });
+    expect(getRdaDisplayName(empty)).toBe("Nuevo RDA");
   });
 });

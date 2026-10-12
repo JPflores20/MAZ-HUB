@@ -14,6 +14,7 @@ import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { RecentMovements } from "@/components/dashboard/recent-movements";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { getRdaDisplayName } from "@/components/RDA/rda-name";
 
 function getRdaComputedProgress(r: Rda): number {
   if (r.status === "Cerrado") return 100;
@@ -123,7 +124,7 @@ function Dashboard() {
     })),
     ...rdasList.map((r) => ({
       id: r.id,
-      title: r.title || "Sin título",
+      title: getRdaDisplayName(r, "Sin título"),
       area: r.context?.planta || "Otra",
       date: new Date(r.updatedAt || Date.now()).toLocaleDateString("es-ES", {
         day: "numeric",

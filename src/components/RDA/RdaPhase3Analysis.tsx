@@ -52,26 +52,26 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
       });
     }
   };
-  // Setup Ishikawa adapter logic
-  const ishikawas = rda.ishikawa || [];
-  if (ishikawas.length === 0) {
-    // initialize at least one
-    ishikawas.push({
-      id: crypto.randomUUID(),
-      title: t("rdaInternal.mainProblem"),
-      effect: rda.title || "",
-      causes: {
-        machine: [""],
-        method: [""],
-        material: [""],
-        man: [""],
-        measurement: [""],
-        environment: [""],
-      },
-      prioritizedCauses: [],
-      customLabels: {},
-    });
-  }
+  // Setup Ishikawa adapter logic (sin mutar el prop `rda`)
+  const ishikawas = rda.ishikawa?.length
+    ? rda.ishikawa
+    : [
+        {
+          id: "ishikawa-0",
+          title: t("rdaInternal.mainProblem"),
+          effect: getRdaName(rda),
+          causes: {
+            machine: [""],
+            method: [""],
+            material: [""],
+            man: [""],
+            measurement: [""],
+            environment: [""],
+          },
+          prioritizedCauses: [],
+          customLabels: {},
+        },
+      ];
 
   const handleIshikawaChange = (idx: number, newIshikawa: NonNullable<Rda["ishikawa"]>[number]) => {
     const updated = [...ishikawas];
@@ -95,7 +95,7 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
           handleIshikawaChange(0, { ...currentIshikawa, causes: resolved });
         }}
         efectoPrincipal={getRdaName(rda)}
-        alCambiarEfecto={(name) => onChange(withRdaName(rda, name))}
+        alCambiarEfecto={(name) => onChange(withRdaName({ ...rda, ishikawa: ishikawas }, name))}
         hidePrioritizationTable={true}
         causasPriorizadas={currentIshikawa.prioritizedCauses || []}
         alCambiarCausasPriorizadas={(prioritizedCauses) =>

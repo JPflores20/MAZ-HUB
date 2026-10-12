@@ -19,6 +19,7 @@ const LazyRdaDialog = lazy(() =>
 );
 import { subscribeToRdas, createRda, updateRda, deleteRda } from "@/services/rda-service";
 import { Rda, defaultRda } from "@/data/rda";
+import { getRdaDisplayName } from "@/components/RDA/rda-name";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -268,7 +269,7 @@ function RdaPage() {
                   className="cursor-pointer transition-colors hover:bg-secondary/30 text-sm"
                   onClick={() => handleEdit(rda)}
                 >
-                  <TableCell className="font-medium">{rda.title}</TableCell>
+                  <TableCell className="font-medium">{getRdaDisplayName(rda)}</TableCell>
                   <TableCell>
                     {rda.status === "Abierto"
                       ? t("openStatus")

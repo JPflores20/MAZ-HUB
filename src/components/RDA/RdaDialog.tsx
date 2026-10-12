@@ -14,7 +14,7 @@ import { RdaPhase2Problem } from "./RdaPhase2Problem";
 import { RdaPhase3Analysis } from "./RdaPhase3Analysis";
 import { RdaPhase6QualityEval } from "./RdaPhase6QualityEval";
 import { RdaPhase7EffectivenessEval } from "./RdaPhase7EffectivenessEval";
-import { normalizeRdaName } from "./rda-name";
+import { getRdaDisplayName, normalizeRdaName } from "./rda-name";
 
 interface RdaDialogProps {
   open: boolean;
@@ -307,7 +307,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight max-w-3xl">
-            {localRda.title || t("rda.newRda")}
+            {getRdaDisplayName(localRda, t("rda.newRda"))}
           </h1>
 
           <div className="flex-shrink-0 text-right min-w-[180px]">

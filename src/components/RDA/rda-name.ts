@@ -16,6 +16,16 @@ export function getRdaName(rda: Rda): string {
   return isPlaceholderTitle(rda.title) ? "" : rda.title;
 }
 
+/**
+ * Nombre a mostrar en listas y encabezados: el título, o la cabeza del Ishikawa
+ * si el título sigue siendo el de por defecto. No depende de que el RDA se haya
+ * vuelto a abrir/guardar.
+ */
+export function getRdaDisplayName(rda: Rda, fallback = "Nuevo RDA"): string {
+  const effect = rda.ishikawa?.[0]?.effect ?? "";
+  return getRdaName(rda) || (isPlaceholderTitle(effect) ? "" : effect.trim()) || fallback;
+}
+
 /** Renombra el RDA manteniendo sincronizada la cabeza del Ishikawa. */
 export function withRdaName(rda: Rda, name: string): Rda {
   const [first, ...rest] = rda.ishikawa || [];
