@@ -15,8 +15,8 @@ import {
 } from "../pdca-defaults";
 
 describe("PHASES", () => {
-  it("contiene exactamente las 4 fases del ciclo PDCA en orden", () => {
-    expect(PHASES).toEqual(["Plan", "Do", "Check", "Act"]);
+  it("contiene exactamente las 6 fases del ciclo PDCA en orden", () => {
+    expect(PHASES).toEqual(["Resumen", "Plan", "Do", "Check", "Act", "Evaluacion"]);
   });
 
   it("el alias legacy `phases` apunta al mismo arreglo", () => {
@@ -26,7 +26,14 @@ describe("PHASES", () => {
 
 describe("PHASE_STYLES", () => {
   it("tiene una entrada para cada fase del ciclo PDCA", () => {
-    expect(Object.keys(PHASE_STYLES)).toEqual(["Plan", "Do", "Check", "Act"]);
+    expect(Object.keys(PHASE_STYLES)).toEqual([
+      "Resumen",
+      "Plan",
+      "Do",
+      "Check",
+      "Act",
+      "Evaluacion",
+    ]);
   });
 
   it("cada estilo es un string no vacío con clases de Tailwind", () => {

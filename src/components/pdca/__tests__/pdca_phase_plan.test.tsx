@@ -3,14 +3,14 @@
  * Pruebas unitarias de la Fase 1 (PLAN) del PDCA.
  */
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PdcaPhasePlan } from "../1.PLAN/pdca_phase_plan";
 import { DEFAULT_DEFINICION_META } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 import { DEFAULT_PARTICIPANTES, DEFAULT_VPO_CHECKPOINTS } from "@/data/pdca";
 
 describe("PdcaPhasePlan", () => {
-  it("debe renderizar la secciï¿½n de meta y participantes", () => {
+  it("debe renderizar la sección de meta y participantes", () => {
     render(
       <PdcaPhasePlan
         title_value=""
@@ -18,7 +18,7 @@ describe("PdcaPhasePlan", () => {
         area_value=""
         on_area_change={vi.fn()}
         on_deadline_change={vi.fn()}
-        problem_description="Descripciï¿½n de prueba"
+        problem_description="Descripción de prueba"
         on_problem_change={vi.fn()}
         goal_definition={DEFAULT_DEFINICION_META}
         on_goal_definition_change={vi.fn()}
@@ -41,7 +41,11 @@ describe("PdcaPhasePlan", () => {
         is_admin_user={false}
       />,
     );
-    expect(screen.getByText(/PASO 1: DEFINICIï¿½N DE LA META Y PARTICIPANTES/i)).toBeDefined();
-    expect(screen.getByText(/PASO 2: PHASE SDCA CHECKLIST/i)).toBeDefined();
+
+    const subphase1Btn = screen.getByRole("button", { name: /Identificación del Problema/i });
+    fireEvent.click(subphase1Btn);
+
+    expect(screen.getByText(/PASO 1: DECLARACIÓN DEL PROYECTO/i)).toBeDefined();
+    expect(screen.getByText(/PASO 2: FASE SDCA CHECKLIST/i)).toBeDefined();
   });
 });

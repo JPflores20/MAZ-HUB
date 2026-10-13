@@ -439,6 +439,17 @@ const resources = {
             placeholder: "Document the lessons learned during the PDCA project...",
           },
         },
+        resumen: {
+          step33: {
+            title: "STEP 33: CONCLUSIONS",
+            instructionsTitle: "Instructions",
+            inst1: "Fill in the finish date",
+            inst2:
+              'Fill in the general KPI information including the initial KPI value and final KPI value. If an increase in value equals a KPI improvement, select "Higher". Otherwise, select "Lower".',
+            inst3:
+              "If your PDCA had a narrower focus on a specific PI, fill in the PI information to show the PI before and after the PDCA.",
+          },
+        },
       },
       table: {
         projectTitle: "PROJECT TITLE",
@@ -1363,6 +1374,17 @@ const resources = {
           step32: {
             title: "PASO 32: LECCIONES APRENDIDAS",
             placeholder: "Documenta las lecciones aprendidas durante el proyecto PDCA...",
+          },
+        },
+        resumen: {
+          step33: {
+            title: "PASO 33: CONCLUSIONES",
+            instructionsTitle: "Instrucciones",
+            inst1: "Llene la fecha de finalización",
+            inst2:
+              'Llene la información general del KPI incluyendo el valor inicial del KPI, el valor final del KPI. Si un aumento del valor equivale a una mejora del KPI, seleccione "Más alto". De lo contrario, seleccione "Más bajo".',
+            inst3:
+              "Si su PDCA tenía un enfoque más limitado en un PI específico, entonces llene la información del PI para mostrar el PI antes y después del PDCA.",
           },
         },
       },

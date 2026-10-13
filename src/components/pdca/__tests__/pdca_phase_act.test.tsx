@@ -8,7 +8,7 @@ import { describe, it, expect, vi } from "vitest";
 import { PdcaPhaseAct } from "../4.ACT/pdca_phase_act";
 
 describe("PdcaPhaseAct", () => {
-  it("debe renderizar los pasos de la fase de Ejecuciï¿½n", () => {
+  it("debe renderizar los pasos de la fase de Estandarización (Act)", () => {
     render(
       <PdcaPhaseAct
         tabla_estandarizacion={[]}
@@ -20,11 +20,11 @@ describe("PdcaPhaseAct", () => {
       />,
     );
 
-    expect(screen.getByText(/PASO 25: ESTANDARIZACIï¿½N DE PROCESOS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 26: SOPs & DOCUMENTOS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 27: PLAN DE ENTRENAMIENTO/i)).toBeDefined();
-    expect(screen.getByText(/PASO 28: PLAN DE CONTROL/i)).toBeDefined();
-    expect(screen.getByText(/PASO 29: LECCIONES APRENDIDAS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 30: CONCLUSIONES/i)).toBeDefined();
+    expect(screen.getByText(/PASO 27: ESTANDARIZACIÓN DE PROCESOS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 29: SOPs & DOCUMENTOS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 30: PLAN DE ENTRENAMIENTO/i)).toBeDefined();
+    expect(screen.getByText(/PASO 31: PLAN DE CONTROL/i)).toBeDefined();
+    expect(screen.getByText(/PASO 32: LECCIONES APRENDIDAS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 33: CONCLUSIONES/i)).toBeDefined();
   });
 });

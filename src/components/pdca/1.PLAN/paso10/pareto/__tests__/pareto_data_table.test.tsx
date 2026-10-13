@@ -36,9 +36,9 @@ describe("ParetoDataTable", () => {
         total_gap={15}
       />,
     );
-    expect(screen.getByText("ï¿½rea / Categorï¿½a")).toBeDefined();
-    expect(screen.getByText("% Ind.")).toBeDefined();
-    expect(screen.getByText("% Acum.")).toBeDefined();
+    expect(screen.getByText(/Área \/ Categoría/i)).toBeDefined();
+    expect(screen.getByText(/% Ind\./i)).toBeDefined();
+    expect(screen.getByText(/% Acum\./i)).toBeDefined();
     expect(screen.getByText("TOTAL")).toBeDefined();
   });
 
@@ -57,7 +57,7 @@ describe("ParetoDataTable", () => {
     expect(screen.getByDisplayValue("Sweet")).toBeDefined();
   });
 
-  it("llama a on_row_update al cambiar el ï¿½rea", () => {
+  it("llama a on_row_update al cambiar el área", () => {
     const mock_update = vi.fn();
     render(
       <ParetoDataTable
@@ -74,7 +74,7 @@ describe("ParetoDataTable", () => {
     expect(mock_update).toHaveBeenCalledWith(1, "area", "Estery");
   });
 
-  it("muestra botones de eliminar cuando hay mï¿½s de un item", () => {
+  it("muestra botones de eliminar cuando hay más de un item", () => {
     render(
       <ParetoDataTable
         pareto_data={SAMPLE_CHART_ITEMS}

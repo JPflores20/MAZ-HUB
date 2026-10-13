@@ -33,27 +33,27 @@ const DEFAULT_PROPS = {
 };
 
 describe("ParetoChart", () => {
-  it("renderiza el input de nombre del grï¿½fico", () => {
+  it("renderiza el input de nombre del gráfico", () => {
     render(<ParetoChart {...DEFAULT_PROPS} />);
-    const title_input = screen.getByPlaceholderText("Nombre del grï¿½fico...");
+    const title_input = screen.getByPlaceholderText("Nombre del gráfico...");
     expect(title_input).toBeDefined();
   });
 
   it("llama a on_chart_title_change al escribir el nombre", () => {
     const mock_fn = vi.fn();
     render(<ParetoChart {...DEFAULT_PROPS} on_chart_title_change={mock_fn} />);
-    const input = screen.getByPlaceholderText("Nombre del grï¿½fico...");
+    const input = screen.getByPlaceholderText("Nombre del gráfico...");
     fireEvent.change(input, { target: { value: "Pareto Sabores" } });
     expect(mock_fn).toHaveBeenCalledWith("Pareto Sabores");
   });
 
-  it("renderiza los controles de Y mï¿½n y Y mï¿½x", () => {
+  it("renderiza los controles de Y mín y Y máx", () => {
     render(<ParetoChart {...DEFAULT_PROPS} />);
-    expect(screen.getByText(/Y mï¿½n/i)).toBeDefined();
-    expect(screen.getByText(/Y mï¿½x/i)).toBeDefined();
+    expect(screen.getByText(/Y mín/i)).toBeDefined();
+    expect(screen.getByText(/Y máx/i)).toBeDefined();
   });
 
-  it("llama a on_y_axis_min_change al cambiar el mï¿½nimo", () => {
+  it("llama a on_y_axis_min_change al cambiar el mínimo", () => {
     const mock_fn = vi.fn();
     render(<ParetoChart {...DEFAULT_PROPS} on_y_axis_min_change={mock_fn} />);
     const min_inputs = screen.getAllByRole("spinbutton");
@@ -61,17 +61,17 @@ describe("ParetoChart", () => {
     expect(mock_fn).toHaveBeenCalledWith(5);
   });
 
-  it("muestra el botï¿½n Expandir cuando se provee on_expand y no estï¿½ en fullscreen", () => {
+  it("muestra el botón Expandir cuando se provee on_expand y no está en fullscreen", () => {
     render(<ParetoChart {...DEFAULT_PROPS} on_expand={vi.fn()} is_fullscreen={false} />);
     expect(screen.getByText(/Expandir/i)).toBeDefined();
   });
 
-  it("no muestra el botï¿½n Expandir en modo fullscreen", () => {
+  it("no muestra el botón Expandir en modo fullscreen", () => {
     render(<ParetoChart {...DEFAULT_PROPS} on_expand={vi.fn()} is_fullscreen={true} />);
     expect(screen.queryByText(/Expandir/i)).toBeNull();
   });
 
-  it("muestra el tï¿½tulo editado en el input", () => {
+  it("muestra el título editado en el input", () => {
     render(<ParetoChart {...DEFAULT_PROPS} chart_title="Mi Pareto" />);
     const input = screen.getByDisplayValue("Mi Pareto");
     expect(input).toBeDefined();

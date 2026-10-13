@@ -33,7 +33,7 @@ describe("use_pdca_dialog_state", () => {
 
     expect(result.current.title_value).toBe("Optimización de Envasado");
     expect(result.current.area_value).toBe("envasado");
-    expect(result.current.active_tab).toBe("Plan");
+    expect(result.current.active_tab).toBe("Resumen");
     expect(result.current.team_members).toEqual(["Operador 1", "Mecánico 1"]);
   });
 
