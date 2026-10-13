@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import type { RdaAnomalyContext } from "@/data/rda";
+import { AREAS } from "@/data/pdca-defaults";
 import {
   Table,
   TableBody,
@@ -162,10 +163,17 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
             <TableCell className={cellClass}>
               <Input
                 className={inputClass}
+                list="rda-context-area-list"
                 value={context.area}
                 onChange={(e) => handleChange("area", e.target.value)}
+                onBlur={(e) => handleChange("area", e.target.value.trim())}
                 placeholder={t('rdaInternal.phArea')}
               />
+              <datalist id="rda-context-area-list">
+                {AREAS.map((a) => (
+                  <option key={a.value} value={a.label} />
+                ))}
+              </datalist>
             </TableCell>
             <TableCell className={cellClass}>
               <Input

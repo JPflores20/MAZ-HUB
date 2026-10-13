@@ -157,6 +157,10 @@ export function ActionPlanTable({
                   </TableHead>
                 ))}
 
+                <TableHead className="text-white font-bold h-8 py-1 px-2 border-r border-white/20 text-center min-w-[250px] leading-tight">
+                  Análisis 5 medios básicos para cero averías
+                </TableHead>
+
                 {[t("pdcaTables.actionPlan.factors.safety"), t("pdcaTables.actionPlan.factors.quality"), t("pdcaTables.actionPlan.factors.cost"), t("pdcaTables.actionPlan.factors.environment"), t("pdcaTables.actionPlan.factors.service")].map((label) => (
                   <TableHead
                     key={label}

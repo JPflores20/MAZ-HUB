@@ -34,9 +34,9 @@ export const ResumenCharts: React.FC<Props> = ({
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 print:grid-cols-3 gap-4 print:gap-3">
       {/* Columna 1: Tendencia del KPI (paso 26) */}
-      <Card className="shadow-sm border-border">
+      <Card className="shadow-sm border-border print:shadow-none print:border print:break-inside-avoid">
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <TrendingUp className="size-3.5 text-blue-500" />
@@ -89,7 +89,7 @@ export const ResumenCharts: React.FC<Props> = ({
       </Card>
 
       {/* Columna 2: Pareto Antes (paso 10) */}
-      <Card className="shadow-sm border-border">
+      <Card className="shadow-sm border-border print:shadow-none print:border print:break-inside-avoid">
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <BarChartIcon className="size-3.5 text-red-500 dark:text-red-400" />
@@ -127,7 +127,7 @@ export const ResumenCharts: React.FC<Props> = ({
       </Card>
 
       {/* Columna 3: Pareto Después (paso 24) */}
-      <Card className="shadow-sm border-border">
+      <Card className="shadow-sm border-border print:shadow-none print:border print:break-inside-avoid">
         <CardHeader className="pb-2 pt-4 px-4 border-b bg-muted/20">
           <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <BarChartIcon className="size-3.5 text-green-500" />

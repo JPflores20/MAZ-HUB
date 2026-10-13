@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Plus, Search, Trash2, Edit, RefreshCw, Filter } from "lucide-react";
+import { Plus, Search, Trash2, Edit, RefreshCw, Filter, Download, FileSpreadsheet } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
@@ -19,7 +20,9 @@ const LazyRdaDialog = lazy(() =>
 );
 import { subscribeToRdas, createRda, updateRda, deleteRda } from "@/services/rda-service";
 import { Rda, defaultRda } from "@/data/rda";
+import { AREAS } from "@/data/pdca-defaults";
 import { getRdaDisplayName } from "@/components/RDA/rda-name";
+import { getRdaStatus } from "@/components/RDA/rda-status";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +45,9 @@ function RdaPage() {
   const [selectedRda, setSelectedRda] = useState<Rda | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [rdaToDelete, setRdaToDelete] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [areaFilter, setAreaFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     const unsubscribe = subscribeToRdas((data) => {
@@ -81,6 +87,60 @@ function RdaPage() {
   // Persiste y devuelve la versión guardada. Los errores se propagan al diálogo,
   // que es quien los muestra al usuario y decide si cerrar.
   const handleSave = (rda: Rda) => updateRda(rda);
+
+
+  const availableAreas = React.useMemo(() => {
+    const areaMap = new Map<string, string>();
+    rdas.forEach((r) => {
+      const raw = (r.context?.area || r.portada?.area || "").trim().replace(/\s+/g, " ");
+      if (raw) {
+        const key = raw.toLowerCase();
+        if (!areaMap.has(key)) {
+          const matched = AREAS.find(
+            (a) => a.value.toLowerCase() === key || a.label.toLowerCase() === key,
+          );
+          areaMap.set(key, matched ? matched.label : raw);
+        }
+      }
+    });
+    return Array.from(areaMap.values()).sort((a, b) =>
+      a.localeCompare(b, "es", { sensitivity: "base" }),
+    );
+  }, [rdas]);
+
+  const filteredRdas = rdas.filter((rda) => {
+    const term = searchTerm.toLowerCase();
+    const title = getRdaDisplayName(rda).toLowerCase();
+    const folio = (rda.context?.folio || "").toLowerCase();
+    const resp = (rda.context?.responsable || "").toLowerCase();
+    const matchesSearch = title.includes(term) || folio.includes(term) || resp.includes(term);
+
+    const rdaArea = (rda.context?.area || rda.portada?.area || "").trim().toLowerCase();
+    const matchesArea = areaFilter === "all" || rdaArea === areaFilter.trim().toLowerCase();
+
+    const rdaStatus = getRdaStatus(rda);
+    const matchesStatus = statusFilter === "all" || rdaStatus === statusFilter;
+
+    return matchesSearch && matchesArea && matchesStatus;
+  });
+
+  const exportExcel = () => {
+    const data = filteredRdas.map(rda => ({
+      Folio: rda.context?.folio || "-",
+      Titulo: getRdaDisplayName(rda),
+      Estatus: getRdaStatus(rda),
+      Planta: rda.context?.planta || "-",
+      Area: rda.context?.area || "-",
+      Responsable: rda.context?.responsable || "-",
+      Autor: rda.portada?.autorOriginal || "-",
+      FechaLimite: rda.portada?.fechaLimite ? new Date(rda.portada.fechaLimite).toLocaleDateString("es-ES") : "-",
+      Actualizado: rda.updatedAt ? new Date(rda.updatedAt).toLocaleDateString("es-ES") : "-",
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Mis RDA");
+    XLSX.writeFile(wb, "Mis_RDA.xlsx");
+  };
 
   if (selectedRda || isDialogOpen) {
     return (
@@ -147,41 +207,51 @@ function RdaPage() {
         </div>
       ) : (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {["Abierto", "En Progreso", "Cerrado"].map((status) => {
-            const color =
-              status === "Abierto"
-                ? "border-t-phase-plan"
-                : status === "En Progreso"
-                  ? "border-t-phase-do"
-                  : "border-t-phase-check";
-            const bgDot =
-              status === "Abierto"
-                ? "bg-phase-plan"
-                : status === "En Progreso"
-                  ? "bg-phase-do"
-                  : "bg-phase-check";
-            const label =
-              status === "Abierto"
-                ? t("openStatus")
-                : status === "En Progreso"
-                  ? t("inProgressStatus")
-                  : t("closedStatus");
+          {[
+            {
+              id: "Abierto",
+              label: t("openStatus", "Abierto"),
+              count: rdas.filter((r) => getRdaStatus(r) === "Abierto").length,
+              color: "border-t-blue-600",
+              bgDot: "bg-blue-600",
+              description: "RDAs en estatus abierto",
+            },
+            {
+              id: "Cerrado",
+              label: t("closedStatus", "Cerrado"),
+              count: rdas.filter((r) => getRdaStatus(r) === "Cerrado").length,
+              color: "border-t-emerald-600",
+              bgDot: "bg-emerald-600",
+              description: "Fases 1, 2 y 3 completas",
+            },
+            {
+              id: "Evaluado",
+              label: t("evaluatedStatus", "Evaluado"),
+              count: rdas.filter((r) => getRdaStatus(r) === "Evaluado").length,
+              color: "border-t-purple-600",
+              bgDot: "bg-purple-600",
+              description: "Fases 4 y 5 completas",
+            },
+          ].map((card) => {
+            const isSelected = statusFilter === card.id;
             return (
               <button
-                key={status}
-                className={`rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] text-left transition-all hover:scale-[1.01] border-t-4 ${color}`}
+                key={card.id}
+                type="button"
+                onClick={() => setStatusFilter((prev) => (prev === card.id ? "all" : card.id))}
+                className={`rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] text-left transition-all hover:scale-[1.01] border-t-4 cursor-pointer ${card.color} ${
+                  isSelected ? "ring-2 ring-primary ring-offset-2 scale-[1.01]" : ""
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${bgDot}`}></span>
-                    <span className="text-sm font-semibold uppercase">{label}</span>
+                    <span className={`w-2 h-2 rounded-full ${card.bgDot}`}></span>
+                    <span className="text-sm font-semibold uppercase">{card.label}</span>
                   </div>
-                  <span className="text-2xl font-bold">
-                    {rdas.filter((r) => r.status === status).length}
-                  </span>
+                  <span className="text-2xl font-bold">{card.count}</span>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  {t("rdasInStatus")} {label.toLowerCase()}
+                  {card.description}
                 </p>
               </button>
             );
@@ -190,16 +260,54 @@ function RdaPage() {
       )}
 
       <div className="mb-6 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder={t("searchPlaceholder")} className="pl-9 pr-4 bg-card" />
+        <div className="relative w-full sm:max-w-sm flex items-center gap-2">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input 
+              placeholder={t("searchPlaceholder", "Buscar Folio, Título o Resp...")} 
+              className="pl-9 pr-4 bg-card" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <select 
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+            value={areaFilter}
+            onChange={(e) => setAreaFilter(e.target.value)}
+          >
+            <option value="all">Todas las Áreas</option>
+            {availableAreas.map(a => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+          {statusFilter !== "all" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="h-10 text-xs gap-1 border-dashed text-primary hover:text-primary shrink-0"
+            >
+              Estatus: <strong className="ml-1">{statusFilter}</strong>
+              <span className="ml-1 text-muted-foreground font-normal">✕</span>
+            </Button>
+          )}
         </div>
+        <Button 
+          variant="default" 
+          onClick={exportExcel} 
+          className="shrink-0 bg-green-600 hover:bg-green-700 text-white border-none shadow-md transition-all hover:scale-105"
+        >
+          <FileSpreadsheet className="mr-2 h-4 w-4" /> Exportar a Excel
+        </Button>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
         <Table>
           <TableHeader>
             <TableRow className="bg-secondary/80 hover:bg-secondary/80 text-xs">
+              <TableHead className="font-semibold text-foreground/80">
+                {t("rdaTable.folio", "Folio")}
+              </TableHead>
               <TableHead className="font-semibold text-foreground/80">
                 {t("rdaTable.title")}
               </TableHead>
@@ -256,26 +364,40 @@ function RdaPage() {
                   </TableCell>
                 </TableRow>
               ))
-            ) : rdas.length === 0 ? (
+            ) : filteredRdas.length === 0 ? (
               <TableRow className="bg-secondary/80 hover:bg-secondary/80">
-                <TableCell colSpan={8} className="text-center py-4 text-muted-foreground">
+                <TableCell colSpan={9} className="text-center py-4 text-muted-foreground">
                   {t("rdaTable.noRdas")}
                 </TableCell>
               </TableRow>
             ) : (
-              rdas.map((rda) => (
+              filteredRdas.map((rda) => (
                 <TableRow
                   key={rda.id}
                   className="cursor-pointer transition-colors hover:bg-secondary/30 text-sm"
                   onClick={() => handleEdit(rda)}
                 >
+                  <TableCell className="font-semibold">{rda.context?.folio || "-"}</TableCell>
                   <TableCell className="font-medium">{getRdaDisplayName(rda)}</TableCell>
                   <TableCell>
-                    {rda.status === "Abierto"
-                      ? t("openStatus")
-                      : rda.status === "En Progreso"
-                        ? t("inProgressStatus")
-                        : t("closedStatus")}
+                    {(() => {
+                      const st = getRdaStatus(rda);
+                      const badgeColor =
+                        st === "Evaluado"
+                          ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
+                          : st === "Cerrado"
+                            ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
+                            : "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800";
+                      return (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeColor}`}>
+                          {st === "Evaluado"
+                            ? t("evaluatedStatus", "Evaluado")
+                            : st === "Cerrado"
+                              ? t("closedStatus", "Cerrado")
+                              : t("openStatus", "Abierto")}
+                        </span>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>{rda.context.planta}</TableCell>
                   <TableCell>{rda.context.responsable || "-"}</TableCell>

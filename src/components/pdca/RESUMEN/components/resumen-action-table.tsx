@@ -20,12 +20,12 @@ interface Props {
 export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
   const { t } = useTranslation();
   return (
-    <Card className="border-emerald-500/30 shadow-sm overflow-hidden">
+    <Card className="border-emerald-500/30 shadow-sm overflow-hidden print:border print:shadow-none">
       <CardHeader className="pb-3 pt-4 px-4 flex flex-row items-center justify-between border-b bg-emerald-50/40 dark:bg-emerald-950/20">
         <div className="flex items-center gap-2">
           <ListChecks className="size-4 text-emerald-600 dark:text-emerald-400" />
           <CardTitle className="text-sm font-bold uppercase tracking-wide text-foreground">
-            {t('pdcaResumen.step18TableTitle')}
+            {t('pdcaResumen.step18TableTitle', 'Plan de Acción')}
           </CardTitle>
         </div>
         <Badge
@@ -55,11 +55,11 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
                 return (
                   <tr
                     key={i}
-                    className={
+                    className={`print:break-inside-avoid ${
                       isPrioritized
                         ? "bg-emerald-50/40 dark:bg-emerald-950/15 hover:bg-emerald-50/80 transition-colors"
                         : "hover:bg-muted/30 transition-colors"
-                    }
+                    }`}
                   >
                     <td className="py-2.5 px-3 font-bold text-center text-muted-foreground">
                       {i + 1}
@@ -96,7 +96,7 @@ export const ResumenActionTable: React.FC<Props> = ({ displayActions }) => {
               {displayActions.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-muted-foreground">
-                    No hay {t('pdcaResumen.actionsRegistered')} en el Paso 18.
+                    {t('pdcaResumen.noActionsRegisteredStep18', 'No hay acciones registradas.')}
                   </td>
                 </tr>
               )}

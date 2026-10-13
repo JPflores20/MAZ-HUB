@@ -121,10 +121,12 @@ export const PdcaDialogHeader: React.FC<HeaderProps> = ({
       <button
         type="button"
         onClick={on_go_back}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+        className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border/80 bg-card hover:bg-secondary/60 text-foreground font-semibold text-sm shadow-sm hover:shadow transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer group"
       >
-        <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
-        {t("pdcaDialog.backToPdcas")}
+        <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
+          <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+        </span>
+        <span>{t("pdcaDialog.backToPdcas", "Volver a Mis PDCAs")}</span>
       </button>
 
       {/* Row 2: Meta + Save */}

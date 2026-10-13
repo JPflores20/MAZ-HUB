@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useMemo } from "react";
+import { ReactNode, useState, useEffect, useMemo, useRef } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, ClipboardList, Users, ShieldAlert } from "lucide-react";
 import { format, isValid } from "date-fns";
@@ -20,8 +20,52 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const currentPath = router.location.pathname;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
+  const mainRef = useRef<HTMLElement>(null);
   const { allPdcas } = usePdcas();
   const [deadlinePickerOpenId, setDeadlinePickerOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let lastScrollTop = 0;
+    const mainEl = mainRef.current;
+
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement | Document | null;
+      let currentScrollTop = 0;
+
+      if (target === document || target === document.documentElement) {
+        currentScrollTop = window.scrollY || document.documentElement.scrollTop;
+      } else if (target && "scrollTop" in target) {
+        currentScrollTop = (target as HTMLElement).scrollTop;
+      } else if (mainEl) {
+        currentScrollTop = mainEl.scrollTop;
+      }
+
+      // Si hace scroll hacia abajo (más de 20px de desplazamiento), colapsar el sidebar automáticamente
+      if (currentScrollTop > 20 && currentScrollTop > lastScrollTop) {
+        setDesktopSidebarOpen(false);
+      } else if (currentScrollTop <= 10) {
+        // Al regresar al tope superior, expandir el sidebar
+        setDesktopSidebarOpen(true);
+      }
+
+      lastScrollTop = currentScrollTop;
+    };
+
+    mainEl?.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      mainEl?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+    setDesktopSidebarOpen(true);
+  }, [currentPath]);
 
   const handleDeadlineChange = async (
     pdcaId: string,
@@ -126,7 +170,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main ref={mainRef} className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

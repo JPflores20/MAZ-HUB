@@ -15,6 +15,7 @@ import { RdaPhase3Analysis } from "./RdaPhase3Analysis";
 import { RdaPhase6QualityEval } from "./RdaPhase6QualityEval";
 import { RdaPhase7EffectivenessEval } from "./RdaPhase7EffectivenessEval";
 import { getRdaDisplayName, normalizeRdaName } from "./rda-name";
+import { getRdaStatus, isRdaPhaseComplete, RDA_PHASE_STEP_IDS } from "./rda-status";
 
 interface RdaDialogProps {
   open: boolean;
@@ -75,8 +76,26 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
   useEffect(() => {
     if (rda && open) {
-      setLocalRda(normalizeRdaName({ ...rda }));
-      lastSavedJson.current = JSON.stringify(rda);
+      const normalized = normalizeRdaName({ ...rda });
+      const hasPhaseOrStepData =
+        (normalized.completedPhases && normalized.completedPhases.length > 0) ||
+        (normalized.completedSteps && normalized.completedSteps.length > 0) ||
+        (normalized.naSteps && normalized.naSteps.length > 0);
+
+      if (!hasPhaseOrStepData) {
+        if (normalized.status === "Evaluado") {
+          normalized.completedPhases = RDA_PHASES.map((p) => p.id);
+        } else if (normalized.status === "Cerrado") {
+          normalized.completedPhases = [
+            "1. Resumen",
+            "2. Descripción del Problema",
+            "3. Análisis de Causas Raíz",
+          ];
+        }
+      }
+
+      setLocalRda(normalized);
+      lastSavedJson.current = JSON.stringify(normalized);
       setSaveState("idle");
       setActiveTab("1. Resumen");
     }
@@ -96,7 +115,9 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
     setSaveState("saving");
     const task = (async () => {
       try {
-        const saved = await onSave(snapshot);
+        const currentStatus = getRdaStatus(snapshot, { ignoreLegacyStatus: true });
+        const toSave = snapshot.status !== currentStatus ? { ...snapshot, status: currentStatus } : snapshot;
+        const saved = await onSave(toSave);
         if (latestRda.current === snapshot) {
           // Nadie editó mientras guardábamos: adoptamos la versión guardada
           // (trae URLs de Storage en lugar de base64 y el nuevo updatedAt).
@@ -179,20 +200,46 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
           ? "dirty"
           : "saved";
 
-  const togglePhaseComplete = (e: React.MouseEvent, phaseId: RdaPhase) => {
+  const handleRdaChange = (next: Rda) => {
+    const nextStatus = getRdaStatus(next, { ignoreLegacyStatus: true });
+    setLocalRda({ ...next, status: nextStatus });
+  };
+
+  const togglePhaseComplete = (
+    e: React.MouseEvent,
+    phaseId: RdaPhase,
+    phaseNum: 1 | 2 | 3 | 4 | 5,
+  ) => {
     e.stopPropagation();
     setLocalRda((prev) => {
       if (!prev) return prev;
       const completed = prev.completedPhases || [];
-      if (completed.includes(phaseId)) {
-        return { ...prev, completedPhases: completed.filter((id) => id !== phaseId) };
+      const currentlyComplete = isRdaPhaseComplete(prev, phaseNum);
+      const phaseStepIds = new Set(RDA_PHASE_STEP_IDS[phaseNum]);
+
+      let next: Rda;
+      if (currentlyComplete) {
+        next = {
+          ...prev,
+          completedPhases: completed.filter((id) => id !== phaseId),
+          completedSteps: (prev.completedSteps || []).filter((s) => !phaseStepIds.has(s)),
+          naSteps: (prev.naSteps || []).filter((s) => !phaseStepIds.has(s)),
+        };
       } else {
-        return { ...prev, completedPhases: [...completed, phaseId] };
+        next = {
+          ...prev,
+          completedPhases: completed.includes(phaseId) ? completed : [...completed, phaseId],
+        };
       }
+
+      return {
+        ...next,
+        status: getRdaStatus(next, { ignoreLegacyStatus: true }),
+      };
     });
   };
 
-  const getPhaseTabColors = (id: RdaPhase, isCurrent: boolean, isCompleted: boolean) => {
+  const getPhaseTabColors = (id: RdaPhase, isCurrent: boolean, _isCompleted: boolean) => {
     if (isCurrent) {
       switch (id) {
         case "1. Resumen":
@@ -222,10 +269,9 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
   };
 
   const currentIndex = RDA_PHASES.findIndex((p) => p.id === activeTab);
-  const isCompletable = (pid: string) =>
-    !pid.startsWith("1.") && !pid.startsWith("4.") && !pid.startsWith("5.");
+  const isCompletable = (_pid: string) => true;
 
-  // Progreso: pasos que cuentan (fases 2 y 3)
+  // Progreso: todos los pasos reales del RDA (fases 2, 3, 4 y 5)
   const RDA_PROGRESS_STEP_IDS = [
     "rda-step-1",
     "rda-step-2",
@@ -236,9 +282,10 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
     "rda-step-7",
     "rda-step-8",
     "rda-step-9",
-    "rda-step-10",
     "rda-step-11",
     "rda-step-12",
+    "rda-step-14",
+    "rda-step-15",
   ];
   const TOTAL_RDA_STEPS = RDA_PROGRESS_STEP_IDS.length;
   const doneOrNa = new Set([...(localRda.completedSteps || []), ...(localRda.naSteps || [])]);
@@ -251,10 +298,12 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+          className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border/80 bg-card hover:bg-secondary/60 text-foreground font-semibold text-sm shadow-sm hover:shadow transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer group"
         >
-          <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
-          {t("rda.backToMyRdas")}
+          <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
+            <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+          </span>
+          <span>{t("rda.backToMyRdas", "Volver a Mis RDAs")}</span>
         </button>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
@@ -266,7 +315,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
               {activeTab}
             </span>
             <span className="text-xs text-muted-foreground ml-2">
-              {t("rda.statusLabel")} {localRda.status}
+              {t("rda.statusLabel")} {getRdaStatus(localRda, { ignoreLegacyStatus: true })}
             </span>
           </div>
 
@@ -355,7 +404,8 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
         >
           {RDA_PHASES.map((phase, i) => {
             const isCurrent = i === currentIndex;
-            const isCompleted = localRda.completedPhases?.includes(phase.id) || false;
+            const phaseNum = (i + 1) as 1 | 2 | 3 | 4 | 5;
+            const isCompleted = isRdaPhaseComplete(localRda, phaseNum);
 
             const getPhaseCheckColors = () => {
               if (isCompleted)
@@ -408,7 +458,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
                 {isCompletable(phase.id) && (
                   <button
                     type="button"
-                    onClick={(e) => togglePhaseComplete(e, phase.id)}
+                    onClick={(e) => togglePhaseComplete(e, phase.id, phaseNum)}
                     className={cn(
                       "shrink-0 size-6 grid place-items-center rounded-full border-2 transition-all",
                       getPhaseCheckColors(),
@@ -449,18 +499,18 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
       </div>
 
       <div className="mt-8">
-        {activeTab === "1. Resumen" && <RdaPhase1Resumen rda={localRda} onChange={setLocalRda} />}
+        {activeTab === "1. Resumen" && <RdaPhase1Resumen rda={localRda} onChange={handleRdaChange} />}
         {activeTab === "2. Descripción del Problema" && (
-          <RdaPhase2Problem rda={localRda} onChange={setLocalRda} />
+          <RdaPhase2Problem rda={localRda} onChange={handleRdaChange} />
         )}
         {activeTab === "3. Análisis de Causas Raíz" && (
-          <RdaPhase3Analysis rda={localRda} onChange={setLocalRda} />
+          <RdaPhase3Analysis rda={localRda} onChange={handleRdaChange} />
         )}
         {activeTab === "4. Evaluación de Calidad RDA" && (
-          <RdaPhase6QualityEval rda={localRda} onChange={setLocalRda} />
+          <RdaPhase6QualityEval rda={localRda} onChange={handleRdaChange} />
         )}
         {activeTab === "5. Evaluación de Efectividad de RDA" && (
-          <RdaPhase7EffectivenessEval rda={localRda} onChange={setLocalRda} />
+          <RdaPhase7EffectivenessEval rda={localRda} onChange={handleRdaChange} />
         )}
       </div>
     </div>

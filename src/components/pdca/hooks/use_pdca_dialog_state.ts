@@ -207,5 +207,7 @@ export const use_pdca_dialog_state = (
     set_lecciones_aprendidas: resultados.setTextoLeccionesAprendidas,
     benchmark_image: resultados.imagenBenchmark,
     set_benchmark_image: resultados.setImagenBenchmark,
+    id: initial_pdca.id,
+    document_identifier: initial_pdca.id,
   };
 };

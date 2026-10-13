@@ -41,8 +41,8 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
       {pestañasMontadas.has("Resumen") && (
         <TabContainer isActive={estadoDialogo.active_tab === "Resumen"}>
           <PdcaPhaseResumen
-            pdca_title={estadoDialogo.title}
-            document_identifier={estadoDialogo.document_identifier}
+            pdca_title={estadoDialogo.title_value || estadoDialogo.title || "Reporte PDCA"}
+            document_identifier={estadoDialogo.document_identifier || estadoDialogo.id || estadoDialogo.folio}
             goal_definition={estadoDialogo.definition_goal}
             vpo_checkpoints={estadoDialogo.vpo_checkpoints}
             pareto_data_map={estadoDialogo.pareto_data_map}

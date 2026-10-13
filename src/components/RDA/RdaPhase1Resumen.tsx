@@ -4,6 +4,11 @@ import React from "react";
 import type { Rda } from "@/data/rda";
 import { IshikawaInteractivo } from "@/components/pdca/1.PLAN/paso16/ishikawa-interactive";
 import { getRdaName } from "./rda-name";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   rda: Rda;
@@ -32,6 +37,16 @@ export function RdaPhase1Resumen({ rda }: Props) {
   // Ishikawa data
   const currentIshikawa = rda.ishikawa?.[0] || { effect: "", causes: {} };
 
+  const formatDate = (isoString?: string) => {
+    if (!isoString) return "-";
+    const datePart = isoString.includes("T") ? isoString.split("T")[0] : isoString;
+    const [year, month, day] = datePart.split("-");
+    if (year && month && day) {
+      return `${day}/${month}/${year}`;
+    }
+    return isoString;
+  };
+
   // Common classes for print-like tables
   const thClass =
     "border border-black/30 bg-[#0078D7] p-1.5 font-bold text-[10px] text-center text-white uppercase";
@@ -42,8 +57,23 @@ export function RdaPhase1Resumen({ rda }: Props) {
   const textDivClass =
     "border border-t-0 border-black/30 p-3 text-xs text-blue-800 text-center font-medium bg-white min-h-[40px]";
 
+  const printRef = useRef<HTMLDivElement>(null);
+  
+  const handleDownloadPdf = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Resumen_${rda.context?.folio || rda.id}`,
+    pageStyle: `@page { size: landscape; margin: 10mm; } body { -webkit-print-color-adjust: exact; }`
+  });
+
   return (
-    <div className="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-border w-full overflow-x-auto text-black print:p-0 print:border-none print:shadow-none">
+    <div className="relative">
+      <div className="absolute top-0 right-0 z-10 print:hidden">
+        <Button onClick={handleDownloadPdf} variant="outline" size="sm" className="gap-2">
+          <Download className="w-4 h-4" />
+          Descargar PDF
+        </Button>
+      </div>
+      <div id="rda-resumen-content" ref={printRef} className="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-border w-full overflow-x-auto text-black print:p-0 print:border-none print:shadow-none">
       <h1 className="text-xl font-bold tracking-wide uppercase text-center mb-4">
         {t("rda.anomalyReport")}
       </h1>
@@ -61,7 +91,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
           </tr>
           <tr>
             <td className={tdClass}>{rda.context.planta || "-"}</td>
-            <td className={tdClass}>{rda.context.fecha || "-"}</td>
+            <td className={tdClass}>{formatDate(rda.context.fecha)}</td>
             <td className={tdClass}>{rda.context.turno || "-"}</td>
             <td className={tdClass}>{rda.context.iniciadoPor || "-"}</td>
             <td className={tdClass}>{rda.context.responsable || "-"}</td>
@@ -195,13 +225,23 @@ export function RdaPhase1Resumen({ rda }: Props) {
               <td className={tdClass}>{val.causaPotencial}</td>
               <td className={tdClass}>{val.accion}</td>
               <td className={tdClass}>{val.responsable}</td>
-              <td className={tdClass}>{val.fechaLimite}</td>
+              <td className={tdClass}>{formatDate(val.fechaLimite)}</td>
               <td
                 className={`${tdClass} ${val.estatus === "Completa" ? "bg-green-400 text-black" : ""}`}
               >
                 {val.estatus}
               </td>
-              <td className={tdClass}>{val.esCausaRaiz}</td>
+              <td
+                className={
+                  val.esCausaRaiz?.toUpperCase() === "SI"
+                    ? "border border-black/30 p-1.5 text-xs text-center font-bold bg-red-500 text-white"
+                    : val.esCausaRaiz?.toUpperCase() === "NO"
+                      ? "border border-black/30 p-1.5 text-xs text-center font-bold bg-[#00B050] text-white"
+                      : tdClass
+                }
+              >
+                {val.esCausaRaiz}
+              </td>
             </tr>
           ))}
           {(!rda.validationActions || rda.validationActions.length === 0) && (
@@ -303,12 +343,12 @@ export function RdaPhase1Resumen({ rda }: Props) {
           {rda.pda?.map((action, idx) => (
             <tr key={action.id}>
               <td className={tdClass}>{idx + 1}</td>
-              <td className={tdClass}>{action.fecha || "-"}</td>
+              <td className={tdClass}>{formatDate(action.fecha)}</td>
               <td className={tdClass}>{action.asunto || "-"}</td>
               <td className={tdClass}>{action.accion || "-"}</td>
               <td className={tdClass}>{action.comentarios || "-"}</td>
               <td className={tdClass}>{action.responsable || "-"}</td>
-              <td className={tdClass}>{action.fechaLimite || "-"}</td>
+              <td className={tdClass}>{formatDate(action.fechaLimite)}</td>
               <td
                 className={`${tdClass} ${action.estatus === "Complete" ? "bg-green-400 text-black" : action.estatus === "In Progress" ? "bg-yellow-200 text-black" : ""}`}
               >
@@ -325,6 +365,78 @@ export function RdaPhase1Resumen({ rda }: Props) {
           )}
         </tbody>
       </table>
+
+      {/* Aviso de Confidencialidad y Privacidad (Disclaimer en última hoja - solo PDF) */}
+      <div
+        className="hidden print:block print:mt-0 print:pt-4"
+        style={{ pageBreakBefore: "always", breakBefore: "page" }}
+      >
+        <div className="rounded-xl border border-slate-300 bg-slate-50 p-6 text-slate-700 shadow-sm print:shadow-none print:border-slate-400">
+          <div className="flex items-center justify-between border-b border-slate-300 pb-3 mb-4">
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+                Cervecería de Zacatecas • Grupo Modelo • AB InBev
+              </h2>
+              <p className="text-xs text-slate-500">
+                Plataforma MAZ HUB — Reporte de Anomalía (RDA)
+              </p>
+            </div>
+            <span className="text-xs font-semibold text-slate-600">
+              Folio: {rda.context?.folio || rda.id}
+            </span>
+          </div>
+
+          <div className="space-y-4 text-xs leading-relaxed text-slate-600">
+            <div>
+              <h3 className="font-bold text-slate-800 uppercase mb-1 text-[11px] tracking-wide">
+                Aviso de Confidencialidad y Privacidad (Disclaimer)
+              </h3>
+              <p className="mb-2">
+                Este reporte y la información técnica u operativa contenida en el mismo son propiedad de Cervecería de Zacatecas / Grupo Modelo / AB InBev y pueden contener información privilegiada o confidencial para uso exclusivo de su destinatario o personal expresamente autorizado. Cualquier divulgación, reproducción, distribución, copia o uso no autorizado expresamente queda prohibido y puede ser ilegal de conformidad con la legislación aplicable. Si usted ha tenido acceso a este reporte por error, favor de notificar inmediatamente al remitente o administrador de la plataforma MAZ HUB y borrar el presente documento.
+              </p>
+              <p className="mb-2">
+                Los Datos Personales y registros operativos en nuestra posesión se encuentran protegidos y se tratan de conformidad con las legislaciones y regulaciones aplicables y nuestro Aviso de Privacidad y Políticas Corporativas, disponible en nuestra página de Internet Global:{" "}
+                <a
+                  href="https://www.ab-inbev.com/our-policies/#responsibledisclosurepolicy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  https://www.ab-inbev.com/our-policies/#responsibledisclosurepolicy
+                </a>{" "}
+                y/o las específicas del país de origen de esta comunicación. Únicamente la persona autorizada por AB InBev podrá garantizar que la información aquí contenida —y la interpretación de esta misma— sea aplicable o apropiada a su situación particular. Para cualquier consulta o aclaración, puede comunicarse con nosotros utilizando nuestro sitio web global "contáctenos" o su persona de contacto autorizada de AB InBev.
+              </p>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200">
+              <h3 className="font-bold text-slate-800 uppercase mb-1 text-[11px] tracking-wide">
+                Confidentiality and Privacy Statement (Disclaimer)
+              </h3>
+              <p className="mb-2">
+                This document, report, and any data contained herein are the property of Cervecería de Zacatecas / Grupo Modelo / AB InBev and may contain confidential and/or privileged information intended solely for the use of the named addressee or authorized personnel. Any unauthorized review, dissemination, copying, distribution, or use is prohibited and may be illegal. If you are not the intended recipient or if you have received this document in error, please notify the sender or MAZ HUB administrator and delete this document permanently.
+              </p>
+              <p>
+                Personal Data and operational records in our possession are protected and treated pursuant to applicable data protection regulations and our Privacy Statement available on our global Internet website:{" "}
+                <a
+                  href="https://www.ab-inbev.com/our-policies/#responsibledisclosurepolicy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  https://www.ab-inbev.com/our-policies/#responsibledisclosurepolicy
+                </a>{" "}
+                and/or the country-specific policy. Only an AB InBev authorized person in this matter can provide assurances that the information contained herein —and your interpretation of it— is applicable or appropriate to your particular situation. For any query, you may contact us using our global “contact us” website or your designated AB InBev contact person.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-400">
+            <span>Documento generado por plataforma MAZ HUB</span>
+            <span>Confidencial — Uso Interno Autorizado</span>
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   );
 }

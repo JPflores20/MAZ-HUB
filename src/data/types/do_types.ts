@@ -9,6 +9,7 @@ export type ActionItem = {
   causaRaiz2?: string;
   accion?: string;
   accion2?: string;
+  analisis5Medios?: string;
   comentarios?: string;
   herramientaSdca?: string;
   // Campos legacy (compatibilidad)

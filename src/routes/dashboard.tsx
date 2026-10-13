@@ -15,11 +15,13 @@ import { RecentMovements } from "@/components/dashboard/recent-movements";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { getRdaDisplayName } from "@/components/RDA/rda-name";
+import { getRdaStatus } from "@/components/RDA/rda-status";
 
 function getRdaComputedProgress(r: Rda): number {
-  if (r.status === "Cerrado") return 100;
-  if (r.status === "Abierto") return 10;
-  if (r.status === "En Progreso") return 50;
+  const st = getRdaStatus(r);
+  if (st === "Evaluado") return 100;
+  if (st === "Cerrado") return 75;
+  if (st === "Abierto") return 25;
   return 0;
 }
 function getComputedProgress(p: Pdca): number {

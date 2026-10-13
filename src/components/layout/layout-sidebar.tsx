@@ -32,20 +32,21 @@ export const LayoutSidebar: React.FC<Props> = ({
         desktopSidebarOpen ? "w-[280px]" : "w-[72px]",
       )}
     >
-      <div className="flex flex-col items-center justify-center pt-6 pb-3 px-3 text-center shrink-0">
-        <div className="size-12 rounded-2xl bg-white/10 p-1 flex items-center justify-center border border-white/15 shadow-md mb-2 hover:scale-105 transition-transform">
-          <img src="/logos/MAZ.webp" alt="Logo MAZ" className="h-10 w-10 object-cover rounded-xl" />
-        </div>
-        {desktopSidebarOpen && (
-          <>
-            <span className="font-display text-2xl font-extrabold tracking-wider text-white uppercase leading-none mt-1">
-              MAZ HUB
-            </span>
-            <span className="text-[11px] text-blue-300 font-bold tracking-[0.25em] uppercase mt-1">
-              Zacatecas
-            </span>
-          </>
-        )}
+      <div className="flex flex-col items-center justify-center pt-6 pb-4 px-3 text-center shrink-0">
+        <Link
+          to="/"
+          title="MAZ HUB - Zacatecas"
+          className="group flex items-center justify-center transition-transform duration-300 hover:scale-105 focus:outline-none"
+        >
+          <img
+            src="/logos/MAZ.webp"
+            alt="Logo MAZ"
+            className={cn(
+              "rounded-full object-cover shadow-2xl transition-all duration-300 ring-2 ring-white/10 group-hover:ring-amber-400/40",
+              desktopSidebarOpen ? "size-44" : "size-11",
+            )}
+          />
+        </Link>
       </div>
       <div className="px-5 py-2">
         <div className="h-px w-full bg-white/10"></div>

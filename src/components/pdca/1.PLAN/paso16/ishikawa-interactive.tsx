@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Maximize2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 import { Button } from "@/components/ui/button";
 import { StepCard } from "@/components/ui/step-card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -126,12 +127,12 @@ export function IshikawaInteractivo({
           <span className="text-[9px] font-semibold text-destructive/70 uppercase tracking-wider mb-1">
             Efecto / Problema
           </span>
-          <Textarea
+          <TextareaAutosize
             value={efectoPrincipal}
             onChange={(eventoCajaTexto) => alCambiarEfecto(eventoCajaTexto.target.value)}
             placeholder="Escribe el efecto..."
-            rows={2}
-            className="w-full text-center bg-transparent border-none text-destructive font-bold text-xs resize-none focus-visible:ring-1 focus-visible:ring-destructive/40 p-0 shadow-none"
+            minRows={2}
+            className="w-full text-center bg-transparent border-none text-destructive font-bold text-xs resize-none focus-visible:ring-1 focus-visible:ring-destructive/40 p-0 shadow-none outline-none"
           />
         </div>
 

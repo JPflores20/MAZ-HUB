@@ -7,7 +7,7 @@ import type {
   ItfR2d2Evaluation,
 } from "./pdca";
 
-export type RdaStatus = "Abierto" | "En Progreso" | "Cerrado";
+export type RdaStatus = "Abierto" | "Cerrado" | "Evaluado" | "En Progreso";
 
 export interface RdaQualityEval {
   definicionProblema: number;

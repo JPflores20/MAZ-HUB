@@ -7,6 +7,7 @@ import { RdaProblemDescriptionTab } from "./RdaProblemDescriptionTab";
 import { RdaTimelineTab } from "./RdaTimelineTab";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 import { StepCard } from "@/components/ui/step-card";
 
 interface Props {
@@ -105,7 +106,7 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
             <div className="bg-[#0078D7] border-b border-border px-4 py-2 font-bold text-center text-[10px] text-white uppercase">
               {t("rdaInternal.immediateCorrectiveActionsTitle")}
             </div>
-            <Textarea
+            <TextareaAutosize
               placeholder="Se revisa el reposo que alimentó los BBT's..."
               value={rda.immediateActions?.[0]?.accion || ""}
               onChange={(e) => {
@@ -113,7 +114,8 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
                 const first = current[0] || { id: crypto.randomUUID(), accion: "" };
                 onChange({ ...rda, immediateActions: [{ ...first, accion: e.target.value }] });
               }}
-              className="min-h-[100px] w-full border-none shadow-none focus-visible:ring-0 resize-y text-xs text-blue-700 dark:text-blue-400 font-medium"
+              minRows={4}
+              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
             />
           </div>
 
@@ -122,11 +124,12 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
             <div className="bg-[#0078D7] border-b border-border px-4 py-2 font-bold text-center text-[10px] text-white uppercase">
               {t("rdaInternal.observationsDetails")}
             </div>
-            <Textarea
+            <TextareaAutosize
               placeholder="Los BBTs llenaron con el reposo 101 que entro desde las 9:30..."
               value={rda.observacionesAdicionales || ""}
               onChange={(e) => onChange({ ...rda, observacionesAdicionales: e.target.value })}
-              className="min-h-[100px] w-full border-none shadow-none focus-visible:ring-0 resize-y text-xs text-blue-700 dark:text-blue-400 font-medium"
+              minRows={4}
+              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
             />
           </div>
         </div>

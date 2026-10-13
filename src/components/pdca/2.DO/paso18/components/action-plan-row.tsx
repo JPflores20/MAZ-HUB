@@ -145,6 +145,25 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
         alCambiar={actualizarCampo("accion")}
       />
 
+      <TableCell className="p-1 border-r min-w-[250px]">
+        <Select
+          value={fila.analisis5Medios || "-"}
+          onValueChange={(v) => actualizarCampo("analisis5Medios")(v === "-" ? "" : v)}
+        >
+          <SelectTrigger className="h-8 text-[11px] bg-transparent border-0 shadow-none px-2 focus:ring-1 focus:ring-primary rounded">
+            <SelectValue placeholder="-" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="-">-</SelectItem>
+            <SelectItem value="1.- Establecer condiciones basicas del Equipo (CIL).">1.- Establecer condiciones basicas del Equipo (CIL).</SelectItem>
+            <SelectItem value="2.- Mantener condiciones basicas de operación">2.- Mantener condiciones basicas de operación</SelectItem>
+            <SelectItem value="3.- Restaurar deterioro natural o forzado">3.- Restaurar deterioro natural o forzado</SelectItem>
+            <SelectItem value="4.- Mejorar puntos debiles de diseño">4.- Mejorar puntos debiles de diseño</SelectItem>
+            <SelectItem value="5.- Prevencion de errores Humanos">5.- Prevencion de errores Humanos</SelectItem>
+          </SelectContent>
+        </Select>
+      </TableCell>
+
       {/* Factores numéricos de impacto */}
       {CLAVES_FACTORES.map((clave) => {
         const valorCelda = fila[clave] ? String(fila[clave]) : "";
