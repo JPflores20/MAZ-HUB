@@ -1,3 +1,7 @@
+/**
+ * use_pdca_dialog_state.test.ts
+ * Pruebas unitarias del hook de estado general del diálogo PDCA.
+ */
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { use_pdca_dialog_state } from "../hooks/use_pdca_dialog_state";

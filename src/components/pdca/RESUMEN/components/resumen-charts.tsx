@@ -1,3 +1,8 @@
+/**
+ * resumen-charts.tsx
+ * Gráficas estadísticas del Resumen del PDCA renderizadas con Recharts.
+ * Incluye la Tendencia del KPI (Actual vs Target), Pareto Antes y Pareto Después.
+ */
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

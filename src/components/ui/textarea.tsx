@@ -1,3 +1,7 @@
+/**
+ * textarea.tsx
+ * Componente base de interfaz (shadcn/ui) para campos de texto multilínea.
+ */
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

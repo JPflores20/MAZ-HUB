@@ -1,3 +1,7 @@
+/**
+ * slider.tsx
+ * Componente base de interfaz (shadcn/ui) para controles deslizantes de selección numérica.
+ */
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 

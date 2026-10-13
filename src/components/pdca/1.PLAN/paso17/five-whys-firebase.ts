@@ -1,3 +1,7 @@
+/**
+ * five-whys-firebase.ts
+ * Funciones de sincronización y normalización de datos del módulo 5 Porqués con Firestore.
+ */
 // Utilidades de Firebase para el módulo Five Whys
 
 /** Comprime una imagen antes de subirla para optimizar el almacenamiento */

@@ -1,3 +1,7 @@
+/**
+ * pdca_phase_do.tsx
+ * Componente principal de la Fase 2 (DO / Ejecución) del PDCA. Integra Gemba Walk, Plan de Acción y Evidencias.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ActionPlanTable } from "./paso18/action-plan-table";

@@ -1,3 +1,7 @@
+/**
+ * time-series-ytd.tsx
+ * Paso 7 del PDCA: Contenedor de Situación Actual e histórico anual (YTD) Target vs. Actual.
+ */
 import React from "react";
 import { Input } from "@/components/ui/input";
 import {

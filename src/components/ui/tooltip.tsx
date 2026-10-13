@@ -1,3 +1,7 @@
+/**
+ * tooltip.tsx
+ * Componente base de interfaz (shadcn/ui) para descripciones emergentes al pasar el cursor.
+ */
 "use client";
 
 import * as React from "react";

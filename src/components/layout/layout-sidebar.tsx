@@ -1,3 +1,7 @@
+/**
+ * layout-sidebar.tsx
+ * Barra lateral principal con enlaces de navegación (Dashboard, PDCAs, RDAs, Administración) y perfil del usuario activo.
+ */
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";

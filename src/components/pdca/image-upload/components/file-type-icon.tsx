@@ -1,3 +1,7 @@
+/**
+ * file-type-icon.tsx
+ * Ícono representativo según el formato de archivo adjunto (imagen, PDF, hoja de cálculo, enlace).
+ */
 import React from "react";
 import { FileText, FileSpreadsheet, Presentation } from "lucide-react";
 import type { TipoDeArchivo } from "../utils/upload-utils";

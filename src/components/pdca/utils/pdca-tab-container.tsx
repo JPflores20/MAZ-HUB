@@ -1,3 +1,7 @@
+/**
+ * pdca-tab-container.tsx
+ * Contenedor con transición visual para envolver el contenido de cada fase del PDCA.
+ */
 import React from "react";
 
 // Optimization: Prevents massive re-renders of hidden tabs by skipping reconciliation

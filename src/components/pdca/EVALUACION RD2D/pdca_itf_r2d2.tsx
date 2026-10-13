@@ -1,3 +1,7 @@
+/**
+ * pdca_itf_r2d2.tsx
+ * Módulo de Evaluación RD2D / ITF para auditar y calificar la calidad metodológica del proyecto PDCA.
+ */
 import React from "react";
 import { ItfR2d2Evaluation } from "@/data/pdca-types";
 import { Label } from "@/components/ui/label";

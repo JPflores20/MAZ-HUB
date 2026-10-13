@@ -1,3 +1,7 @@
+/**
+ * server.ts
+ * Punto de entrada del servidor SSR/SPA para TanStack Start.
+ */
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";

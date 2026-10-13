@@ -1,3 +1,9 @@
+/**
+ * RdaDialog.tsx
+ * Contenedor principal del editor de Reportes de Anomalía (RDA).
+ * Gestiona la navegación entre las 5 fases metodológicas, el marcado de fases/pasos,
+ * el cálculo de progreso y el autoguardado sincronizado con Firestore.
+ */
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowLeft, Save, UploadCloud, Check, AlertTriangle, CircleDot } from "lucide-react";

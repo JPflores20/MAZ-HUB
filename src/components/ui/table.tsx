@@ -1,3 +1,7 @@
+/**
+ * table.tsx
+ * Componente base de interfaz (shadcn/ui) para tablas de datos responsivas.
+ */
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

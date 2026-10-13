@@ -1,3 +1,7 @@
+/**
+ * RdaPortadaTab.tsx
+ * Vista de portada e identificación general del reporte RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Label } from "@/components/ui/label";

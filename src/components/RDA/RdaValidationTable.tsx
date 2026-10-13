@@ -1,3 +1,7 @@
+/**
+ * RdaValidationTable.tsx
+ * Tabla para validar o descartar causas potenciales mediante pruebas y evidencias en el RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";

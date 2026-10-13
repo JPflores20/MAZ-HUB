@@ -1,3 +1,7 @@
+/**
+ * flavor-correlation-section.tsx
+ * Paso 11 del PDCA: Sección de análisis de correlación entre variables o SKUs/sabores.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, FileText } from "lucide-react";

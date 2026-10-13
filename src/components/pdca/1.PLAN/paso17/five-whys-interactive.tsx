@@ -1,3 +1,7 @@
+/**
+ * five-whys-interactive.tsx
+ * Editor interactivo de cadenas de 5 Porqués para profundizar hasta la causa raíz sistémica.
+ */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";

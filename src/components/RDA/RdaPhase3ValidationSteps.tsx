@@ -1,4 +1,8 @@
 // @ts-nocheck
+/**
+ * RdaPhase3ValidationSteps.tsx
+ * Pasos de validación de causas raíz, plan de acción (PDA) y checklist de estandarización dentro de la Fase 3 del RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";

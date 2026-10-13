@@ -1,3 +1,7 @@
+/**
+ * paso1-declaracion-proyecto.tsx
+ * Paso 1 del PDCA: Declaración del Proyecto (Project Statement), definición de meta, participantes y línea de tiempo.
+ */
 import React from "react";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";

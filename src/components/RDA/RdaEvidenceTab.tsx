@@ -1,3 +1,7 @@
+/**
+ * RdaEvidenceTab.tsx
+ * Pestaña para adjuntar y visualizar evidencias fotográficas de la anomalía en el RDA.
+ */
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, UploadCloud, X } from "lucide-react";

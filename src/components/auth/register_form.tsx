@@ -1,3 +1,7 @@
+/**
+ * register_form.tsx
+ * Componente de formulario para creación de nuevas cuentas de usuario.
+ */
 import { useState } from "react";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,7 @@
+/**
+ * flavor-correlation-chart.tsx
+ * Gráfica de dispersión/correlación para evaluar la relación estadística entre variables del proceso.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {

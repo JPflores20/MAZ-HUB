@@ -1,3 +1,7 @@
+/**
+ * analisis-riesgos-table.tsx
+ * Paso 6 del PDCA: Tabla de Análisis de Riesgos del proyecto y medidas de mitigación.
+ */
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

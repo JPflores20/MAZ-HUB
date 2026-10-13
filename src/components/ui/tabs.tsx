@@ -1,3 +1,7 @@
+/**
+ * tabs.tsx
+ * Componente base de interfaz (shadcn/ui) para navegación por pestañas.
+ */
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 

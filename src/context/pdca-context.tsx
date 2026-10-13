@@ -1,3 +1,7 @@
+/**
+ * pdca-context.tsx
+ * Contexto global de proyectos PDCA. Sincroniza el estado en tiempo real con Firestore, caché local y operaciones CRUD.
+ */
 import { createContext, useContext, ReactNode } from "react";
 import { fetchPdcasFromFirestore } from "@/services/pdca-service";
 import { type Pdca } from "@/data/pdca";

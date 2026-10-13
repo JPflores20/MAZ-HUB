@@ -1,3 +1,7 @@
+/**
+ * theme-toggle.tsx
+ * Botón conmutador para cambiar entre modo claro y modo oscuro.
+ */
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 

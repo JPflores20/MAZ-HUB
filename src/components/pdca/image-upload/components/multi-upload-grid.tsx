@@ -1,3 +1,7 @@
+/**
+ * multi-upload-grid.tsx
+ * Cuadrícula de miniaturas para gestionar múltiples evidencias cargadas en un paso del PDCA.
+ */
 import React from "react";
 import { X, Plus, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";

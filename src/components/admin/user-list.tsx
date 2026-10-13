@@ -1,3 +1,7 @@
+/**
+ * user-list.tsx
+ * Contenedor de gestión y visualización de la lista de usuarios registrados.
+ */
 import { Shield, User, Trash2 } from "lucide-react";
 import { userService } from "@/services/user-service";
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,7 @@
+/**
+ * alert.tsx
+ * Componente base de interfaz (shadcn/ui) para mostrar mensajes y avisos destacados.
+ */
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 

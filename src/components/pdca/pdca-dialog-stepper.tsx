@@ -1,3 +1,7 @@
+/**
+ * pdca-dialog-stepper.tsx
+ * Barra de navegación por fases del proyecto PDCA (Resumen, Plan, Do, Check, Act, Evaluación RD2D).
+ */
 import React from "react";
 import type { Phase } from "@/data/pdca";
 import { useTranslation } from "react-i18next";

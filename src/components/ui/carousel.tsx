@@ -1,3 +1,7 @@
+/**
+ * carousel.tsx
+ * Componente base de interfaz (shadcn/ui) para carruseles y presentación secuencial de elementos.
+ */
 import * as React from "react";
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * five-whys-types.ts
+ * Definición de tipos TypeScript para las filas y evidencias del análisis de 5 Porqués.
+ */
 // ─── Tipos e Interfaces para Five Whys Interactive ──────────────────────────
 
 export interface PropiedadesFiveWhysInteractivo {

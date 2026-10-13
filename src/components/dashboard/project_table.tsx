@@ -1,3 +1,7 @@
+/**
+ * project_table.tsx
+ * Tabla resumen de proyectos PDCA con indicadores de progreso y acceso rápido.
+ */
 import { useState, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useShortcuts } from "@/hooks/use-shortcuts";

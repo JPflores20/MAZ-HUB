@@ -1,3 +1,7 @@
+/**
+ * conclusiones-pi-table.tsx
+ * Tabla comparativa de evolución de los Indicadores de Proceso (PIs) en la sección de conclusiones.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";

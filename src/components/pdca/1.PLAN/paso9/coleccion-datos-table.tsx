@@ -1,3 +1,7 @@
+/**
+ * coleccion-datos-table.tsx
+ * Paso 9 del PDCA: Plan de recolección y estratificación de datos del problema.
+ */
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

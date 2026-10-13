@@ -1,3 +1,7 @@
+/**
+ * resizable.tsx
+ * Componente base de interfaz (shadcn/ui) para paneles divisibles con tamaño ajustable.
+ */
 import { GripVertical } from "lucide-react";
 import { Group, Panel, Separator } from "react-resizable-panels";
 

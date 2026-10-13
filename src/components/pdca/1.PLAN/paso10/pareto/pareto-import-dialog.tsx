@@ -1,3 +1,7 @@
+/**
+ * pareto-import-dialog.tsx
+ * Diálogo para importar datos masivos al diagrama de Pareto copiando y pegando desde Excel.
+ */
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

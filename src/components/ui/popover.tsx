@@ -1,3 +1,7 @@
+/**
+ * popover.tsx
+ * Componente base de interfaz (shadcn/ui) para paneles flotantes anclados a un elemento.
+ */
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 

@@ -1,3 +1,7 @@
+/**
+ * ishikawa-category-box.tsx
+ * Tarjeta de categoría M del diagrama de Ishikawa para agregar, clasificar y colorear causas potenciales.
+ */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";

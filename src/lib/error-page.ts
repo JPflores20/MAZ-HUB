@@ -1,3 +1,7 @@
+/**
+ * error-page.ts
+ * Renderizado de pantalla de respaldo ante errores críticos de inicialización.
+ */
 export function renderErrorPage(): string {
   return `<!doctype html>
 <html lang="en">

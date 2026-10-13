@@ -1,3 +1,7 @@
+/**
+ * avatar.tsx
+ * Componente base de interfaz (shadcn/ui) para mostrar imágenes o iniciales de perfil de usuario.
+ */
 "use client";
 
 import * as React from "react";

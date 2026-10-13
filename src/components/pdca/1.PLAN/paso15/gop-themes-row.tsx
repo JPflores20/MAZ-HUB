@@ -1,3 +1,7 @@
+/**
+ * gop-themes-row.tsx
+ * Fila editable para cada tema GOP con estado de cumplimiento y observaciones.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * layout-mobile-menu.tsx
+ * Menú de navegación lateral adaptable para pantallas móviles.
+ */
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { X, LogOut } from "lucide-react";

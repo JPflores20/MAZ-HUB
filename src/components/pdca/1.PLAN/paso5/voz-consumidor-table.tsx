@@ -1,3 +1,7 @@
+/**
+ * voz-consumidor-table.tsx
+ * Paso 5 del PDCA: Tabla de Voz del Consumidor / Cliente Interno (VOC) y requerimientos críticos.
+ */
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

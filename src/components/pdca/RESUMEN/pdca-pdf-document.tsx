@@ -1,3 +1,8 @@
+/**
+ * pdca-pdf-document.tsx
+ * Plantilla de documento PDF generada con @react-pdf/renderer para el Resumen del PDCA.
+ * Estructura páginas con métricas, gráficas tabulares, plan de acción y aviso de privacidad final.
+ */
 import React from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type {

@@ -1,3 +1,7 @@
+/**
+ * pareto-table.tsx
+ * Tabla editable de categorías, frecuencias y porcentajes acumulados del diagrama de Pareto.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";

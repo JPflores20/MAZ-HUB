@@ -1,3 +1,7 @@
+/**
+ * single-upload-drop-zone.tsx
+ * Zona interactiva de arrastrar y soltar (drop zone) para carga individual de archivos.
+ */
 import React, { useRef } from "react";
 import { Image as ImageIcon, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";

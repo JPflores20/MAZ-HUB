@@ -1,3 +1,7 @@
+/**
+ * dropdown-menu.tsx
+ * Componente base de interfaz (shadcn/ui) para menús desplegables de acciones y opciones.
+ */
 "use client";
 
 import * as React from "react";

@@ -1,3 +1,7 @@
+/**
+ * pdca-draft.ts
+ * Utilidades para guardar, recuperar y limpiar borradores locales de proyectos PDCA en localStorage.
+ */
 import { DEFAULT_VPO_CHECKPOINTS, type Pdca } from "@/data/pdca";
 
 export const create_empty_pdca_draft = (): Pdca => ({

@@ -1,3 +1,7 @@
+/**
+ * radio-group.tsx
+ * Componente base de interfaz (shadcn/ui) para grupos de botones de opción única (radio buttons).
+ */
 import * as React from "react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Circle } from "lucide-react";

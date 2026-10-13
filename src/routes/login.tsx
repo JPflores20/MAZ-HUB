@@ -1,3 +1,7 @@
+/**
+ * login.tsx
+ * Vista de inicio de sesión y autenticación de usuarios de la plataforma MAZ HUB.
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";

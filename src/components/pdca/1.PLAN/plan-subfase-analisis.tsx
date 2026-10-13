@@ -1,3 +1,7 @@
+/**
+ * plan-subfase-analisis.tsx
+ * Subfase 1.2 (Análisis de Causas): agrupa Rendimiento Actual, GOP Themes, Ishikawa, 5 Porqués y Conclusiones.
+ */
 import { Plus, X } from "lucide-react";
 import { ImageUploadSection } from "../image-upload-section";
 import { ParetoSection } from "@/components/pdca/1.PLAN/paso10/pareto-section";

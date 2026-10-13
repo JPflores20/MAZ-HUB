@@ -1,3 +1,7 @@
+/**
+ * tabla-resultados-finales.tsx
+ * Tabla de cierre y validación de resultados finales y lecciones aprendidas del proyecto PDCA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";

@@ -1,3 +1,7 @@
+/**
+ * scroll-area.tsx
+ * Componente base de interfaz (shadcn/ui) para áreas de desplazamiento con barras estilizadas.
+ */
 import * as React from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 

@@ -1,3 +1,7 @@
+/**
+ * vpo-checkpoint-row.tsx
+ * Fila individual de evaluación para cada punto de verificación del SDCA Checklist.
+ */
 import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";

@@ -1,3 +1,7 @@
+/**
+ * rda-name.test.ts
+ * Pruebas unitarias para la extracción y normalización del nombre del RDA desde el Ishikawa.
+ */
 import { describe, it, expect } from "vitest";
 import type { Rda } from "@/data/rda";
 import { getRdaDisplayName, getRdaName, normalizeRdaName, withRdaName } from "../rda-name";

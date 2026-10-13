@@ -1,3 +1,7 @@
+/**
+ * menubar.tsx
+ * Componente base de interfaz (shadcn/ui) para barras de menú horizontales.
+ */
 import * as React from "react";
 import * as MenubarPrimitive from "@radix-ui/react-menubar";
 import { Check, ChevronRight, Circle } from "lucide-react";

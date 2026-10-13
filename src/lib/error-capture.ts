@@ -1,3 +1,7 @@
+/**
+ * error-capture.ts
+ * Captura global de errores no controlados y promesas rechazadas en el navegador.
+ */
 // Captures the original Error out-of-band so server.ts can recover the stack
 // when h3 has already swallowed the throw into a generic 500 Response.
 

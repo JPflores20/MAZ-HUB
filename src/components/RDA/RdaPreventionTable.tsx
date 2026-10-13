@@ -1,3 +1,7 @@
+/**
+ * RdaPreventionTable.tsx
+ * Tabla de acciones de prevención de recurrencia y expansión horizontal del RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";

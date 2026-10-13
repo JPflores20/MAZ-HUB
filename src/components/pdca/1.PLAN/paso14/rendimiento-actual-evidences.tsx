@@ -1,3 +1,7 @@
+/**
+ * rendimiento-actual-evidences.tsx
+ * Galería de evidencias adjuntas al análisis de rendimiento actual (Paso 14).
+ */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UploadCloud, RefreshCw, FileText, X } from "lucide-react";

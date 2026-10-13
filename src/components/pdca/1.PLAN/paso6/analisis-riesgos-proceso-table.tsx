@@ -1,3 +1,7 @@
+/**
+ * analisis-riesgos-proceso-table.tsx
+ * Tabla complementaria para evaluación de riesgos operativos por etapa del proceso.
+ */
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

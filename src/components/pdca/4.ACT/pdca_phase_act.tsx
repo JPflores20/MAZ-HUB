@@ -1,3 +1,7 @@
+/**
+ * pdca_phase_act.tsx
+ * Componente principal de la Fase 4 (ACT / Estandarización) del PDCA. Gestiona la estandarización VPO y resultados finales.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { TablaEstandarizacion } from "./paso27/tabla-estandarizacion";

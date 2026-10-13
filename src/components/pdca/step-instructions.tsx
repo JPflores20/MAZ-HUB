@@ -1,3 +1,7 @@
+/**
+ * step-instructions.tsx
+ * Banner informativo con la guía e instrucciones metodológicas de cada paso del PDCA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {

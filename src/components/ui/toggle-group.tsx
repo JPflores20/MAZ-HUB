@@ -1,3 +1,7 @@
+/**
+ * toggle-group.tsx
+ * Componente base de interfaz (shadcn/ui) para grupos de botones de alternancia.
+ */
 "use client";
 
 import * as React from "react";

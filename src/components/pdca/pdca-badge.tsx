@@ -1,3 +1,7 @@
+/**
+ * pdca-badge.tsx
+ * Insignias visuales codificadas por color para mostrar la fase actual (Plan, Do, Check, Act) del PDCA.
+ */
 import { cn } from "@/lib/utils";
 import { phaseStyles, type Phase } from "@/data/pdca";
 

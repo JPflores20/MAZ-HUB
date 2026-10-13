@@ -1,3 +1,7 @@
+/**
+ * rich_text_editor.tsx
+ * Editor de texto enriquecido ligero para notas y descripciones dentro de la Fase PLAN.
+ */
 import React, { useRef, useEffect } from "react";
 import { Bold, Italic, List, ListOrdered } from "lucide-react";
 

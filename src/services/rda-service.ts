@@ -1,3 +1,7 @@
+/**
+ * rda-service.ts
+ * Servicio de persistencia en Firestore y Storage para el módulo RDA (creación, suscripción en tiempo real, actualización y borrado).
+ */
 import {
   getDocs,
   doc,

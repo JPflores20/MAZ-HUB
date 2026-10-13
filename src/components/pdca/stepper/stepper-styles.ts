@@ -1,3 +1,7 @@
+/**
+ * stepper-styles.ts
+ * Estilos y variantes de color para los estados activo, completado y pendiente del stepper PDCA.
+ */
 export const getPhaseTabColors = (id: string, isCurrent: boolean) => {
   if (isCurrent) {
     switch (id) {

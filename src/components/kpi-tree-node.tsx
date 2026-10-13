@@ -1,3 +1,7 @@
+/**
+ * kpi-tree-node.tsx
+ * Nodo personalizado para representar cada métrica dentro del Árbol de KPIs.
+ */
 import { Handle, Position, useReactFlow } from "@xyflow/react";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";

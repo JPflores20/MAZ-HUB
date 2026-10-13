@@ -1,3 +1,7 @@
+/**
+ * multi-image-upload-section.tsx
+ * Sección para carga múltiple de imágenes, archivos PDF y enlaces externos de evidencia.
+ */
 import React, { useRef } from "react";
 import { StepCard } from "@/components/ui/step-card";
 import { subirArchivoAFirebase, esArchivoValido, ALL_ACCEPT_STRING } from "./utils/upload-utils";

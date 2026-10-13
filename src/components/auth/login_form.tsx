@@ -1,3 +1,7 @@
+/**
+ * login_form.tsx
+ * Componente de formulario de autenticación con correo corporativo y contraseña.
+ */
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { ArrowRight, Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react";

@@ -1,4 +1,10 @@
 // @ts-nocheck
+/**
+ * RdaPhase1Resumen.tsx
+ * Fase 1 del RDA (Resumen Ejecutivo). Consolida en formato tabular la información de contexto,
+ * descripción 5W1H, diagrama de Ishikawa, causa raíz, estándares y plan de acción (PDA),
+ * permitiendo exportar el reporte completo a PDF con aviso de privacidad en la última hoja.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";

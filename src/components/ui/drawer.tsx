@@ -1,3 +1,7 @@
+/**
+ * drawer.tsx
+ * Componente base de interfaz (shadcn/ui) para paneles deslizables desde el borde de la pantalla.
+ */
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 

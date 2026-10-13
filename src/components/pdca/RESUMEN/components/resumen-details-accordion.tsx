@@ -1,3 +1,8 @@
+/**
+ * resumen-details-accordion.tsx
+ * Sección desplegable en pantalla (y expandida automáticamente en impresión/PDF)
+ * que muestra el Project Statement (KPI, PIs, Meta, Benchmark, Responsable) y el SDCA Checklist.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

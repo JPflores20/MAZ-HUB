@@ -1,3 +1,8 @@
+/**
+ * resumen-action-table.tsx
+ * Tabla consolidada del Plan de Acción dentro del Resumen del PDCA.
+ * Muestra problemas, causas raíz, acciones de mejora, priorización, Quick Wins y herramientas SDCA/SOP.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

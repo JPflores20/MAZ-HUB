@@ -1,3 +1,7 @@
+/**
+ * pdca_dialog.tsx
+ * Componente contenedor principal del editor de proyectos PDCA con gestión de estado, autoguardado y navegación por fases.
+ */
 import React, { useMemo, useCallback, useState, useEffect, startTransition } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";

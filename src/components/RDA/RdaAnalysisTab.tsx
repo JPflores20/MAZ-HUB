@@ -1,3 +1,7 @@
+/**
+ * RdaAnalysisTab.tsx
+ * Pestaña de análisis de causa raíz y registro de hallazgos del RDA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Textarea } from "@/components/ui/textarea";

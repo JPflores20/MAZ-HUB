@@ -1,3 +1,7 @@
+/**
+ * pdca-goal-definition.tsx
+ * Formulario de definición de meta (KPI, PIs, valor inicial, valor objetivo, unidad y brecha/GAP).
+ */
 import React from "react";
 import { type DefinicionMeta } from "@/data/pdca";
 import { Input } from "@/components/ui/input";

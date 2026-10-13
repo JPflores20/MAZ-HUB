@@ -1,3 +1,7 @@
+/**
+ * pareto-section.tsx
+ * Paso 10 del PDCA: Sección de Análisis de Pareto multinivel para priorizar los principales ofensores.
+ */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ParetoItem } from "@/data/pdca";

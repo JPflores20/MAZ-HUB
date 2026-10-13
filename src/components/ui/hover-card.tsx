@@ -1,3 +1,7 @@
+/**
+ * hover-card.tsx
+ * Componente base de interfaz (shadcn/ui) para tarjetas informativas al pasar el cursor.
+ */
 import * as React from "react";
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 

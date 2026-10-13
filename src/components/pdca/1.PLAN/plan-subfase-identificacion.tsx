@@ -1,3 +1,7 @@
+/**
+ * plan-subfase-identificacion.tsx
+ * Subfase 1.1 (Identificación del Problema): agrupa los pasos iniciales desde Project Statement hasta Pareto y Correlación.
+ */
 import React from "react";
 import { Paso1DeclaracionProyecto } from "./paso1/paso1-declaracion-proyecto";
 import { VpoCheckpointTable } from "./paso2/vpo-checkpoint-table";

@@ -1,3 +1,7 @@
+/**
+ * error-boundary.tsx
+ * Componente contenedor de seguridad (Error Boundary) para capturar fallos de renderizado sin colapsar la vista.
+ */
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Alert, AlertTitle, AlertDescription } from "./alert";
 import { AlertCircle } from "lucide-react";

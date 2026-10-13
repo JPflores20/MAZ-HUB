@@ -1,4 +1,10 @@
 // @ts-nocheck
+/**
+ * pdca_phase_resumen.tsx
+ * Vista de Resumen Ejecutivo del proyecto PDCA.
+ * Presenta tarjetas de métricas clave, gráficas comparativas (Tendencia KPI y Paretos Antes/Después),
+ * Project Statement, SDCA Checklist y tabla del Plan de Acción, con exportación a PDF de alta fidelidad.
+ */
 import React, { useRef } from "react";
 import type {
   DefinicionMeta,

@@ -1,3 +1,7 @@
+/**
+ * pdca_meta_fields.tsx
+ * Campos editables de metadatos del proyecto PDCA (título, área, líder, planta, fechas).
+ */
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";

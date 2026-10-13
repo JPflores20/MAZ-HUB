@@ -1,3 +1,7 @@
+/**
+ * pareto-interactive.tsx
+ * Componente interactivo de Pareto con soporte para drill-down jerárquico entre niveles.
+ */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Plus, X, FileText, Maximize2 } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * flavor-correlation-editor.tsx
+ * Editor tabular de pares de datos (X, Y) para el análisis de correlación.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";

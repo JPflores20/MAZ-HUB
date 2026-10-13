@@ -1,3 +1,7 @@
+/**
+ * five-whys-table-body.tsx
+ * Cuerpo tabular editable con las columnas Por qué 1 a 5 y conclusión de causa raíz.
+ */
 import React, { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";

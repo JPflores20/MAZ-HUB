@@ -1,3 +1,7 @@
+/**
+ * layout-types.ts
+ * Tipos e interfaces compartidas para los componentes de navegación y layout.
+ */
 export interface NavItem {
   href: string;
   label: string;

@@ -1,3 +1,7 @@
+/**
+ * pdca_collapsible_card.tsx
+ * Tarjeta colapsable reutilizable para encapsular cada paso metodológico del PDCA.
+ */
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";

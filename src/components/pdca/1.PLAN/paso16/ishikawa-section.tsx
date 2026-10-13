@@ -1,3 +1,7 @@
+/**
+ * ishikawa-section.tsx
+ * Paso 16 del PDCA: Sección completa del Diagrama de Ishikawa (Espina de Pescado 6M) y matriz de priorización.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";

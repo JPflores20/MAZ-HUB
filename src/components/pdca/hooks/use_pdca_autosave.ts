@@ -1,3 +1,7 @@
+/**
+ * use_pdca_autosave.ts
+ * Hook que coordina el autoguardado periódico y respaldo local de cambios en el editor PDCA.
+ */
 import { useRef, useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { savePdcaToFirestore } from "@/services/pdca-service";

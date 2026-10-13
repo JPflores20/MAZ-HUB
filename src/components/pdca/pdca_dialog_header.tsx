@@ -1,3 +1,9 @@
+/**
+ * pdca_dialog_header.tsx
+ * Encabezado del editor de proyectos PDCA.
+ * Contiene el botón para volver al listado, folio, insignia de fase, indicador de sincronización,
+ * botón de guardado manual, barra de progreso global y alerta de días restantes para la fecha límite.
+ */
 import React from "react";
 import { ArrowLeft, Check, UploadCloud, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";

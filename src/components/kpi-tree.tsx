@@ -1,3 +1,7 @@
+/**
+ * kpi-tree.tsx
+ * Lienzo interactivo (@xyflow/react) para visualizar y editar el Árbol de KPIs y sus indicadores de proceso (PIs).
+ */
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ReactFlow,

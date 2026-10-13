@@ -1,4 +1,8 @@
 // @ts-nocheck
+/**
+ * pareto_chart.test.tsx
+ * Pruebas unitarias para el componente gráfico ParetoChart.
+ */
 import "@testing-library/jest-dom";
 /**
  * pareto_chart.test.tsx

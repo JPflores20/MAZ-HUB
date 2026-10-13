@@ -1,3 +1,7 @@
+/**
+ * recent-movements.tsx
+ * Panel de actividad y movimientos recientes registrados en los proyectos.
+ */
 import { PhaseBadge } from "@/components/pdca/pdca-badge";
 
 interface RecentMovement {

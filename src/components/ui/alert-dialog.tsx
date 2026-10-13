@@ -1,3 +1,7 @@
+/**
+ * alert-dialog.tsx
+ * Componente base de interfaz (shadcn/ui) para diálogos modales de confirmación y alerta.
+ */
 import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 

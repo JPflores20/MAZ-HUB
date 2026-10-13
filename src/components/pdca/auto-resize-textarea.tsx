@@ -1,3 +1,7 @@
+/**
+ * auto-resize-textarea.tsx
+ * Componente de área de texto que ajusta su altura automáticamente al contenido escrito.
+ */
 import { useEffect, useState, useMemo, useCallback, useRef, Fragment } from "react";
 import {
   Check,

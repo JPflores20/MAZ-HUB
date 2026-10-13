@@ -1,3 +1,7 @@
+/**
+ * conclusiones-kpi-table.tsx
+ * Tabla comparativa de resultados finales de KPIs en la sección de conclusiones.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";

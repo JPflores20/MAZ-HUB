@@ -1,3 +1,7 @@
+/**
+ * RdaClosureSection.tsx
+ * Sección de validación de cierre y firmas de aprobación del RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";

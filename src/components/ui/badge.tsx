@@ -1,3 +1,7 @@
+/**
+ * badge.tsx
+ * Componente base de interfaz (shadcn/ui) para etiquetas e insignias de estado.
+ */
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 

@@ -1,3 +1,7 @@
+/**
+ * pdca-dialog-step-header.tsx
+ * Encabezado estandarizado para cada paso del PDCA con controles de completado, N/A y bloqueo.
+ */
 import { useEffect, useState, useMemo, useCallback, useRef, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import {

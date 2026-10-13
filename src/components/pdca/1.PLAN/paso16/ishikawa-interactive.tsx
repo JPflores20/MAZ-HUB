@@ -1,3 +1,7 @@
+/**
+ * ishikawa-interactive.tsx
+ * Diagrama interactivo de Ishikawa 6M (Mano de Obra, Maquinaria, Material, Método, Medio Ambiente, Medición) con edición visual del efecto y causas.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Maximize2, X } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * PdfDownloadButton.tsx
+ * Botón de acción reutilizable para activar la exportación a PDF del Resumen del PDCA.
+ */
 import React from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";

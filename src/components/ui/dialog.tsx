@@ -1,3 +1,7 @@
+/**
+ * dialog.tsx
+ * Componente base de interfaz (shadcn/ui) para ventanas modales superpuestas.
+ */
 "use client";
 
 import * as React from "react";

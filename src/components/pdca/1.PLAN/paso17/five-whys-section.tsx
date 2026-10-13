@@ -1,3 +1,7 @@
+/**
+ * five-whys-section.tsx
+ * Paso 17 del PDCA: Sección contenedora del análisis de 5 Porqués (5 Whys).
+ */
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";

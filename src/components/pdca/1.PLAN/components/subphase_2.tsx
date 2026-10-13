@@ -1,3 +1,7 @@
+/**
+ * subphase_2.tsx
+ * Vista modular de la segunda subfase de planificación (Análisis de Causa Raíz).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageUploadSection } from "../../image-upload-section";

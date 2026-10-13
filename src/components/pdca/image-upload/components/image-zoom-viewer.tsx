@@ -1,3 +1,7 @@
+/**
+ * image-zoom-viewer.tsx
+ * Visor modal con controles de zoom y rotación para inspeccionar imágenes de evidencia a pantalla completa.
+ */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";

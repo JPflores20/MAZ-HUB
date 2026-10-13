@@ -1,3 +1,7 @@
+/**
+ * lovable-error-reporting.ts
+ * Integración de reporte de errores en tiempo de desarrollo para el entorno Lovable.
+ */
 type LovableErrorOptions = {
   mechanism?: "manual" | "onerror" | "unhandledrejection" | "react_error_boundary";
   handled?: boolean;

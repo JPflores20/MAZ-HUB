@@ -1,3 +1,7 @@
+/**
+ * use-shortcuts.ts
+ * Hook para registrar atajos de teclado globales en la aplicación.
+ */
 import { useEffect } from "react";
 
 export function useShortcuts() {

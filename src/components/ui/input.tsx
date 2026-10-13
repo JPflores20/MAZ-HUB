@@ -1,3 +1,7 @@
+/**
+ * input.tsx
+ * Componente base de interfaz (shadcn/ui) para campos de entrada de texto.
+ */
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

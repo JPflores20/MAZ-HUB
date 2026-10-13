@@ -1,3 +1,7 @@
+/**
+ * switch.tsx
+ * Componente base de interfaz (shadcn/ui) para interruptores booleanos (encendido/apagado).
+ */
 import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 

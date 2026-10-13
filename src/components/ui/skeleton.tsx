@@ -1,3 +1,7 @@
+/**
+ * skeleton.tsx
+ * Componente base de interfaz (shadcn/ui) para indicadores de carga (placeholders animados).
+ */
 import { cn } from "@/lib/utils";
 
 function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

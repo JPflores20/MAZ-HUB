@@ -1,3 +1,7 @@
+/**
+ * accordion.tsx
+ * Componente base de interfaz (shadcn/ui) para secciones desplegables en acordeón.
+ */
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";

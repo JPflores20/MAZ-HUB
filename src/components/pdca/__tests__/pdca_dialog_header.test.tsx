@@ -1,3 +1,7 @@
+/**
+ * pdca_dialog_header.test.tsx
+ * Pruebas unitarias del encabezado del diálogo PDCA.
+ */
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";

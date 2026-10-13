@@ -1,3 +1,7 @@
+/**
+ * RdaContextForm.tsx
+ * Formulario de datos generales y contexto operativo del RDA (Planta, Área, Línea, Equipo, Fecha, Folio, Responsable).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import type { RdaAnomalyContext } from "@/data/rda";

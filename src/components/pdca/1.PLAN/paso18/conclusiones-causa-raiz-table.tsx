@@ -1,3 +1,7 @@
+/**
+ * conclusiones-causa-raiz-table.tsx
+ * Paso 18 del PDCA: Tabla resumen de conclusiones de causas raíz validadas al cierre de la fase PLAN.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * pareto_data_table.test.tsx
+ * Pruebas unitarias para la tabla de datos del módulo Pareto.
+ */
 import "@testing-library/jest-dom";
 /**
  * pareto_data_table.test.tsx

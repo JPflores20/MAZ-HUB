@@ -1,3 +1,7 @@
+/**
+ * flavor-correlation-utils.ts
+ * Cálculo del coeficiente de correlación, regresión lineal y formateo de series.
+ */
 export type PuntoCorrelacion = { id: number; x: number; y: number };
 
 export type SerieCorrelacion = {

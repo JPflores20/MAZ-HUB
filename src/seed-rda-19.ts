@@ -1,3 +1,7 @@
+/**
+ * seed-rda-19.ts
+ * Script de semilla (seed) para poblar datos iniciales de ejemplo del reporte RDA #19.
+ */
 import { createRda } from "@/services/rda-service";
 import type { Rda } from "@/data/rda";
 

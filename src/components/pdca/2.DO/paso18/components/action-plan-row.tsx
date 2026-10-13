@@ -1,3 +1,7 @@
+/**
+ * action-plan-row.tsx
+ * Fila editable individual para cada acción correctiva o preventiva del Plan de Acción.
+ */
 import React from "react";
 import { X, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,7 @@
+/**
+ * action-plan-table.tsx
+ * Tabla interactiva del Plan de Acción (5W2H, priorización, Quick Wins, responsable, fecha compromiso y estatus).
+ */
 import React from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";

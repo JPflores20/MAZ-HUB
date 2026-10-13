@@ -1,3 +1,7 @@
+/**
+ * use_pdca_payload_builder.ts
+ * Hook que construye y serializa el objeto PDCA final listo para persistir en Firestore.
+ */
 import { useCallback } from "react";
 import { format_date_to_string, parse_date_string } from "../utils/date_helpers";
 import type { Pdca } from "@/data/pdca";

@@ -1,3 +1,7 @@
+/**
+ * phase_plan_types.ts
+ * Tipos e interfaces internas para los formularios y tablas de la Fase PLAN.
+ */
 import type {
   DefinicionMeta,
   ParticipantesData,

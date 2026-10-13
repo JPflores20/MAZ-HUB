@@ -1,3 +1,7 @@
+/**
+ * gemba-drop-zone.tsx
+ * Zona de carga de fotografías y archivos para el registro de Gemba Walk.
+ */
 import React from "react";
 import { UploadCloud, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";

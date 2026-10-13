@@ -1,3 +1,7 @@
+/**
+ * problem-timeline-section.tsx
+ * Sección para planificar el cronograma y fechas clave del proyecto PDCA.
+ */
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

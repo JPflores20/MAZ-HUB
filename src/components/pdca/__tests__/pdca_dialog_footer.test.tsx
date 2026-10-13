@@ -1,3 +1,7 @@
+/**
+ * pdca_dialog_footer.test.tsx
+ * Pruebas unitarias del pie de página del diálogo PDCA.
+ */
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";

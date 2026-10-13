@@ -1,3 +1,7 @@
+/**
+ * sidebar.tsx
+ * Componente base de interfaz (shadcn/ui) para la estructura y estado de barras laterales.
+ */
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";

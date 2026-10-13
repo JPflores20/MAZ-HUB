@@ -1,3 +1,7 @@
+/**
+ * pdca_phase_plan.tsx
+ * Componente principal de la Fase 1 (PLAN) del PDCA. Organiza las subfases de Identificación y Análisis.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {

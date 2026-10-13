@@ -1,3 +1,7 @@
+/**
+ * plan-props.ts
+ * Definición de propiedades (props) compartidas por los componentes de la Fase PLAN.
+ */
 import type {
   DefinicionMeta,
   ParticipantesData,

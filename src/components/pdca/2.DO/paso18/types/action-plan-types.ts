@@ -1,3 +1,7 @@
+/**
+ * action-plan-types.ts
+ * Tipos e interfaces para los elementos del Plan de Acción de la Fase DO.
+ */
 import type { ActionItem } from "@/data/pdca";
 
 // ─── Re-export central type ────────────────────────────────────────────────

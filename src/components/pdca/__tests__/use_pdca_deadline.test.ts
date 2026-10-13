@@ -1,3 +1,7 @@
+/**
+ * use_pdca_deadline.test.ts
+ * Pruebas unitarias del hook de cálculo de fecha límite (use_pdca_deadline).
+ */
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { use_pdca_deadline } from "../hooks/use_pdca_deadline";

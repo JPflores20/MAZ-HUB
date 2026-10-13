@@ -1,3 +1,7 @@
+/**
+ * pagination.tsx
+ * Componente base de interfaz (shadcn/ui) para controles de paginación de listas y tablas.
+ */
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 

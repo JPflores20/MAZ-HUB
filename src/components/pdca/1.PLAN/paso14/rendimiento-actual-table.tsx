@@ -1,3 +1,7 @@
+/**
+ * rendimiento-actual-table.tsx
+ * Tabla de indicadores de proceso con valores actuales, metas y estado de cumplimiento.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react";

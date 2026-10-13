@@ -1,3 +1,7 @@
+/**
+ * card.tsx
+ * Componente base de interfaz (shadcn/ui) para tarjetas contenedoras con encabezado, cuerpo y pie.
+ */
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

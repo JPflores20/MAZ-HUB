@@ -1,3 +1,7 @@
+/**
+ * gemba-image-thumbnail.tsx
+ * Miniatura individual de imagen con descripción y controles de vista previa en Gemba Walk.
+ */
 import React from "react";
 import { ZoomIn, X, FileText } from "lucide-react";
 

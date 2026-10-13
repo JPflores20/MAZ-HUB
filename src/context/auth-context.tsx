@@ -1,3 +1,7 @@
+/**
+ * auth-context.tsx
+ * Contexto global de autenticación. Gestiona la sesión de Firebase Auth, perfil de usuario, rol (admin/user) y cierre por inactividad.
+ */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { primaryAuth } from "@/lib/firebase";

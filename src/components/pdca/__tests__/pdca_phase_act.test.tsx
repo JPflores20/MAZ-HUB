@@ -1,3 +1,7 @@
+/**
+ * pdca_phase_act.test.tsx
+ * Pruebas unitarias de la Fase 4 (ACT) del PDCA.
+ */
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";

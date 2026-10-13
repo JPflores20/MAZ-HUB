@@ -1,3 +1,7 @@
+/**
+ * url-link-popover.tsx
+ * Popover para adjuntar enlaces externos (URLs) como evidencia complementaria.
+ */
 import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

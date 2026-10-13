@@ -1,3 +1,7 @@
+/**
+ * input-otp.tsx
+ * Componente base de interfaz (shadcn/ui) para captura de códigos de verificación de un solo uso (OTP).
+ */
 import * as React from "react";
 import { OTPInput, OTPInputContext } from "input-otp";
 import { Minus } from "lucide-react";

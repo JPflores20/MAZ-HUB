@@ -1,3 +1,7 @@
+/**
+ * separator.tsx
+ * Componente base de interfaz (shadcn/ui) para líneas divisorias horizontales o verticales.
+ */
 import * as React from "react";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 

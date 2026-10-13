@@ -1,3 +1,7 @@
+/**
+ * layout.tsx
+ * Layout estructural de la aplicación con barra lateral colapsable, encabezado superior, selector de idioma y área de contenido.
+ */
 import { ReactNode, useState, useEffect, useMemo, useRef } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, ClipboardList, Users, ShieldAlert } from "lucide-react";

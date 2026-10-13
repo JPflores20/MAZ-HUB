@@ -1,3 +1,7 @@
+/**
+ * index.tsx
+ * Vista principal de proyectos PDCA. Permite filtrar, buscar, crear, editar y eliminar proyectos PDCA.
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Plus, RefreshCw } from "lucide-react";

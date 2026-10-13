@@ -1,3 +1,7 @@
+/**
+ * start.ts
+ * Configuración de arranque e inicialización de middleware para TanStack Start.
+ */
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";

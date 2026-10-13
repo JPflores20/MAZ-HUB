@@ -1,3 +1,7 @@
+/**
+ * pdca_phase_check.tsx
+ * Componente principal de la Fase 3 (CHECK / Verificación) del PDCA. Evalúa pruebas ejecutadas, nuevo Pareto y tendencia del KPI.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StepCard } from "@/components/ui/step-card";

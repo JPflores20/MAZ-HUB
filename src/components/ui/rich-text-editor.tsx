@@ -1,3 +1,7 @@
+/**
+ * rich-text-editor.tsx
+ * Componente de editor de texto enriquecido basado en TipTap con barra de formato y soporte de imágenes.
+ */
 import React, { useRef } from "react";
 import { Bold, Italic, List, ListOrdered } from "lucide-react";
 import { cn } from "@/lib/utils";

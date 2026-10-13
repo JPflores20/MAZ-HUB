@@ -1,3 +1,7 @@
+/**
+ * navigation-menu.tsx
+ * Componente base de interfaz (shadcn/ui) para menús de navegación con paneles desplegables.
+ */
 import * as React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";

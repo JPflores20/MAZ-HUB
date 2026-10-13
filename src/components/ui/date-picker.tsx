@@ -1,3 +1,7 @@
+/**
+ * date-picker.tsx
+ * Componente selector de fecha con calendario desplegable formateado.
+ */
 import * as React from "react";
 import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";

@@ -1,3 +1,7 @@
+/**
+ * pdca-types.ts
+ * Reexportación centralizada de tipos e interfaces del modelo de datos PDCA.
+ */
 export * from "./types/core_types";
 export * from "./types/plan_types";
 export * from "./types/do_types";

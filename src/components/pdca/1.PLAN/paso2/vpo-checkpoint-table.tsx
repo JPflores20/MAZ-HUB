@@ -1,3 +1,7 @@
+/**
+ * vpo-checkpoint-table.tsx
+ * Paso 2 del PDCA: Tabla completa del SDCA Checklist (VPO Checkpoints) con estados YES, NO y N/A.
+ */
 import React from "react";
 import { FileText } from "lucide-react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";

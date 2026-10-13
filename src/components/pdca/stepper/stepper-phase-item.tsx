@@ -1,3 +1,7 @@
+/**
+ * stepper-phase-item.tsx
+ * Elemento individual de fase dentro de la barra de progreso (stepper) del PDCA.
+ */
 import React from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";

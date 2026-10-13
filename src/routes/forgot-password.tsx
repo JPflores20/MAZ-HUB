@@ -1,3 +1,7 @@
+/**
+ * forgot-password.tsx
+ * Vista para solicitar el restablecimiento de contraseña mediante correo electrónico con Firebase Auth.
+ */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";

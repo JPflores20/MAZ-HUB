@@ -1,3 +1,7 @@
+/**
+ * RdaTimelineTab.tsx
+ * Editor de secuencia cronológica de eventos (línea de tiempo) previos a la anomalía en el RDA.
+ */
 import React, { useState } from "react";
 import type { RdaTimelineEvent } from "@/data/rda";
 import { ProblemTimelineSection } from "@/components/pdca/1.PLAN/paso1/problem-timeline-section";

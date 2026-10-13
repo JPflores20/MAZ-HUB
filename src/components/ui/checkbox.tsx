@@ -1,3 +1,7 @@
+/**
+ * checkbox.tsx
+ * Componente base de interfaz (shadcn/ui) para casillas de verificación accesibles.
+ */
 import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { Check } from "lucide-react";

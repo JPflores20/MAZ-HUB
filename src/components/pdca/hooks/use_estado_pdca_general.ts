@@ -1,3 +1,7 @@
+/**
+ * use_estado_pdca_general.ts
+ * Hook para gestionar el estado de los datos generales, participantes y definición de meta del PDCA.
+ */
 import { useState } from "react";
 import type { Phase, PdcaComment, PdcaHistoryEvent, ParticipantesData, Pdca } from "@/data/pdca";
 import { DEFAULT_PARTICIPANTES } from "@/data/pdca";

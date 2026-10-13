@@ -1,4 +1,8 @@
 // @ts-nocheck
+/**
+ * conclusiones-step.tsx
+ * Paso consolidado de conclusiones ejecutivas del proyecto PDCA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ConclusionesKpiData, ConclusionesPiItem } from "@/data/pdca";

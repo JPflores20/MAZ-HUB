@@ -1,3 +1,8 @@
+/**
+ * resumen-metrics-cards.tsx
+ * Tarjetas superiores de indicadores del Resumen del PDCA.
+ * Presenta el Indicador/Target/GAP, el porcentaje de Avance PDCA y SDCA Check, y el conteo de Acciones del Plan.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Activity, TrendingUp, ListChecks } from "lucide-react";

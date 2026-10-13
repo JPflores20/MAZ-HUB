@@ -1,3 +1,7 @@
+/**
+ * gemba-gallery.tsx
+ * Galería visual de evidencias capturadas durante el Gemba Walk.
+ */
 import React from "react";
 import { Loader2 } from "lucide-react";
 

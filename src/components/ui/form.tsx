@@ -1,3 +1,7 @@
+/**
+ * form.tsx
+ * Componente base de interfaz (shadcn/ui) para formularios integrados con validación.
+ */
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";

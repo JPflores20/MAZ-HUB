@@ -1,3 +1,7 @@
+/**
+ * command.tsx
+ * Componente base de interfaz (shadcn/ui) para paletas de búsqueda y menús filtrables.
+ */
 "use client";
 
 import * as React from "react";

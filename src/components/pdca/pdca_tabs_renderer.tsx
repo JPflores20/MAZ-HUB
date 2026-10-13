@@ -1,3 +1,7 @@
+/**
+ * pdca_tabs_renderer.tsx
+ * Renderizador condicional del contenido de cada pestaña/fase activa dentro del editor PDCA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { TabContainer } from "./utils/pdca-tab-container";

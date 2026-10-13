@@ -1,3 +1,7 @@
+/**
+ * RdaPhase3Analysis.tsx
+ * Fase 3 del RDA (Análisis de Causas Raíz). Integra lluvia de ideas, Diagrama de Ishikawa 6M, 5 Porqués, validación, PDA y estandarización.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";

@@ -1,3 +1,7 @@
+/**
+ * RdaProblemDescriptionTab.tsx
+ * Formulario estructurado para la descripción del problema (Qué, Cómo, Cuándo, Dónde, Quién) en el RDA.
+ */
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

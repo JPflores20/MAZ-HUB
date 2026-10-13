@@ -1,3 +1,7 @@
+/**
+ * RdaPhase6QualityEval.tsx
+ * Fase 4 del RDA (Evaluación de Calidad RDA). Califica del 0 al 5 los criterios metodológicos del análisis para obtener el puntaje de calidad.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda, RdaQualityEval } from "@/data/rda";

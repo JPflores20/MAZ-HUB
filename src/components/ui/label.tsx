@@ -1,3 +1,7 @@
+/**
+ * label.tsx
+ * Componente base de interfaz (shadcn/ui) para etiquetas descriptivas de campos de formulario.
+ */
 "use client";
 
 import * as React from "react";

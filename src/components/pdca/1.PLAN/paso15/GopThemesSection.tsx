@@ -1,3 +1,7 @@
+/**
+ * GopThemesSection.tsx
+ * Paso 15 del PDCA: Evaluación de condiciones básicas y estándares operativos (GOP Themes).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * rendimiento-actual-upload.ts
+ * Funciones auxiliares de carga de archivos para el paso de rendimiento actual.
+ */
 export function comprimirImagen(
   archivoImagen: File,
   anchoMaximo = 2048,

@@ -1,3 +1,7 @@
+/**
+ * upcoming-tasks.tsx
+ * Listado de acciones y tareas próximas a vencer para seguimiento preventivo.
+ */
 interface UpcomingTask {
   id: string;
   description: string;

@@ -1,3 +1,7 @@
+/**
+ * evidencias-solucion-step.tsx
+ * Paso de registro de evidencias Antes vs. Después de la implementación de las acciones de mejora.
+ */
 import React from "react";
 import { UploadCloud, X, FileText } from "lucide-react";
 import { StepCard } from "@/components/ui/step-card";

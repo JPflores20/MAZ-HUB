@@ -1,3 +1,7 @@
+/**
+ * admin.tsx
+ * Ruta del panel de administración para gestión de usuarios, roles y permisos.
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";

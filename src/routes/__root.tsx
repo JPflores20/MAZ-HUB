@@ -1,3 +1,7 @@
+/**
+ * __root.tsx
+ * Ruta raíz de la aplicación. Envuelve todas las vistas con los proveedores de autenticación, tema, PDCA, notificaciones y layout general.
+ */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,

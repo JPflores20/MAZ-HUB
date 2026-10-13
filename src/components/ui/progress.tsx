@@ -1,3 +1,7 @@
+/**
+ * progress.tsx
+ * Componente base de interfaz (shadcn/ui) para barras horizontales de porcentaje de avance.
+ */
 "use client";
 
 import * as React from "react";

@@ -1,3 +1,7 @@
+/**
+ * registration-form.tsx
+ * Formulario administrativo para dar de alta nuevos usuarios y asignarles rol en la plataforma.
+ */
 import { useState } from "react";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { AlertCircle, UserPlus } from "lucide-react";

@@ -1,3 +1,7 @@
+/**
+ * five-whys-toolbar.tsx
+ * Barra de herramientas para agregar filas y filtrar causas dentro del análisis de 5 Porqués.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, MinusCircle, X, Maximize2 } from "lucide-react";

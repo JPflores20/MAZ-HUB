@@ -1,3 +1,7 @@
+/**
+ * tabla-estandarizacion-vpo.tsx
+ * Matriz de alineación de estándares implementados con los pilares VPO.
+ */
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Upload, X } from "lucide-react";

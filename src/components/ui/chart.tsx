@@ -1,3 +1,7 @@
+/**
+ * chart.tsx
+ * Componente base de interfaz (shadcn/ui) para contenedores y leyendas de gráficas Recharts.
+ */
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 

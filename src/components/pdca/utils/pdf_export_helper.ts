@@ -1,3 +1,7 @@
+/**
+ * pdf_export_helper.ts
+ * Funciones auxiliares para la generación y descarga de reportes PDF de proyectos PDCA.
+ */
 import { toast } from "sonner";
 
 /**

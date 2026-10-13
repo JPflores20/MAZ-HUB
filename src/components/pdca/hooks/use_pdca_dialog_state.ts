@@ -1,3 +1,7 @@
+/**
+ * use_pdca_dialog_state.ts
+ * Hook central que unifica todo el estado editable del diálogo PDCA y sus subfases.
+ */
 import { use_estado_pdca_general } from "./use_estado_pdca_general";
 import { use_estado_pdca_plan_graficas } from "./use_estado_pdca_plan_graficas";
 import { use_estado_pdca_herramientas } from "./use_estado_pdca_herramientas";

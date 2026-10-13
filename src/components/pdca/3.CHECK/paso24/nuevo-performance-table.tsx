@@ -1,3 +1,7 @@
+/**
+ * nuevo-performance-table.tsx
+ * Tabla y comparativa del nuevo rendimiento obtenido tras la ejecución del plan de acción.
+ */
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

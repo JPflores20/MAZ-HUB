@@ -1,3 +1,7 @@
+/**
+ * pdca-history.tsx
+ * Historial de cambios y bitácora de auditoría del proyecto PDCA.
+ */
 import { PdcaHistoryEvent } from "@/data/pdca";
 import { History, Clock } from "lucide-react";
 import { format, parseISO } from "date-fns";

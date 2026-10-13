@@ -1,3 +1,7 @@
+/**
+ * dashboard_filters.tsx
+ * Barra de filtros superiores para segmentar proyectos PDCA por fase, área o estado en el Dashboard.
+ */
 import { PhaseBadge } from "@/components/pdca/pdca-badge";
 import { type Phase, type Pdca, phases } from "@/data/pdca";
 import { Target, CheckCircle2, Building, Snowflake, Flame } from "lucide-react";

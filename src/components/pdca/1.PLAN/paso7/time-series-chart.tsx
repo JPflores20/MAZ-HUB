@@ -1,3 +1,7 @@
+/**
+ * time-series-chart.tsx
+ * Gráfica de líneas (Recharts) para visualizar el comportamiento mensual Target vs. Actual del KPI.
+ */
 import React from "react";
 import {
   Bar,

@@ -1,3 +1,7 @@
+/**
+ * rendimiento-actual-step.tsx
+ * Paso 14 del PDCA: Evaluación del rendimiento actual de los indicadores de proceso (PIs) y sus brechas.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";

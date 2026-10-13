@@ -1,3 +1,7 @@
+/**
+ * pareto-utils.ts
+ * Funciones matemáticas para ordenar datos y calcular frecuencias relativas y acumuladas de Pareto.
+ */
 import type { ParetoItem } from "@/data/pdca";
 
 export interface FilaPareto extends ParetoItem {

@@ -1,3 +1,7 @@
+/**
+ * user-service.ts
+ * Servicio de administración de usuarios en Firestore y creación de cuentas con instancia secundaria de Firebase Auth.
+ */
 import { db } from "@/lib/firebase";
 import {
   doc,

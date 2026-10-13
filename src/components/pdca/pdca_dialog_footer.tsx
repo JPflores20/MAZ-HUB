@@ -1,3 +1,7 @@
+/**
+ * pdca_dialog_footer.tsx
+ * Pie de página del editor PDCA con controles de navegación entre fases y guardado.
+ */
 import React from "react";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";

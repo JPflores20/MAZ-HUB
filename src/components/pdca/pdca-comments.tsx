@@ -1,3 +1,7 @@
+/**
+ * pdca-comments.tsx
+ * Sección de comentarios y retroalimentación colaborativa dentro de un proyecto PDCA.
+ */
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

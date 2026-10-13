@@ -1,3 +1,7 @@
+/**
+ * use_estado_pdca_plan_graficas.ts
+ * Hook para gestionar el estado de las series de tiempo, Paretos y gráficas de correlación en la fase Plan del PDCA.
+ */
 import { useState, useCallback } from "react";
 import type { Pdca, VpoCheckpointItem, ParetoItem, DefinicionMeta } from "@/data/pdca";
 import {

@@ -1,3 +1,7 @@
+/**
+ * use_estado_pdca_herramientas.ts
+ * Hook para gestionar el estado de las herramientas de análisis (SIPOC, Ishikawa, 5 Porqués, Matriz de Impacto) del PDCA.
+ */
 import { useState } from "react";
 import type {
   Pdca,

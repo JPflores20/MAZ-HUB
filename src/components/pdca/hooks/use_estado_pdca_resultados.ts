@@ -1,3 +1,7 @@
+/**
+ * use_estado_pdca_resultados.ts
+ * Hook para gestionar el estado de resultados, pruebas ejecutadas, estandarización y evaluación RD2D del PDCA.
+ */
 import { useState } from "react";
 import type { Pdca, ConclusionesKpiData, ConclusionesPiItem } from "@/data/pdca";
 import { DEFAULT_TARGET_VS_ACTUAL } from "@/data/pdca";

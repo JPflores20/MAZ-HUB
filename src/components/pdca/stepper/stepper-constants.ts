@@ -1,3 +1,7 @@
+/**
+ * stepper-constants.ts
+ * Constantes de configuración y mapeo de pasos por cada fase del stepper PDCA.
+ */
 import type { Phase } from "@/data/pdca";
 import type { CustomPhase } from "./stepper-types";
 

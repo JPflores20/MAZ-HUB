@@ -1,3 +1,7 @@
+/**
+ * pareto-chart.tsx
+ * Gráfica combinada de barras y curva acumulada 80/20 para el Análisis de Pareto.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {

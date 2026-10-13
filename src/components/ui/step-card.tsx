@@ -1,3 +1,7 @@
+/**
+ * step-card.tsx
+ * Tarjeta contenedora para pasos metodológicos (PDCA/RDA) con controles de completado, N/A y colapsado.
+ */
 import * as React from "react";
 import { ChevronDown, Maximize2, Minimize2 } from "lucide-react";
 import { cn } from "@/lib/utils";

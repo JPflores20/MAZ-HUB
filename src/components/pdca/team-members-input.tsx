@@ -1,3 +1,7 @@
+/**
+ * team-members-input.tsx
+ * Selector y gestor de miembros del equipo multidisciplinario asignados al proyecto PDCA.
+ */
 import { useEffect, useState, useMemo, useCallback, useRef, Fragment } from "react";
 import {
   Check,

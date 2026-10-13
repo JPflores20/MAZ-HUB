@@ -1,3 +1,7 @@
+/**
+ * subphase_1.tsx
+ * Vista modular de la primera subfase de planificación (Definición e Identificación).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { PdcaGoalDefinition } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";

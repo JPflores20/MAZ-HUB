@@ -1,3 +1,7 @@
+/**
+ * action-kanban.tsx
+ * Tablero Kanban interactivo con arrastrar y soltar (Drag & Drop) para gestionar el estado de las acciones.
+ */
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,3 +1,7 @@
+/**
+ * gemba-lightbox.tsx
+ * Visor emergente (lightbox) para examinar a detalle las fotografías del Gemba Walk.
+ */
 import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 

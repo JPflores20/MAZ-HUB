@@ -1,3 +1,7 @@
+/**
+ * use_pdca_deadline.ts
+ * Hook para calcular alertas de vencimiento y bloqueo automático por fecha límite en el PDCA.
+ */
 import { useMemo } from "react";
 import { parse_date_string } from "../utils/date_helpers";
 

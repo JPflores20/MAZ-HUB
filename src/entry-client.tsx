@@ -1,3 +1,7 @@
+/**
+ * entry-client.tsx
+ * Punto de entrada del cliente (hidratación/renderizado de React y TanStack Start en el navegador).
+ */
 import "./suppress-warnings";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";

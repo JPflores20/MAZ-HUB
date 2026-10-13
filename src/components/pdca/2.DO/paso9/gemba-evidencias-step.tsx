@@ -1,3 +1,7 @@
+/**
+ * gemba-evidencias-step.tsx
+ * Paso de Gemba Walk para documentar hallazgos y evidencias recolectadas directamente en piso de producción.
+ */
 import React, { useRef, useState } from "react";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";

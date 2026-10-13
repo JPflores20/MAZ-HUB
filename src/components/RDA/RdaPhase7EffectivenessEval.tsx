@@ -1,3 +1,7 @@
+/**
+ * RdaPhase7EffectivenessEval.tsx
+ * Fase 5 del RDA (Evaluación de Efectividad de RDA). Evalúa el impacto Antes vs. Después en el indicador durante el periodo definido.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";

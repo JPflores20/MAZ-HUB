@@ -1,3 +1,7 @@
+/**
+ * calendar.tsx
+ * Componente base de interfaz (shadcn/ui) para selección interactiva de fechas en calendario.
+ */
 "use client";
 
 import * as React from "react";

@@ -1,3 +1,7 @@
+/**
+ * kpi-cards.tsx
+ * Tarjetas de resumen estadístico de proyectos PDCA en el Dashboard principal.
+ */
 import { ClipboardList, CheckCircle2, Clock, Target } from "lucide-react";
 
 interface KpiData {

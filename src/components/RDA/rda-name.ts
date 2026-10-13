@@ -1,3 +1,7 @@
+/**
+ * rda-name.ts
+ * Funciones auxiliares para obtener y sincronizar el nombre del RDA a partir de la cabeza (efecto) del Diagrama de Ishikawa.
+ */
 import type { Rda } from "@/data/rda";
 
 /** Título con el que se crea un RDA nuevo (ver `defaultRda`). */

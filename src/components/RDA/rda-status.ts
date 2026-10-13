@@ -1,3 +1,8 @@
+/**
+ * rda-status.ts
+ * Define la lógica de negocio para evaluar el avance por fases de un Reporte de Anomalía (RDA)
+ * y calcular automáticamente su estado global ("Abierto", "Cerrado" o "Evaluado").
+ */
 import type { Rda } from "@/data/rda";
 
 export const RDA_PHASE_STEP_IDS: Record<1 | 2 | 3 | 4 | 5, string[]> = {

@@ -1,3 +1,7 @@
+/**
+ * five-whys-evidences.tsx
+ * Gestor de evidencias fotográficas y documentales asociadas a la validación de los 5 Porqués.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { UploadCloud, FileText, X, RefreshCw } from "lucide-react";

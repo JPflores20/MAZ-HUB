@@ -1,3 +1,7 @@
+/**
+ * use-mobile.tsx
+ * Hook personalizado para detectar si el viewport actual corresponde a un dispositivo móvil.
+ */
 import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;

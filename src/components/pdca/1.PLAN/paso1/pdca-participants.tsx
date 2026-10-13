@@ -1,3 +1,7 @@
+/**
+ * pdca-participants.tsx
+ * Tabla de registro del equipo participante, roles y áreas involucradas en el proyecto PDCA.
+ */
 import React from "react";
 import { type ParticipantesData } from "@/data/pdca";
 import { Input } from "@/components/ui/input";

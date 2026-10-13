@@ -1,3 +1,7 @@
+/**
+ * pdca_model.ts
+ * Interfaz principal del documento PDCA completo con todas las propiedades de las fases Plan, Do, Check, Act y Evaluación.
+ */
 import type { Phase, PdcaComment, PdcaHistoryEvent } from "./core_types";
 import type {
   DefinicionMeta,

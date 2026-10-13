@@ -1,3 +1,7 @@
+/**
+ * rda.ts
+ * Definición de tipos TypeScript, interfaces y valores por defecto para los Reportes de Anomalía (RDA) y sus 5 fases.
+ */
 import type {
   DefinicionMeta,
   ParticipantesData,

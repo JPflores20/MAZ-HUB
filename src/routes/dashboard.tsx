@@ -1,3 +1,9 @@
+/**
+ * dashboard.tsx
+ * Ruta del Dashboard Ejecutivo de MAZ HUB.
+ * Consolida en tiempo real los indicadores de proyectos PDCA y reportes RDA (Abiertos, Cerrados, Evaluados),
+ * movimientos recientes y próximas tareas por vencer.
+ */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { subscribeToRdas } from "@/services/rda-service";

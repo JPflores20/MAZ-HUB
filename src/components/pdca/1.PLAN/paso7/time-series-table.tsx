@@ -1,3 +1,7 @@
+/**
+ * time-series-table.tsx
+ * Tabla editable de valores mensuales (Enero-Diciembre) para alimentar la serie de tiempo del KPI.
+ */
 import React from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";

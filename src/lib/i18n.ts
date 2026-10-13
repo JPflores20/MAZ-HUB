@@ -1,3 +1,7 @@
+/**
+ * i18n.ts
+ * Configuración de internacionalización (i18next) y diccionarios de traducción en Español, Inglés y Portugués.
+ */
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 

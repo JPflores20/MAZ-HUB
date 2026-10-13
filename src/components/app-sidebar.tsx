@@ -1,3 +1,7 @@
+/**
+ * app-sidebar.tsx
+ * Componente de barra lateral de navegación de la aplicación.
+ */
 import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, ClipboardList, FileStack, Lock } from "lucide-react";
 

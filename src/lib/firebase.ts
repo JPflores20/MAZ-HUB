@@ -1,3 +1,7 @@
+/**
+ * firebase.ts
+ * Inicialización y configuración de los servicios de Firebase (App, Auth, Firestore con caché persistente y Storage).
+ */
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import {

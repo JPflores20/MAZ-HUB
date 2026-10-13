@@ -1,4 +1,8 @@
 // @ts-nocheck
+/**
+ * RdaPhase2Problem.tsx
+ * Fase 2 del RDA (Descripción del Problema). Incluye contexto, matriz 5W2H, evidencias del fenómeno y línea de tiempo.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Rda } from "@/data/rda";

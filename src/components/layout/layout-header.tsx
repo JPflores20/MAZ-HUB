@@ -1,3 +1,7 @@
+/**
+ * layout-header.tsx
+ * Barra superior de navegación con migas de pan, selector de idioma, campana de notificaciones y controles de tema.
+ */
 import React from "react";
 import {
   Menu,

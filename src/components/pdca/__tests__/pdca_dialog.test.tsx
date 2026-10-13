@@ -1,3 +1,7 @@
+/**
+ * pdca_dialog.test.tsx
+ * Pruebas de integración del componente principal PdcaDialog.
+ */
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";

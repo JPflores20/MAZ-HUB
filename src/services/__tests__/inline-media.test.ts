@@ -1,3 +1,7 @@
+/**
+ * inline-media.test.ts
+ * Pruebas unitarias para la extracción y subida de imágenes base64 a Firebase Storage.
+ */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const uploadMock = vi.fn(async (file: File) => `https://storage.example/${file.name}`);

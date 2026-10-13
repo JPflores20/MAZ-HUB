@@ -1,3 +1,7 @@
+/**
+ * seed-rda-update.ts
+ * Script de actualización masiva y normalización de registros de prueba del módulo RDA en Firestore.
+ */
 import { createRda } from "@/services/rda-service";
 import type { Rda } from "@/data/rda";
 

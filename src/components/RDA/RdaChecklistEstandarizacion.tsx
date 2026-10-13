@@ -1,4 +1,8 @@
 // @ts-nocheck
+/**
+ * RdaChecklistEstandarizacion.tsx
+ * Lista de verificación (checklist) de estandarización y actualización de documentos (SOP/OPL) en el RDA.
+ */
 import { useTranslation } from "react-i18next";
 import React from "react";
 import {

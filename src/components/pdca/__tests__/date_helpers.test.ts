@@ -1,3 +1,7 @@
+/**
+ * date_helpers.test.ts
+ * Pruebas unitarias para las funciones de formateo y cálculo de fechas del módulo PDCA.
+ */
 import { describe, it, expect } from "vitest";
 import { parse_date_string, format_date_to_string } from "../utils/date_helpers";
 

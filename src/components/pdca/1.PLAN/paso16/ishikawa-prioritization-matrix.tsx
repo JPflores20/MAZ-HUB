@@ -1,3 +1,7 @@
+/**
+ * ishikawa-prioritization-matrix.tsx
+ * Matriz de Impacto vs. Esfuerzo para priorizar las causas identificadas en el diagrama de Ishikawa.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";

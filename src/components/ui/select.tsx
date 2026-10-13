@@ -1,3 +1,7 @@
+/**
+ * select.tsx
+ * Componente base de interfaz (shadcn/ui) para listas desplegables de selección.
+ */
 "use client";
 
 import * as React from "react";

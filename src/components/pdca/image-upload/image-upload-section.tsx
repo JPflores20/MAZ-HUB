@@ -1,3 +1,7 @@
+/**
+ * image-upload-section.tsx
+ * Sección reutilizable para subir, previsualizar y eliminar una imagen o documento de evidencia.
+ */
 import React, { useRef } from "react";
 import { X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";

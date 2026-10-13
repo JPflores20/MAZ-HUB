@@ -1,3 +1,7 @@
+/**
+ * tabla-estandarizacion.tsx
+ * Tabla de estandarización de acciones exitosas (creación o actualización de SOP, OPL, LUP y entrenamientos).
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";

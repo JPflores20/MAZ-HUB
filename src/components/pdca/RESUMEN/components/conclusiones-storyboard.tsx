@@ -1,3 +1,7 @@
+/**
+ * conclusiones-storyboard.tsx
+ * Vista tipo Storyboard que resume visualmente cada etapa del proyecto PDCA.
+ */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";

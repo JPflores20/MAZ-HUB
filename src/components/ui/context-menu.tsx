@@ -1,3 +1,7 @@
+/**
+ * context-menu.tsx
+ * Componente base de interfaz (shadcn/ui) para menús contextuales al hacer clic derecho.
+ */
 import * as React from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";

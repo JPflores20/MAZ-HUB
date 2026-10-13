@@ -1,3 +1,7 @@
+/**
+ * notification-bell.tsx
+ * Campana de notificaciones en tiempo real con alertas de tareas próximas a vencer y asignaciones.
+ */
 import React, { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

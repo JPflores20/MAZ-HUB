@@ -1,3 +1,9 @@
+/**
+ * rda.tsx
+ * Ruta principal del módulo de Reportes de Anomalía (RDA).
+ * Muestra las 3 tarjetas de estado (Abierto, Cerrado, Evaluado), filtros por año/mes/planta/proceso/estatus,
+ * exportación a Excel (.xlsx), listado tabular y apertura del editor RdaDialog.
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Plus, Search, Trash2, Edit, RefreshCw, Filter, Download, FileSpreadsheet } from "lucide-react";

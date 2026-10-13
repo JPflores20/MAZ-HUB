@@ -1,3 +1,7 @@
+/**
+ * sheet.tsx
+ * Componente base de interfaz (shadcn/ui) para paneles laterales deslizables.
+ */
 "use client";
 
 import * as React from "react";

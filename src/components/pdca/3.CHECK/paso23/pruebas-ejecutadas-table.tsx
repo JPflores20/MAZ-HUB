@@ -1,3 +1,7 @@
+/**
+ * pruebas-ejecutadas-table.tsx
+ * Tabla de seguimiento y validación de pruebas ejecutadas durante la fase de verificación.
+ */
 import React, { useState } from "react";
 import { Plus, Trash2, X, UploadCloud, RefreshCw, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
