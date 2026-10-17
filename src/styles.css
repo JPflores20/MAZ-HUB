@@ -1,5 +1,4 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -172,14 +171,20 @@
     font-family: var(--font-display);
     letter-spacing: 0.01em;
   }
+
+  textarea {
+    text-align: justify;
+  }
 }
 
 /* Utilities */
 .hide-arrows::-webkit-outer-spin-button,
 .hide-arrows::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 .hide-arrows {
   -moz-appearance: textfield;
+  appearance: textfield;
 }

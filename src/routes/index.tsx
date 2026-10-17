@@ -1,9 +1,11 @@
 /**
  * index.tsx
- * Vista principal de proyectos PDCA. Permite filtrar, buscar, crear, editar y eliminar proyectos PDCA.
+ * Vista principal del Banco de proyectos PDCA.
+ * Todos los usuarios pueden ver el banco completo de PDCAs; si no tienen permiso para abrir un PDCA,
+ * pueden solicitar acceso al Creador, al Responsable o a un Administrador.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, RefreshCw } from "lucide-react";
 import { format, isValid, isBefore, startOfDay, parse } from "date-fns";
 import { es } from "date-fns/locale";
@@ -27,6 +29,12 @@ import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import React, { lazy, Suspense } from "react";
+import {
+  AccessRequestDialog,
+  type AccessRequestTarget,
+  buildPdcaAccessTarget,
+  canUserAccessPdca,
+} from "@/components/ui/access-request-dialog";
 
 const LazyPdcaDialog = lazy(() =>
   import("@/components/pdca/pdca-dialog-wrapper").then((m) => ({ default: m.PdcaDialog })),
@@ -60,12 +68,12 @@ export const Route = createFileRoute("/")({
 });
 
 /**
- * Componente principal de la ruta de dashboard (Mis PDCAs)
+ * Componente principal de la ruta de dashboard (Banco de PDCAs)
  */
 function MisPdcas() {
   const { t } = useTranslation();
-  const { currentUser: current_user } = useAuth();
-  const { pdcaList: pdca_list, allPdcas: all_pdcas, refresh, loading } = usePdcas();
+  const { currentUser: current_user, permissions } = useAuth();
+  const { allPdcas: all_pdcas, pdcaList: accessible_pdcas, refresh, loading } = usePdcas();
 
   // Estados de la vista
   const [query, set_query] = useState("");
@@ -74,6 +82,9 @@ function MisPdcas() {
   const [is_creating_new, set_is_creating_new] = useState(false);
   const [delete_id, set_delete_id] = useState<string | null>(null);
   const [is_refreshing, set_is_refreshing] = useState(false);
+  const [access_request_target, set_access_request_target] = useState<AccessRequestTarget | null>(
+    null,
+  );
 
   // Manejador de recarga de datos
   const handle_refresh = async () => {
@@ -83,15 +94,51 @@ function MisPdcas() {
   };
 
   const is_admin = current_user?.role === "admin";
-  const user_pdcas = is_admin ? all_pdcas : pdca_list;
+  // Todos los usuarios pueden visualizar el banco completo de PDCAs
+  const user_pdcas = all_pdcas;
 
-  // PDCA seleccionado actualmente
+  const handle_select_pdca_id = (id: string) => {
+    const target = user_pdcas.find((p) => p.id === id);
+    if (!target) return;
+    if (!canUserAccessPdca(target, current_user, permissions)) {
+      set_access_request_target(buildPdcaAccessTarget(target));
+      return;
+    }
+    set_selected_id(id);
+  };
+
+  // Si el usuario viene desde el Dashboard, buscador o notificaciones, abrir el PDCA solicitado (o pedir permiso)
+  useEffect(() => {
+    if (loading || user_pdcas.length === 0) return;
+    try {
+      const targetId = sessionStorage.getItem("maz_hub_open_pdca_id");
+      if (targetId) {
+        sessionStorage.removeItem("maz_hub_open_pdca_id");
+        const found = user_pdcas.find((p) => p.id === targetId);
+        if (found) {
+          if (canUserAccessPdca(found, current_user, permissions)) {
+            set_selected_id(targetId);
+          } else {
+            set_access_request_target(buildPdcaAccessTarget(found));
+          }
+        }
+      }
+    } catch {
+      // Ignorar errores de sessionStorage
+    }
+  }, [loading, user_pdcas, current_user, permissions]);
+
+  // PDCA seleccionado actualmente (solo si tiene permiso)
   const selected = useMemo(() => {
     if (!selected_id) return null;
-    return user_pdcas.find((p) => p.id === selected_id) || null;
-  }, [selected_id, user_pdcas]);
+    const found = user_pdcas.find((p) => p.id === selected_id) || null;
+    if (found && !canUserAccessPdca(found, current_user, permissions)) {
+      return null;
+    }
+    return found;
+  }, [selected_id, user_pdcas, current_user, permissions]);
 
-  // Cálculo de métricas
+  // Cálculo de métricas sobre el banco completo
   const metrics = useMemo(() => {
     let activos = 0;
     let cerrados = 0;
@@ -193,7 +240,7 @@ function MisPdcas() {
   // Apertura de modal PDCA
   const open_pdca = (p: Pdca | null) => {
     if (p) {
-      set_selected_id(p.id);
+      handle_select_pdca_id(p.id);
       set_is_creating_new(false);
     } else {
       set_selected_id(null);
@@ -238,10 +285,10 @@ function MisPdcas() {
               <Skeleton className="h-4 w-64" />
             ) : (
               <p className="text-sm text-muted-foreground">
-                {user_pdcas.length} {t("registeredCycles")}{" "}
-                {current_user?.role === "admin"
-                  ? t("globalView")
-                  : `${t("assignedCycles")} ${current_user?.name || "ti"}.`}
+                {user_pdcas.length} ciclos en el Banco de PDCAs •{" "}
+                <span className="font-medium text-foreground">
+                  {accessible_pdcas.length} con acceso habilitado para ti
+                </span>
               </p>
             )}
           </div>
@@ -256,13 +303,15 @@ function MisPdcas() {
           >
             <RefreshCw className={`h-4 w-4 ${is_refreshing ? "animate-spin" : ""}`} />
           </Button>
-          <Button
-            size="lg"
-            className="bg-primary shadow-sm hover:bg-brand-dark"
-            onClick={() => open_pdca(null)}
-          >
-            <Plus /> {t("createNewPdca")}
-          </Button>
+          {permissions.canCreate && (
+            <Button
+              size="lg"
+              className="bg-primary shadow-sm hover:bg-brand-dark"
+              onClick={() => open_pdca(null)}
+            >
+              <Plus /> {t("createNewPdca")}
+            </Button>
+          )}
         </div>
       </header>
 
@@ -298,7 +347,7 @@ function MisPdcas() {
               setFilter={set_filter}
               current_user={current_user}
               is_admin={is_admin}
-              set_selected_id={set_selected_id}
+              set_selected_id={handle_select_pdca_id}
               request_delete={request_delete}
               handle_deadline_change={handle_deadline_change}
               handle_remove_deadline={handle_remove_deadline}
@@ -306,6 +355,13 @@ function MisPdcas() {
           </ErrorBoundary>
         </>
       )}
+
+      {/* Diálogo para solicitar acceso a PDCAs restringidos */}
+      <AccessRequestDialog
+        open={!!access_request_target}
+        onOpenChange={(open) => !open && set_access_request_target(null)}
+        target={access_request_target}
+      />
 
       {/* Diálogo de Eliminación */}
       <AlertDialog open={!!delete_id} onOpenChange={(open) => !open && set_delete_id(null)}>

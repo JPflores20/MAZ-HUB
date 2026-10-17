@@ -139,6 +139,7 @@ import { AppLayout } from "../components/layout";
 import { AuthProvider } from "@/context/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PdcaProvider } from "@/context/pdca-context";
+import { RdaProvider } from "@/context/rda-context";
 import "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -149,11 +150,13 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <AuthProvider>
-          {/* Single Firestore listener — feeds layout, dashboard, index, etc. */}
+          {/* Single Firestore cache — feeds layout, dashboard, index, rda, etc. */}
           <PdcaProvider>
-            <AppLayout>
-              <Outlet />
-            </AppLayout>
+            <RdaProvider>
+              <AppLayout>
+                <Outlet />
+              </AppLayout>
+            </RdaProvider>
           </PdcaProvider>
           <Toaster richColors position="top-right" />
         </AuthProvider>

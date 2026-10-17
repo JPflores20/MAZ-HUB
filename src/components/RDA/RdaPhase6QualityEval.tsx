@@ -4,9 +4,16 @@
  */
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import type { Rda, RdaQualityEval } from "@/data/rda";
 import { StepCard } from "@/components/ui/step-card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { Button } from "@/components/ui/button";
+import {
+  MethodologyValidatorCard,
+  evaluateRdaMethodology,
+} from "@/components/ui/methodology-validator-card";
 
 interface Props {
   rda: Rda;
@@ -35,6 +42,7 @@ const ScoreSelector = ({ value, onChange }: { value: number; onChange: (v: numbe
 
 export function RdaPhase6QualityEval({ rda, onChange }: Props) {
   const { t } = useTranslation();
+  const rdaMethodology = React.useMemo(() => evaluateRdaMethodology(rda), [rda]);
 
   const isStepCompleted = (stepId: string) => rda.completedSteps?.includes(stepId) || false;
   const isStepNa = (stepId: string) => rda.naSteps?.includes(stepId) || false;
@@ -80,6 +88,11 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
     onChange({ ...rda, calidadRda: { ...evalData, ...updates } });
   };
 
+  const handleApplySuggestedScores = () => {
+    updateData(rdaMethodology.suggestedQualityEval);
+    toast.success("Calificación sugerida aplicada según los datos actuales del RDA");
+  };
+
   const totalScore =
     evalData.definicionProblema +
     evalData.evidencia +
@@ -90,6 +103,24 @@ export function RdaPhase6QualityEval({ rda, onChange }: Props) {
 
   return (
     <div className="space-y-8">
+      <MethodologyValidatorCard
+        title="Diagnóstico Automático de Consistencia Metodológica RDA"
+        criteria={rdaMethodology.criteria}
+        scorePct={rdaMethodology.scorePct}
+        actionButton={
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleApplySuggestedScores}
+            className="h-7 gap-1.5 text-xs font-semibold border-primary/40 text-primary hover:bg-primary/10"
+          >
+            <Sparkles className="size-3.5" />
+            Aplicar calificación sugerida
+          </Button>
+        }
+      />
+
       <StepCard
         title={t("rdaInternal.rdaQualityEval")}
         defaultExpanded={true}

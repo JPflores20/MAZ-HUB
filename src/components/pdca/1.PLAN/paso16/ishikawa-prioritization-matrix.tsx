@@ -4,7 +4,8 @@
  */
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, X } from "lucide-react";
+import { Plus, X, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AutoResizeTextarea } from "../../auto-resize-textarea";
@@ -13,11 +14,13 @@ import { cn } from "@/lib/utils";
 interface PropiedadesMatrizPriorizacion {
   valorMatriz?: any[] | undefined;
   alCambiarValores?: ((causasModificadas: any[]) => void) | undefined;
+  alEnviarA5Porques?: ((causasPriorizadasTexto: string[]) => void) | undefined;
 }
 
 export function MatrizPriorizacionIshikawa({
   valorMatriz = [],
   alCambiarValores,
+  alEnviarA5Porques,
 }: PropiedadesMatrizPriorizacion) {
   const { t } = useTranslation();
 
@@ -69,17 +72,53 @@ export function MatrizPriorizacionIshikawa({
     }
   };
 
+  const manejarEnvioA5Porques = () => {
+    if (!alEnviarA5Porques) return;
+    const conPuntaje = listaCausasMatriz.filter((c) => {
+      const texto = String(c.text || "").trim();
+      const total =
+        (Number(c.impact) || 0) * (Number(c.authority) || 0) * (Number(c.difficulty) || 0);
+      return texto !== "" && total > 0;
+    });
+    const candidatas =
+      conPuntaje.length > 0
+        ? conPuntaje
+        : listaCausasMatriz.filter((c) => String(c.text || "").trim() !== "");
+
+    const textos = candidatas.map((c) => String(c.text).trim());
+    if (textos.length === 0) {
+      toast.error("Escribe al menos una causa probable en la matriz para enviarla a 5 Porqués.");
+      return;
+    }
+    alEnviarA5Porques(textos);
+  };
+
   return (
     <div className="mt-8 border border-[#0078D7] rounded-sm overflow-hidden bg-white shadow-sm dark:bg-background">
-      <div className="bg-white dark:bg-background px-2 py-1 flex items-center justify-between border-b border-[#0078D7]">
+      <div className="bg-white dark:bg-background px-2 py-1 flex flex-wrap items-center justify-between gap-2 border-b border-[#0078D7]">
         <span className="text-[11px] font-bold text-[#0078D7] uppercase tracking-wide">{t("pdcaPlan.paso16_ishikawa_matrix_title")}</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={agregarFilaNueva}
-          className="h-6 px-2 text-[10px] uppercase font-bold text-[#0078D7] hover:bg-[#0078D7]/10"
-        >
-          <Plus className="size-3 mr-1" />{t("pdcaPlan.paso16_ishikawa_add_cause")}</Button>
+        <div className="flex items-center gap-1.5">
+          {alEnviarA5Porques && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={manejarEnvioA5Porques}
+              className="h-6 px-2 text-[10px] uppercase font-bold text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800"
+              title="Enviar causas priorizadas a la tabla de 5 Porqués (Paso 17)"
+            >
+              Enviar a 5 Why&apos;s <ArrowRight className="size-3 ml-1" />
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={agregarFilaNueva}
+            className="h-6 px-2 text-[10px] uppercase font-bold text-[#0078D7] hover:bg-[#0078D7]/10"
+          >
+            <Plus className="size-3 mr-1" />{t("pdcaPlan.paso16_ishikawa_add_cause")}</Button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">

@@ -21,10 +21,23 @@ import { getRdaName, withRdaName } from "./rda-name";
 interface Props {
   rda: Rda;
   onChange: (rda: Rda) => void;
+  onForceSave?: () => void;
 }
 
-export function RdaPhase3Analysis({ rda, onChange }: Props) {
+export function RdaPhase3Analysis({ rda, onChange, onForceSave }: Props) {
   const { t } = useTranslation();
+
+  const correlationData = React.useMemo(() => {
+    const raw = rda.correlaciones;
+    if (raw && !Array.isArray(raw) && typeof raw === "object") {
+      return raw;
+    }
+    return {
+      seriesList: Array.isArray(raw) ? raw : [],
+      positiveTitle: t("rdaInternal.positiveCorrelation"),
+      negativeTitle: t("rdaInternal.negativeCorrelation"),
+    };
+  }, [rda.correlaciones, t]);
 
   const isStepCompleted = (stepId: string) => rda.completedSteps?.includes(stepId) || false;
   const isStepNa = (stepId: string) => rda.naSteps?.includes(stepId) || false;
@@ -87,6 +100,42 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
 
   return (
     <div className="space-y-8">
+      {/* Encabezado de Análisis de Causa Raíz (Otros reportes y Participantes) */}
+      <div className="border border-border rounded-md overflow-hidden bg-card shadow-sm">
+        <div className="bg-[#0078D7] px-4 py-2 text-center font-bold text-xs uppercase text-white">
+          {t("rda.rootCauseAnalysisWarning")}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-border">
+          <div className="md:col-span-4 bg-[#0078D7] px-3 py-2.5 flex items-center justify-center text-center font-bold text-[11px] uppercase text-white">
+            {t("rdaInternal.analyzedInOtherReports")}
+          </div>
+          <div className="md:col-span-2 p-2 flex items-center justify-center bg-background">
+            <select
+              value={rda.analizadoEnOtrosReportes || "No"}
+              onChange={(e) =>
+                onChange({ ...rda, analizadoEnOtrosReportes: e.target.value })
+              }
+              className="h-8 w-full rounded border border-input bg-background px-2 text-xs font-semibold text-center text-blue-700 dark:text-blue-400"
+            >
+              <option value="No">No</option>
+              <option value="Sí">Sí</option>
+            </select>
+          </div>
+          <div className="md:col-span-2 bg-[#0078D7] px-3 py-2.5 flex items-center justify-center text-center font-bold text-[11px] uppercase text-white">
+            {t("rda.participants")}
+          </div>
+          <div className="md:col-span-4 p-2 flex items-center bg-background">
+            <input
+              type="text"
+              value={rda.participantesRC || ""}
+              onChange={(e) => onChange({ ...rda, participantesRC: e.target.value })}
+              placeholder="Nombres de los participantes..."
+              className="h-8 w-full rounded border border-input bg-background px-2.5 text-xs font-medium text-blue-700 dark:text-blue-400 outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* 5. Ishikawa */}
       <IshikawaInteractivo
         tituloPersonalizado={t("rdaInternal.ishikawaDiagram")}
@@ -139,12 +188,9 @@ export function RdaPhase3Analysis({ rda, onChange }: Props) {
       {/* 7. Correlaciones (Opcional) */}
       <FlavorCorrelationSection
         title={t("rdaInternal.correlationsOptional")}
-        data={{
-          seriesList: rda.correlaciones || [],
-          positiveTitle: t("rdaInternal.positiveCorrelation"),
-          negativeTitle: t("rdaInternal.negativeCorrelation"),
-        }}
-        onChange={(newData) => onChange({ ...rda, correlaciones: newData.seriesList })}
+        data={correlationData}
+        onChange={(newData) => onChange({ ...rda, correlaciones: newData })}
+        onForceSave={onForceSave}
         isStepCompleted={isStepCompleted("rda-step-7")}
         isNa={isStepNa("rda-step-7")}
         onToggleStep={() => toggleStep("rda-step-7")}

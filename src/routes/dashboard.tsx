@@ -5,13 +5,13 @@
  * movimientos recientes y próximas tareas por vencer.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { subscribeToRdas } from "@/services/rda-service";
+import { useState } from "react";
 import type { Rda } from "@/data/rda";
 import { ArrowRight, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { usePdcas } from "@/context/pdca-context";
+import { useRdas } from "@/context/rda-context";
 import { useAuth } from "@/context/auth-context";
 import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
 import { type Pdca } from "@/data/pdca";
@@ -19,6 +19,7 @@ import { type Pdca } from "@/data/pdca";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { RecentMovements } from "@/components/dashboard/recent-movements";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
+import { AssignedActionsBoard } from "@/components/dashboard/assigned-actions-board";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { getRdaDisplayName } from "@/components/RDA/rda-name";
 import { getRdaStatus } from "@/components/RDA/rda-status";
@@ -57,63 +58,72 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   const { currentUser } = useAuth();
-  const { pdcaList: userPdcas, refresh } = usePdcas();
-  const [rdasList, setRdasList] = useState<Rda[]>([]);
+  const { pdcaList: userPdcas, allPdcas, refresh: refreshPdcas } = usePdcas();
+  const { rdaList: visibleRdas, refresh: refreshRdas } = useRdas();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = subscribeToRdas((data) => {
-      setRdasList(data);
-    });
-    return () => unsubscribe();
-  }, []);
+  const isAdmin = currentUser?.role === "admin";
+  const visiblePdcas = isAdmin ? allPdcas : userPdcas;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refresh();
+    await Promise.all([refreshPdcas(), refreshRdas()]);
     setIsRefreshing(false);
   };
 
-  const pdcasActivos = userPdcas.filter((p) => p.fase !== "Act").length;
-  const rdasActivos = rdasList.filter((r) => r.status !== "Cerrado").length;
+  const pdcasActivos = visiblePdcas.filter((p) => p.fase !== "Act").length;
+  const rdasActivos = visibleRdas.filter((r) => getRdaStatus(r) === "Abierto").length;
   const activos = pdcasActivos + rdasActivos;
 
-  const pdcasCerrados = userPdcas.filter((p) => p.fase === "Act").length;
-  const rdasCerrados = rdasList.filter((r) => r.status === "Cerrado").length;
+  const pdcasCerrados = visiblePdcas.filter((p) => p.fase === "Act").length;
+  const rdasCerrados = visibleRdas.filter((r) => getRdaStatus(r) !== "Abierto").length;
   const cerrados = pdcasCerrados + rdasCerrados;
 
-  const totalProyectos = userPdcas.length + rdasList.length;
+  const totalProyectos = visiblePdcas.length + visibleRdas.length;
   const avance =
     totalProyectos === 0
       ? 0
       : Math.round(
-          (userPdcas.reduce((a, p) => a + getComputedProgress(p), 0) +
-            rdasList.reduce((a, r) => a + getRdaComputedProgress(r), 0)) /
+          (visiblePdcas.reduce((a, p) => a + getComputedProgress(p), 0) +
+            visibleRdas.reduce((a, r) => a + getRdaComputedProgress(r), 0)) /
             totalProyectos,
         );
 
-  const pdcaTareas = userPdcas.flatMap((p) => p.acciones || []);
-  const rdaTareasVal = rdasList.flatMap((r) => (r as any).validacion || []);
-  const rdaTareasPrev = rdasList.flatMap((r) => (r as any).prevencion || []);
+  const pdcaTareas = visiblePdcas.flatMap((p) => p.acciones || []);
+  const rdaPdaTareas = visibleRdas.flatMap((r) => r.pda || []);
+  const rdaImmTareas = visibleRdas.flatMap((r) => r.immediateActions || []);
 
-  const pendientesPdca = pdcaTareas.filter((t) => !t.done);
-  const pendientesRda = [...rdaTareasVal, ...rdaTareasPrev].filter(
-    (t) => t.estatus !== "Completa" && t.estatus !== "Completada",
+  const pendientesPdca = pdcaTareas.filter(
+    (t) => !t.done && t.status !== "Completada",
+  );
+  const pendientesRdaPda = rdaPdaTareas.filter(
+    (t) => !t.done && t.status !== "Completada",
+  );
+  const pendientesRdaImm = rdaImmTareas.filter(
+    (t) => t.estatus !== "Completa",
   );
 
-  const pendientes = pendientesPdca.length + pendientesRda.length;
+  const pendientes =
+    pendientesPdca.length + pendientesRdaPda.length + pendientesRdaImm.length;
 
   const tareas = [
     ...pendientesPdca.map((t) => ({
-      id: t.id,
+      id: `pdca-${t.id}`,
       description: t.what || t.accion || t.tema || "Sin descripción",
-      deadline: t.when || (t as any).fechaLimite || "Sin fecha",
+      deadline: t.when || t.fecha || "Sin fecha",
       owner: t.who || t.responsable || "Sin asignar",
       type: "PDCA",
     })),
-    ...pendientesRda.map((t) => ({
-      id: t.id,
-      description: t.accion || t.asunto || "Sin descripción",
+    ...pendientesRdaPda.map((t) => ({
+      id: `rda-pda-${t.id}`,
+      description: t.what || t.accion || t.tema || "Sin descripción",
+      deadline: t.when || t.fecha || "Sin fecha",
+      owner: t.who || t.responsable || "Sin asignar",
+      type: "RDA",
+    })),
+    ...pendientesRdaImm.map((t) => ({
+      id: `rda-imm-${t.id}`,
+      description: t.accion || t.causaPotencial || "Sin descripción",
       deadline: t.fechaLimite || "Sin fecha",
       owner: t.responsable || "Sin asignar",
       type: "RDA",
@@ -121,7 +131,7 @@ function Dashboard() {
   ];
 
   const recientes = [
-    ...userPdcas.map((p) => ({
+    ...visiblePdcas.map((p) => ({
       id: p.id,
       title: p.titulo || "Sin título",
       area: p.area,
@@ -130,7 +140,7 @@ function Dashboard() {
       phase: p.fase,
       type: "PDCA",
     })),
-    ...rdasList.map((r) => ({
+    ...visibleRdas.map((r) => ({
       id: r.id,
       title: getRdaDisplayName(r, "Sin título"),
       area: r.context?.planta || "Otra",
@@ -140,7 +150,7 @@ function Dashboard() {
         year: "numeric",
       }),
       progress: getRdaComputedProgress(r),
-      phase: r.status,
+      phase: getRdaStatus(r),
       type: "RDA",
     })),
   ]
@@ -152,7 +162,7 @@ function Dashboard() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Módulo PDCA
+            Módulo PDCA & RDA
           </p>
           <h1 className="mt-1 text-3xl font-bold uppercase">Dashboard</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -173,6 +183,11 @@ function Dashboard() {
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
           <Button asChild variant="outline">
+            <Link to="/rda">
+              Mis RDAs <ArrowRight className="ml-1 size-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/">
               Ir a Mis PDCAs <ArrowRight className="ml-1 size-4" />
             </Link>
@@ -182,6 +197,15 @@ function Dashboard() {
 
       <ErrorBoundary>
         <KpiCards activos={activos} cerrados={cerrados} avance={avance} pendientes={pendientes} />
+      </ErrorBoundary>
+
+      <ErrorBoundary>
+        <AssignedActionsBoard
+          pdcas={visiblePdcas}
+          rdas={visibleRdas}
+          currentUserName={currentUser?.name}
+          currentUserEmail={currentUser?.email}
+        />
       </ErrorBoundary>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-3">

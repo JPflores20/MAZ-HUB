@@ -13,6 +13,7 @@ interface PdcaContextValue {
   allPdcas: Pdca[];
   loading: boolean;
   refresh: () => Promise<void>;
+  updatePdcaInCache: (savedPdca: Pdca) => void;
 }
 
 const PdcaContext = createContext<PdcaContextValue>({
@@ -20,10 +21,11 @@ const PdcaContext = createContext<PdcaContextValue>({
   allPdcas: [],
   loading: true,
   refresh: async () => {},
+  updatePdcaInCache: () => {},
 });
 
 export function PdcaProvider({ children }: { children: ReactNode }) {
-  const { currentUser } = useAuth();
+  const { currentUser, permissions } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: rawPdcas = [], isLoading } = useQuery({
@@ -38,26 +40,70 @@ export function PdcaProvider({ children }: { children: ReactNode }) {
     await queryClient.invalidateQueries({ queryKey: ["pdcas"] });
   };
 
+  /**
+   * Actualiza o inserta un PDCA en la caché de React Query en memoria
+   * para evitar re-leer toda la colección de Firestore tras cada guardado.
+   */
+  const updatePdcaInCache = (savedPdca: Pdca) => {
+    queryClient.setQueryData<Pdca[]>(["pdcas"], (prev) => {
+      if (!prev) return [savedPdca];
+      const exists = prev.some((item) => item.id === savedPdca.id);
+      if (exists) {
+        return prev.map((item) => (item.id === savedPdca.id ? savedPdca : item));
+      }
+      return [savedPdca, ...prev];
+    });
+  };
+
+  const normalizeStr = (val?: string) =>
+    (val || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase();
+
   const pdcaList: Pdca[] = (() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin") return rawPdcas;
-    const emailLower = currentUser.email.toLowerCase();
+    if (currentUser.role === "admin" || permissions.canViewAll) return rawPdcas;
+    const emailLower = (currentUser.email || "").trim().toLowerCase();
+    const nameLower = (currentUser.name || "").trim().toLowerCase();
+    const userAreaNorm = normalizeStr(currentUser.area);
+
     return rawPdcas.filter((p) => {
-      // Si el PDCA no tiene asignados, usamos la lógica original
-      if (!p.asignados || p.asignados.length === 0) {
-        if (!p.autorEmail) return true;
-        return p.autorEmail.toLowerCase() === emailLower || p.autor === currentUser.name;
+      if (
+        permissions.canViewArea &&
+        userAreaNorm &&
+        userAreaNorm !== "usuario" &&
+        normalizeStr(p.area) === userAreaNorm
+      ) {
+        return true;
       }
 
-      // Si tiene asignados, verificamos si el usuario actual está en la lista o es el autor original
-      const isAssigned = p.asignados.some((a) => a.email.toLowerCase() === emailLower);
-      const isAuthor = p.autorEmail?.toLowerCase() === emailLower || p.autor === currentUser.name;
-      return isAssigned || isAuthor;
+      const isAuthor =
+        (Boolean(emailLower) && p.autorEmail?.trim().toLowerCase() === emailLower) ||
+        (Boolean(nameLower) && p.autor?.trim().toLowerCase() === nameLower);
+
+      // Si el PDCA no tiene asignados, usamos la lógica original
+      if (!p.asignados || p.asignados.length === 0) {
+        if (!p.autorEmail && !p.autor) return true;
+        return isAuthor;
+      }
+
+      // Si tiene asignados, verificamos si el usuario actual está en la lista (por correo o nombre) o es el autor original
+      const isAssigned = p.asignados.some(
+        (a) =>
+          (Boolean(emailLower) && a.email?.trim().toLowerCase() === emailLower) ||
+          (Boolean(nameLower) && a.name?.trim().toLowerCase() === nameLower),
+      );
+      const isInTeam = p.equipo?.some((member) => member.trim().toLowerCase() === nameLower) ?? false;
+      return isAssigned || isInTeam || isAuthor;
     });
   })();
 
   return (
-    <PdcaContext.Provider value={{ pdcaList, allPdcas: rawPdcas, loading: isLoading, refresh }}>
+    <PdcaContext.Provider
+      value={{ pdcaList, allPdcas: rawPdcas, loading: isLoading, refresh, updatePdcaInCache }}
+    >
       {children}
     </PdcaContext.Provider>
   );

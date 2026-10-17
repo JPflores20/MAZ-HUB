@@ -17,6 +17,17 @@ import type { Pdca, Phase } from "@/data/pdca";
 import { create_empty_pdca_draft } from "./utils/pdca-draft";
 import { useConstruirPayloadPdca } from "./hooks/use_pdca_payload_builder";
 import { RenderizadorPestanasPdca } from "./pdca_tabs_renderer";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const PdcaDialog: React.FC<{
   pdca: Pdca | null;
@@ -25,11 +36,11 @@ export const PdcaDialog: React.FC<{
 }> = ({ pdca, onOpenChange }) => {
   const { t } = useTranslation();
   const current_pdca = useMemo(() => pdca ?? create_empty_pdca_draft(), [pdca]);
-  const { currentUser: auth_user, usersList: available_users } = useAuth();
+  const { currentUser: auth_user, permissions, usersList: available_users } = useAuth();
   const is_admin = auth_user?.role === "admin";
 
   const is_deadline_locked = use_pdca_deadline(is_admin, current_pdca.fechaFinalizacion);
-  const is_editable = is_admin || !is_deadline_locked;
+  const is_editable = permissions.canEdit && (is_admin || !is_deadline_locked);
 
   const state = use_pdca_dialog_state(current_pdca, auth_user);
 
@@ -40,15 +51,27 @@ export const PdcaDialog: React.FC<{
 
   const get_current_pdca_payload = useConstruirPayloadPdca(current_pdca, state, computed_progress);
 
-  const { refresh } = usePdcas();
+  const { updatePdcaInCache } = usePdcas();
 
   const autosave = use_pdca_autosave(
     current_pdca.id,
     get_current_pdca_payload,
     is_editable,
     auth_user?.name,
-    refresh,
+    (savedPdca) => {
+      updatePdcaInCache?.(savedPdca);
+    },
   );
+
+  const [show_close_confirm, set_show_close_confirm] = useState(false);
+
+  const handle_request_close = useCallback(() => {
+    if (autosave.has_unsaved_changes && is_editable) {
+      set_show_close_confirm(true);
+    } else {
+      onOpenChange(false);
+    }
+  }, [autosave.has_unsaved_changes, is_editable, onOpenChange]);
 
   const [mounted_tabs, set_mounted_tabs] = useState<Set<Phase>>(new Set([state.active_tab]));
   useEffect(() => {
@@ -120,6 +143,37 @@ export const PdcaDialog: React.FC<{
 
   return (
     <div className="flex flex-col gap-6 p-6 max-w-[1400px] mx-auto animate-in fade-in zoom-in duration-300">
+      {autosave.local_draft && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50/90 dark:bg-amber-950/30 dark:border-amber-800 px-4 py-3 text-xs text-amber-900 dark:text-amber-200 shadow-xs">
+          <div>
+            <span className="font-bold">Respaldo local detectado:</span> Se encontró un borrador
+            guardado automáticamente en tu navegador que no se había sincronizado con la base de
+            datos.
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => autosave.discard_local_draft()}
+            >
+              Descartar borrador
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="h-7 text-xs bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={async () => {
+                await autosave.restore_and_sync_local_draft();
+              }}
+            >
+              Sincronizar borrador con BD
+            </Button>
+          </div>
+        </div>
+      )}
+
       <PdcaDialogHeader
         current_phase={state.active_tab}
         document_identifier={current_pdca.id}
@@ -132,7 +186,7 @@ export const PdcaDialog: React.FC<{
         has_pending_modifications={autosave.has_unsaved_changes}
         is_user_permitted_to_edit={is_editable}
         on_trigger_firestore_save={() => autosave.handle_save_to_firestore()}
-        on_go_back={() => onOpenChange(false)}
+        on_go_back={handle_request_close}
       />
 
       <CustomStepper
@@ -176,9 +230,44 @@ export const PdcaDialog: React.FC<{
         document_identifier={current_pdca.id}
         is_user_permitted_to_edit={is_editable}
         on_proceed_next_phase={handle_proceed_next_phase}
-        on_close_dialog={() => onOpenChange(false)}
+        on_close_dialog={handle_request_close}
         isAdmin={is_admin}
       />
+
+      <AlertDialog open={show_close_confirm} onOpenChange={set_show_close_confirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tienes cambios sin sincronizar en la base de datos</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tus cambios ya están respaldados localmente en este navegador (sin consumir lecturas
+              ni escrituras de Firestore). ¿Deseas sincronizarlos en la base de datos antes de salir?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Seguir editando</AlertDialogCancel>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                set_show_close_confirm(false);
+                onOpenChange(false);
+              }}
+            >
+              Salir sin sincronizar
+            </Button>
+            <AlertDialogAction
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={async () => {
+                await autosave.handle_save_to_firestore();
+                set_show_close_confirm(false);
+                onOpenChange(false);
+              }}
+            >
+              Guardar y Salir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

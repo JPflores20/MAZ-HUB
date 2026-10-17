@@ -45,21 +45,24 @@ export function CajaCategoriaIshikawa({
         />
       </div>
       <div className="p-2 flex flex-col gap-1.5 min-h-[60px]">
-        {listaCausas.map((causaTexto, indiceElemento) => (
-          <div
-            key={indiceElemento}
-            className="group relative flex items-start gap-1 rounded bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary leading-tight"
-          >
-            <span className="flex-1 break-words">{causaTexto}</span>
-            <button
-              type="button"
-              onClick={() => alEliminarCausa(categoria.id, indiceElemento)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-primary/60 hover:text-destructive shrink-0 mt-0.5"
+        {listaCausas.map((causaTexto, indiceElemento) => {
+          if (!String(causaTexto || "").trim()) return null;
+          return (
+            <div
+              key={indiceElemento}
+              className="group relative flex items-start gap-1 rounded bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary leading-tight"
             >
-              <X className="size-3" />
-            </button>
-          </div>
-        ))}
+              <span className="flex-1 break-words text-justify">{causaTexto}</span>
+              <button
+                type="button"
+                onClick={() => alEliminarCausa(categoria.id, indiceElemento)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-primary/60 hover:text-destructive shrink-0 mt-0.5"
+              >
+                <X className="size-3" />
+              </button>
+            </div>
+          );
+        })}
         <Input
           value={valorTextoInput}
           onChange={(eventoCajaFiltro) => asignarValorTextoInput(eventoCajaFiltro.target.value)}

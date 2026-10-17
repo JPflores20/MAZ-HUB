@@ -25,6 +25,7 @@ import { IshikawaInteractivo } from "./ishikawa-interactive";
 interface PropiedadesSeccionIshikawa {
   ishikawas: IshikawaItem[];
   onChange: (nuevosRegistrosIshikawa: IshikawaItem[]) => void;
+  onSendToFiveWhys?: ((causasPriorizadasTexto: string[]) => void) | undefined;
   isStepCompleted?: boolean;
   isNa?: boolean | undefined;
   onToggleStep?: () => void;
@@ -34,6 +35,7 @@ interface PropiedadesSeccionIshikawa {
 export function IshikawaSection({
   ishikawas: listaIshikawas,
   onChange: alCambiarRegistros,
+  onSendToFiveWhys,
   isStepCompleted: pasoEstaCompletado,
   isNa: pasoEsNoAplica,
   onToggleStep: alAlternarEstadoPaso,
@@ -152,6 +154,7 @@ export function IshikawaSection({
                   causasPriorizadasModificadas,
                 )
               }
+              alEnviarA5Porques={onSendToFiveWhys}
               etiquetasPersonalizadas={diagramaActualItem.customLabels || {}}
               alCambiarEtiquetas={(etiquetasState) =>
                 manejarActualizacionAtributoIshikawa(

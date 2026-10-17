@@ -66,7 +66,27 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
       >
         <RdaContextForm
           context={rda.context}
-          onChange={(newContext) => onChange({ ...rda, context: newContext })}
+          onChange={(newContext) => {
+            const assignedFromContext = (newContext.responsable || "")
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+            onChange({
+              ...rda,
+              context: newContext,
+              portada: {
+                ...(rda.portada || {
+                  titulo: rda.title || "Nuevo RDA",
+                  area: newContext.area || "",
+                  fechaLimite: "",
+                  autorOriginal: "",
+                  usuariosAsignados: [],
+                  descripcionProblema: "",
+                }),
+                usuariosAsignados: assignedFromContext,
+              },
+            });
+          }}
           disabled={false}
         />
       </StepCard>
@@ -119,7 +139,7 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
                 onChange({ ...rda, immediateActions: [{ ...first, accion: e.target.value }] });
               }}
               minRows={4}
-              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
+              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-justify text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
             />
           </div>
 
@@ -133,7 +153,7 @@ export function RdaPhase2Problem({ rda, onChange }: Props) {
               value={rda.observacionesAdicionales || ""}
               onChange={(e) => onChange({ ...rda, observacionesAdicionales: e.target.value })}
               minRows={4}
-              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
+              className="w-full border-none shadow-none focus-visible:ring-0 text-xs text-justify text-blue-700 dark:text-blue-400 font-medium p-3 resize-none outline-none"
             />
           </div>
         </div>

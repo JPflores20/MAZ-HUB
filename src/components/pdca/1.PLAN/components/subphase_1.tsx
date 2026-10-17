@@ -2,8 +2,9 @@
  * subphase_1.tsx
  * Vista modular de la primera subfase de planificación (Definición e Identificación).
  */
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Check, Plus, UserPlus, X } from "lucide-react";
 import { PdcaGoalDefinition } from "@/components/pdca/1.PLAN/paso1/pdca-goal-definition";
 import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { StepCard } from "@/components/ui/step-card";
@@ -26,6 +27,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  ResponsibleProfileCard,
+  ResponsibleSelectorItem,
+  useDirectoryUsers,
+} from "@/components/ui/responsible-profile-card";
 import { AREAS } from "@/data/pdca";
 import { RichTextEditor } from "./rich_text_editor";
 import { PhasePlanProps } from "./phase_plan_types";
@@ -80,6 +86,19 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
   on_target_vs_actual_ymax_change,
 }) => {
   const { t } = useTranslation();
+  const [custom_assigned_name, set_custom_assigned_name] = useState("");
+  const { directory: directory_users, resolveUser } = useDirectoryUsers(available_users);
+  const selectable_users = directory_users.length > 0 ? directory_users : (available_users ?? []);
+
+  const handle_add_custom_assigned = () => {
+    const val = custom_assigned_name.trim();
+    if (!val) return;
+    on_toggle_assigned_user({
+      name: val.toUpperCase(),
+      email: `${val.toLowerCase().replace(/\s+/g, ".")}@colaborador.local`,
+    });
+    set_custom_assigned_name("");
+  };
 
   return (
     <div className="space-y-6">
@@ -141,7 +160,7 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
                 <Select
                   value={author_email}
                   onValueChange={(email) => {
-                    const found = available_users.find((u) => u.email === email);
+                    const found = selectable_users.find((u) => u.email === email);
                     on_author_change(email, found?.name || "Usuario");
                   }}
                 >
@@ -149,8 +168,8 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
                     <SelectValue placeholder={t("pdcaPlan.selectAuthor")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {(available_users ?? []).map((u) => (
-                      <SelectItem key={u.email} value={u.email}>
+                    {selectable_users.map((u) => (
+                      <SelectItem key={u.email || u.name} value={u.email}>
                         {u.name}
                       </SelectItem>
                     ))}
@@ -162,51 +181,99 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">{t("pdcaPlan.assignedUsers")}</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal min-h-[36px] h-auto p-2"
-                >
-                  {(assigned_users ?? []).length === 0 ? (
-                    <span className="text-xs text-muted-foreground">
-                      {t("pdcaPlan.selectUsers")}
-                    </span>
-                  ) : (
-                    <div className="flex flex-wrap gap-1">
-                      {(assigned_users ?? []).map((u) => (
-                        <Badge key={u.email} variant="secondary" className="text-[11px] py-0">
-                          {u.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-72 p-2" align="start">
-                <div className="max-h-60 overflow-y-auto space-y-1">
-                  {(available_users ?? []).map((u) => {
-                    const assigned = (assigned_users ?? []).some((a) => a.email === u.email);
-                    return (
-                      <div
-                        key={u.email}
-                        onClick={() => on_toggle_assigned_user(u)}
-                        className="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer text-xs"
-                      >
-                        <span>{u.name}</span>
-                        {assigned && (
-                          <Badge variant="outline" className="text-[10px]">
-                            {t("pdcaPlan.assigned")}
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
+          <div className="space-y-2 rounded-xl border border-border bg-secondary/15 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label className="text-xs font-bold uppercase tracking-wide text-foreground">
+                {t("pdcaPlan.assignedUsers")}
+              </Label>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={!is_editable}
+                    className="h-8 gap-1.5 text-xs font-semibold"
+                  >
+                    <UserPlus className="size-3.5 text-primary" />
+                    {(assigned_users ?? []).length === 0
+                      ? t("pdcaPlan.selectUsers")
+                      : "Asignar / quitar responsables"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-3 space-y-2.5" align="end">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Asignar PDCA a varios usuarios
+                  </p>
+                  <div className="max-h-64 overflow-y-auto space-y-1 border-b border-border pb-2">
+                    {selectable_users.map((u) => {
+                      const resolved = resolveUser(u);
+                      const assigned = (assigned_users ?? []).some(
+                        (a) =>
+                          (u.email && a.email.toLowerCase() === u.email.toLowerCase()) ||
+                          a.name.toLowerCase() === u.name.toLowerCase(),
+                      );
+                      return (
+                        <ResponsibleSelectorItem
+                          key={u.email || u.name}
+                          user={resolved}
+                          selected={assigned}
+                          onToggle={() =>
+                            on_toggle_assigned_user({
+                              name: resolved.name,
+                              email: resolved.email,
+                            })
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-1.5 pt-0.5">
+                    <Input
+                      value={custom_assigned_name}
+                      onChange={(e) => set_custom_assigned_name(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handle_add_custom_assigned();
+                        }
+                      }}
+                      placeholder="Agregar otro nombre..."
+                      className="h-7 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="secondary"
+                      onClick={handle_add_custom_assigned}
+                      className="h-7 w-7 shrink-0"
+                    >
+                      <Plus className="size-3.5" />
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {(assigned_users ?? []).length === 0 ? (
+              <p className="text-xs text-muted-foreground italic py-1">
+                No hay responsables asignados aún. Haz clic en el botón superior para seleccionar uno o varios responsables.
+              </p>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                {(assigned_users ?? []).map((u) => {
+                  const resolved = resolveUser(u);
+                  return (
+                    <ResponsibleProfileCard
+                      key={u.email || u.name}
+                      user={resolved}
+                      onRemove={is_editable ? () => on_toggle_assigned_user(u) : undefined}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

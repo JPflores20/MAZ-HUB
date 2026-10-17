@@ -86,9 +86,11 @@ export const use_estado_pdca_resultados = (pdcaInicial: Pdca) => {
   const [tieneNuevaCorrelacion, setTieneNuevaCorrelacion] = useState<boolean>(
     pdcaInicial.has_nueva_correlacion || false,
   );
-  const [datosNuevaCorrelacion, setDatosNuevaCorrelacion] = useState<any[]>(
-    pdcaInicial.nueva_correlacion_data || [],
-  );
+  const [datosNuevaCorrelacion, setDatosNuevaCorrelacion] = useState<any>(() => {
+    const raw =
+      pdcaInicial.nueva_correlacion_data ?? (pdcaInicial as any).nuevaCorrelacionData ?? null;
+    return Array.isArray(raw) ? null : raw;
+  });
 
   const [datosTablaEstandarizacion, setDatosTablaEstandarizacion] = useState<any[]>(
     pdcaInicial.tablaEstandarizacion || pdcaInicial.tabla_estandarizacion || [],

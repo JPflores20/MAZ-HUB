@@ -24,6 +24,7 @@ import { AREAS } from "@/data/pdca";
 import { RichTextEditor as EditorTextoEnriquecido } from "@/components/ui/rich-text-editor";
 import type { PropiedadesFasePlan } from "../plan-props";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/auth-context";
 
 export type PropiedadesPaso1Declaracion = Pick<
   PropiedadesFasePlan,
@@ -80,7 +81,12 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
   on_toggle_step,
   on_toggle_na,
 }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+  const { permissions } = useAuth();
+  const can_manage_assignment = Boolean(
+    is_editable && (is_admin_user || permissions.canManageAssignment),
+  );
+
   return (
     <StepCard
       title={t('pdcaPlan.dynamic.paso1DeclaraciNDel')}
@@ -130,14 +136,14 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
               date={deadline_date}
               setDate={(d) => on_deadline_change?.(d)}
               placeholder={t('pdcaPlan.dynamic.seleccionarFechaLMite')}
-              disabled={!is_admin_user}
+              disabled={!can_manage_assignment}
               className="h-9 text-xs w-full"
             />
           </div>
 
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold">{t('pdcaPlan.dynamic.autorOriginal')}</Label>
-            {is_admin_user ? (
+            {can_manage_assignment ? (
               <Select
                 value={author_email}
                 onValueChange={(email) => {
@@ -169,6 +175,7 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
+                disabled={!can_manage_assignment}
                 className="w-full justify-start text-left font-normal min-h-[36px] h-auto p-2"
               >
                 {(assigned_users ?? []).length === 0 ? (
@@ -184,26 +191,28 @@ export const Paso1DeclaracionProyecto: React.FC<PropiedadesPaso1Declaracion> = (
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-72 p-2" align="start">
-              <div className="max-h-60 overflow-y-auto space-y-1">
-                {(available_users ?? []).map((usuario) => {
-                  const estaAsignado = (assigned_users ?? []).some((a) => a.email === usuario.email);
-                  return (
-                    <div
-                      key={usuario.email}
-                      onClick={() => on_toggle_assigned_user(usuario)}
-                      className="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer text-xs"
-                    >
-                      <span>{usuario.name}</span>
-                      {estaAsignado && (
-                        <Badge variant="outline" className="text-[10px]">
-                          {t('pdcaPlan.dynamic.asignado')}</Badge>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </PopoverContent>
+            {can_manage_assignment && (
+              <PopoverContent className="w-72 p-2" align="start">
+                <div className="max-h-60 overflow-y-auto space-y-1">
+                  {(available_users ?? []).map((usuario) => {
+                    const estaAsignado = (assigned_users ?? []).some((a) => a.email === usuario.email);
+                    return (
+                      <div
+                        key={usuario.email}
+                        onClick={() => on_toggle_assigned_user(usuario)}
+                        className="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer text-xs"
+                      >
+                        <span>{usuario.name}</span>
+                        {estaAsignado && (
+                          <Badge variant="outline" className="text-[10px]">
+                            {t('pdcaPlan.dynamic.asignado')}</Badge>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            )}
           </Popover>
         </div>
 

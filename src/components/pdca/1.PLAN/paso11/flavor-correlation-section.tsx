@@ -12,10 +12,13 @@ import {
   type DatosCorrelacionSabor, 
   type SerieCorrelacion, 
   type PuntoCorrelacion, 
-  COLORES_SERIES 
+  type ColoresCuadrantes,
+  COLORES_SERIES,
+  COLORES_CUADRANTES_POSITIVO_DEFECTO,
+  COLORES_CUADRANTES_NEGATIVO_DEFECTO,
 } from "./flavor-correlation-utils";
 import { EditorSerieCorrelacion } from "./flavor-correlation-editor";
-import { GraficaCorrelacion } from "./flavor-correlation-chart";
+import { GraficaCorrelacion, SelectorColoresCuadrantes } from "./flavor-correlation-chart";
 
 // Exportar para que otros archivos puedan usarlo
 export type FlavorCorrelationData = DatosCorrelacionSabor;
@@ -111,20 +114,105 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
   title?: string | undefined;
 }) {
   const { t } = useTranslation();
-  const datosActuales = data || DATOS_POR_DEFECTO;
-  const tituloPositivo = datosActuales?.positiveTitle || DATOS_POR_DEFECTO.positiveTitle;
-  const tituloNegativo = datosActuales?.negativeTitle || DATOS_POR_DEFECTO.negativeTitle;
-  const listaSeriesCruda = datosActuales?.seriesList || DATOS_POR_DEFECTO.seriesList;
-  const listaSeries = (Array.isArray(listaSeriesCruda) ? listaSeriesCruda : Object.values(listaSeriesCruda || {})) as SerieCorrelacion[];
+  const normalizarDatos = (
+    raw: DatosCorrelacionSabor | null | undefined | unknown,
+  ): DatosCorrelacionSabor => {
+    if (!raw || Array.isArray(raw) || typeof raw !== "object") {
+      return DATOS_POR_DEFECTO;
+    }
+    const obj = raw as Partial<DatosCorrelacionSabor>;
+    const tieneSeriesList = obj.seriesList !== undefined && obj.seriesList !== null;
+    const seriesCruda = tieneSeriesList ? obj.seriesList : DATOS_POR_DEFECTO.seriesList;
+    const seriesNormalizadas = (
+      Array.isArray(seriesCruda) ? seriesCruda : Object.values(seriesCruda || {})
+    ) as SerieCorrelacion[];
+
+    return {
+      positiveTitle:
+        typeof obj.positiveTitle === "string"
+          ? obj.positiveTitle
+          : DATOS_POR_DEFECTO.positiveTitle,
+      negativeTitle:
+        typeof obj.negativeTitle === "string"
+          ? obj.negativeTitle
+          : DATOS_POR_DEFECTO.negativeTitle,
+      positiveQuadrantColors: {
+        ...COLORES_CUADRANTES_POSITIVO_DEFECTO,
+        ...(obj.positiveQuadrantColors || {}),
+      },
+      negativeQuadrantColors: {
+        ...COLORES_CUADRANTES_NEGATIVO_DEFECTO,
+        ...(obj.negativeQuadrantColors || {}),
+      },
+      seriesList: seriesNormalizadas.map((serie) => ({
+        ...serie,
+        points: (
+          Array.isArray(serie?.points) ? serie.points : Object.values(serie?.points || {})
+        ) as PuntoCorrelacion[],
+      })),
+    };
+  };
+
+  const [datosInternos, setDatosInternos] = React.useState<DatosCorrelacionSabor>(() =>
+    normalizarDatos(data),
+  );
+
+  React.useEffect(() => {
+    if (data !== undefined) {
+      setDatosInternos(normalizarDatos(data));
+    }
+  }, [data]);
+
+  const datosActuales =
+    data !== undefined && data !== null && !Array.isArray(data)
+      ? normalizarDatos(data)
+      : datosInternos;
+  const tituloPositivo = datosActuales.positiveTitle;
+  const tituloNegativo = datosActuales.negativeTitle;
+  const coloresCuadrantesPositivos: ColoresCuadrantes =
+    datosActuales.positiveQuadrantColors || COLORES_CUADRANTES_POSITIVO_DEFECTO;
+  const coloresCuadrantesNegativos: ColoresCuadrantes =
+    datosActuales.negativeQuadrantColors || COLORES_CUADRANTES_NEGATIVO_DEFECTO;
+  const listaSeries = datosActuales.seriesList;
 
   const actualizarDatosCorrelacion = (nuevosCampos: Partial<DatosCorrelacionSabor>) => {
-    onChange?.({ ...datosActuales, ...nuevosCampos } as DatosCorrelacionSabor);
+    const siguienteEstado: DatosCorrelacionSabor = {
+      ...datosActuales,
+      ...nuevosCampos,
+    };
+    setDatosInternos(siguienteEstado);
+    onChange?.(siguienteEstado);
   };
-  
-  const actualizarListaSeries = (actualizador: SerieCorrelacion[] | ((previas: SerieCorrelacion[]) => SerieCorrelacion[])) => {
+
+  const actualizarListaSeries = (
+    actualizador: SerieCorrelacion[] | ((previas: SerieCorrelacion[]) => SerieCorrelacion[]),
+  ) => {
     actualizarDatosCorrelacion({
-      seriesList: typeof actualizador === "function" ? actualizador(listaSeries) : actualizador
+      seriesList: typeof actualizador === "function" ? actualizador(listaSeries) : actualizador,
     });
+  };
+
+  const importarPuntosASerie = (
+    idSerie: string,
+    nuevosPuntos: PuntoCorrelacion[],
+    reemplazar = false,
+  ) => {
+    actualizarListaSeries((previas: SerieCorrelacion[]) =>
+      previas.map((serieItem: SerieCorrelacion) => {
+        if (serieItem.id === idSerie) {
+          const arregloPuntos = (
+            Array.isArray(serieItem.points)
+              ? serieItem.points
+              : Object.values(serieItem.points || {})
+          ) as PuntoCorrelacion[];
+          return {
+            ...serieItem,
+            points: reemplazar ? nuevosPuntos : [...arregloPuntos, ...nuevosPuntos],
+          };
+        }
+        return serieItem;
+      }),
+    );
   };
 
   const agregarNuevaSerie = (tipoSerie: "positive" | "negative") => {
@@ -211,7 +299,7 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
           {removeNode}
           <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8">
+            <Button type="button" variant="outline" size="sm" className="h-8">
               <FileText className="size-4 mr-2" /> Editar Puntos
             </Button>
           </DialogTrigger>
@@ -224,6 +312,7 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     Atributos Positivos ({arregloSeriesPositivas.length}/4)
                   </h4>
                   <Button
+                    type="button"
                     variant="secondary"
                     size="sm"
                     onClick={() => agregarNuevaSerie("positive")}
@@ -233,6 +322,15 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     <Plus className="size-3 mr-1" /> Nueva Correlación
                   </Button>
                 </div>
+                <div className="rounded-md border p-3 bg-muted/20">
+                  <SelectorColoresCuadrantes
+                    colores={coloresCuadrantesPositivos}
+                    tipoGrafica="positive"
+                    alCambiarColores={(nuevosColores) =>
+                      actualizarDatosCorrelacion({ positiveQuadrantColors: nuevosColores })
+                    }
+                  />
+                </div>
                 {arregloSeriesPositivas.map((serieItem: SerieCorrelacion) => (
                   <EditorSerieCorrelacion 
                     key={serieItem.id} 
@@ -241,7 +339,8 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     alAgregarPunto={agregarPuntoASerie} 
                     alEliminarSerie={eliminarSerie} 
                     alActualizarPunto={editarValorDePunto} 
-                    alEliminarPunto={eliminarPuntoDeSerie} 
+                    alEliminarPunto={eliminarPuntoDeSerie}
+                    alImportarPuntos={importarPuntosASerie}
                   />
                 ))}
               </div>
@@ -252,6 +351,7 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     Atributos Negativos ({arregloSeriesNegativas.length}/4)
                   </h4>
                   <Button
+                    type="button"
                     variant="secondary"
                     size="sm"
                     onClick={() => agregarNuevaSerie("negative")}
@@ -261,6 +361,15 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     <Plus className="size-3 mr-1" /> Nueva Correlación
                   </Button>
                 </div>
+                <div className="rounded-md border p-3 bg-muted/20">
+                  <SelectorColoresCuadrantes
+                    colores={coloresCuadrantesNegativos}
+                    tipoGrafica="negative"
+                    alCambiarColores={(nuevosColores) =>
+                      actualizarDatosCorrelacion({ negativeQuadrantColors: nuevosColores })
+                    }
+                  />
+                </div>
                 {arregloSeriesNegativas.map((serieItem: SerieCorrelacion) => (
                   <EditorSerieCorrelacion 
                     key={serieItem.id} 
@@ -269,14 +378,15 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
                     alAgregarPunto={agregarPuntoASerie} 
                     alEliminarSerie={eliminarSerie} 
                     alActualizarPunto={editarValorDePunto} 
-                    alEliminarPunto={eliminarPuntoDeSerie} 
+                    alEliminarPunto={eliminarPuntoDeSerie}
+                    alImportarPuntos={importarPuntosASerie}
                   />
                 ))}
               </div>
             </div>
             <div className="flex justify-end pt-4 border-t mt-4">
               <DialogClose asChild>
-                <Button onClick={() => onForceSave?.()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
+                <Button type="button" onClick={() => onForceSave?.()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
                   Guardar y Cerrar
                 </Button>
               </DialogClose>
@@ -291,13 +401,21 @@ data, onChange, onForceSave, removeNode, isStepCompleted, isNa, onToggleStep, on
           tituloGrafica={tituloPositivo} 
           alCambiarTitulo={(texto) => actualizarDatosCorrelacion({ positiveTitle: texto })} 
           seriesDeDatos={arregloSeriesPositivas} 
-          tipoGrafica="positive" 
+          tipoGrafica="positive"
+          coloresCuadrantes={coloresCuadrantesPositivos}
+          alCambiarColoresCuadrantes={(nuevosColores) =>
+            actualizarDatosCorrelacion({ positiveQuadrantColors: nuevosColores })
+          }
         />
         <GraficaCorrelacion 
           tituloGrafica={tituloNegativo} 
           alCambiarTitulo={(texto) => actualizarDatosCorrelacion({ negativeTitle: texto })} 
           seriesDeDatos={arregloSeriesNegativas} 
-          tipoGrafica="negative" 
+          tipoGrafica="negative"
+          coloresCuadrantes={coloresCuadrantesNegativos}
+          alCambiarColoresCuadrantes={(nuevosColores) =>
+            actualizarDatosCorrelacion({ negativeQuadrantColors: nuevosColores })
+          }
         />
       </div>
     </StepCard>

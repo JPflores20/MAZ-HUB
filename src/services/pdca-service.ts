@@ -13,6 +13,7 @@ export {
   save_pdca_to_firestore,
   delete_pdca_from_firestore,
   update_pdca_deadline,
+  update_pdca_assigned_users,
 } from "./pdca-firestore";
 
 // Aliases con los nombres originales (camelCase) para backwards compat
@@ -22,4 +23,5 @@ export {
   save_pdca_to_firestore as savePdcaToFirestore,
   delete_pdca_from_firestore as deletePdcaFromFirestore,
   update_pdca_deadline as updatePdcaDeadline,
+  update_pdca_assigned_users as updatePdcaAssignedUsers,
 } from "./pdca-firestore";

@@ -49,3 +49,34 @@ export function normalizeRdaName(rda: Rda): Rda {
   }
   return rda;
 }
+
+/**
+ * Genera automáticamente el siguiente folio consecutivo para un RDA con el formato:
+ * `RDA_<año>_<número>` (ej. `RDA_2026_01`, `RDA_2026_20`).
+ *
+ * Calcula el consecutivo en memoria a partir de la lista de RDAs existentes
+ * (0 lecturas adicionales a Firestore).
+ */
+export function generateNextRdaFolio(existingRdas: Rda[], targetYear?: number): string {
+  const year = targetYear ?? new Date().getFullYear();
+  const yearStr = String(year);
+  let maxNumber = 0;
+
+  for (const rda of existingRdas) {
+    const rawFolio = (rda.context?.folio || "").trim();
+    if (!rawFolio) continue;
+
+    const match = rawFolio.match(/RDA[\s_-]*(\d{4})[\s_-]*(\d+)/i);
+    if (match && match[1] === yearStr && match[2]) {
+      const parsed = parseInt(match[2], 10);
+      if (!Number.isNaN(parsed) && parsed > maxNumber) {
+        maxNumber = parsed;
+      }
+    }
+  }
+
+  const nextNumber = maxNumber + 1;
+  const paddedNumber = String(nextNumber).padStart(2, "0");
+  return `RDA_${yearStr}_${paddedNumber}`;
+}
+

@@ -120,14 +120,14 @@ export function RdaProblemDescriptionTab({ data, onChange }: RdaProblemDescripti
               {t("rdaInternal.problemDesc5W1H")}
             </h4>
           </div>
-          <div className="p-4 bg-white dark:bg-transparent text-center min-h-[80px] flex items-center justify-center">
+          <div className="p-4 bg-white dark:bg-transparent min-h-[80px] flex items-center justify-center">
             {concatenatedText ? (
-              <p className="text-base font-medium text-foreground">
+              <p className="text-base font-medium text-foreground text-justify w-full">
                 {concatenatedText}
                 {concatenatedText.endsWith(".") || concatenatedText.endsWith(",") ? "" : ","}
               </p>
             ) : (
-              <p className="text-sm text-muted-foreground italic">
+              <p className="text-sm text-muted-foreground italic text-center">
                 {t("rdaInternal.concatenatedDescPlaceholder")}
               </p>
             )}

@@ -4,7 +4,13 @@
  */
 import { describe, it, expect } from "vitest";
 import type { Rda } from "@/data/rda";
-import { getRdaDisplayName, getRdaName, normalizeRdaName, withRdaName } from "../rda-name";
+import {
+  generateNextRdaFolio,
+  getRdaDisplayName,
+  getRdaName,
+  normalizeRdaName,
+  withRdaName,
+} from "../rda-name";
 
 const base = (over: Partial<Rda>): Rda =>
   ({
@@ -61,4 +67,20 @@ describe("rda-name", () => {
     });
     expect(getRdaDisplayName(empty)).toBe("Nuevo RDA");
   });
+
+  it("genera RDA_YYYY_01 cuando no hay RDAs previos en el año", () => {
+    expect(generateNextRdaFolio([], 2026)).toBe("RDA_2026_01");
+  });
+
+  it("calcula el siguiente consecutivo a partir del máximo existente en el año", () => {
+    const existing = [
+      base({ context: { folio: "RDA_2026_01" } as Rda["context"] }),
+      base({ context: { folio: "RDA_2026_18" } as Rda["context"] }),
+      base({ context: { folio: "RDA_2026_02" } as Rda["context"] }),
+      base({ context: { folio: "RDA_2026_19" } as Rda["context"] }),
+      base({ context: { folio: "RDA_2025_45" } as Rda["context"] }),
+    ];
+    expect(generateNextRdaFolio(existing, 2026)).toBe("RDA_2026_20");
+  });
 });
+

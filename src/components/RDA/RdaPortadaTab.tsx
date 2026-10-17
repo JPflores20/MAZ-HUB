@@ -24,6 +24,7 @@ import {
 import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { DEFAULT_PARTICIPANTES, AREAS } from "@/data/pdca-defaults";
 import { format, parseISO } from "date-fns";
+import { useAuth } from "@/context/auth-context";
 
 interface RdaPortadaTabProps {
   data: RdaPortada;
@@ -32,6 +33,8 @@ interface RdaPortadaTabProps {
 
 export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
   const { t } = useTranslation();
+  const { permissions } = useAuth();
+  const canManageAssignment = Boolean(permissions.canEdit && permissions.canManageAssignment);
 
   const handleChange = (field: keyof RdaPortada, value: any) => {
     onChange({ ...data, [field]: value });
@@ -39,6 +42,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
 
   // Helper to ensure date is correctly formatted/parsed
   const handleDateChange = (date: Date | undefined) => {
+    if (!canManageAssignment) return;
     if (date) {
       handleChange("fechaLimite", format(date, "yyyy-MM-dd"));
     } else {
@@ -68,6 +72,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
           <Input
             value={data.titulo || ""}
             onChange={(e) => handleChange("titulo", e.target.value)}
+            disabled={!permissions.canEdit}
             placeholder="Ej. Incrementar el Índice..."
           />
         </div>
@@ -76,7 +81,11 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
           <Label className="text-xs font-semibold text-muted-foreground uppercase">
             {t("rda.area")}
           </Label>
-          <Select value={normalizedArea} onValueChange={(val) => handleChange("area", val)}>
+          <Select
+            value={normalizedArea}
+            onValueChange={(val) => handleChange("area", val)}
+            disabled={!permissions.canEdit}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Seleccionar..." />
             </SelectTrigger>
@@ -94,7 +103,11 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
           <Label className="text-xs font-semibold text-muted-foreground uppercase">
             {t("rda.deadline")}
           </Label>
-          <DatePicker date={currentLimitDate} setDate={handleDateChange} />
+          <DatePicker
+            date={currentLimitDate}
+            setDate={handleDateChange}
+            disabled={!canManageAssignment}
+          />
         </div>
 
         <div className="space-y-2">
@@ -104,6 +117,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
           <Input
             value={data.autorOriginal || ""}
             onChange={(e) => handleChange("autorOriginal", e.target.value)}
+            disabled={!canManageAssignment}
             placeholder="Ej. AXEL GUILLEN RAMIREZ"
           />
         </div>
@@ -115,6 +129,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
           <Input
             value={data.autorEmail || ""}
             onChange={(e) => handleChange("autorEmail", e.target.value)}
+            disabled={!canManageAssignment}
             placeholder="Ej. axel@ab-inbev.com"
           />
         </div>
@@ -127,6 +142,7 @@ export function RdaPortadaTab({ data, onChange }: RdaPortadaTabProps) {
         <TeamMembersInput
           members={data.usuariosAsignados || []}
           onChange={(members) => handleChange("usuariosAsignados", members)}
+          disabled={!canManageAssignment}
         />
       </div>
 

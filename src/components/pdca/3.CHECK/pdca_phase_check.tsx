@@ -50,8 +50,9 @@ interface PhaseCheckProps {
   on_nuevo_pareto_titles_change?: (t: Record<string, string>) => void;
   has_nueva_correlacion?: boolean;
   on_has_nueva_correlacion_change?: (val: boolean) => void;
-  nueva_correlacion_data?: any[];
-  on_nueva_correlacion_data_change?: (d: any[]) => void;
+  nueva_correlacion_data?: any;
+  on_nueva_correlacion_data_change?: (d: any) => void;
+  on_force_save?: (() => void) | undefined;
 }
 
 export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
@@ -91,6 +92,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
   on_has_nueva_correlacion_change,
   nueva_correlacion_data,
   on_nueva_correlacion_data_change,
+  on_force_save,
 }) => {
   const { t } = useTranslation();
   return (
@@ -150,6 +152,9 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
       {/* ── PASO 25: Nueva Correlaciones ────────────────────────── */}
       <FlavorCorrelationSection
         title={t("pdcaPhases.check.step25.title")}
+        data={nueva_correlacion_data}
+        onChange={on_nueva_correlacion_data_change}
+        onForceSave={on_force_save}
         isStepCompleted={completed_steps.has("step-26")}
         onToggleStep={() => on_toggle_step("step-26")}
         isNa={na_steps?.has("step-26")}

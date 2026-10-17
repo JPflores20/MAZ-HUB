@@ -232,7 +232,7 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
           value={fila.comentarios || ""}
           onChange={(e) => alActualizar(fila.id, "comentarios", e.target.value)}
           placeholder={t("pdcaTables.actionPlan.placeholders.comments")}
-          className="w-full text-xs p-2 bg-transparent border-0 resize-none outline-none focus:ring-1 focus:ring-primary rounded"
+          className="w-full text-xs text-justify p-2 bg-transparent border-0 resize-none outline-none focus:ring-1 focus:ring-primary rounded"
         />
       </TableCell>
 

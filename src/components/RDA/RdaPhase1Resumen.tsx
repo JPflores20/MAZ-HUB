@@ -6,23 +6,43 @@
  * permitiendo exportar el reporte completo a PDF con aviso de privacidad en la última hoja.
  */
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useRef, useState } from "react";
 import type { Rda } from "@/data/rda";
 import { IshikawaInteractivo } from "@/components/pdca/1.PLAN/paso16/ishikawa-interactive";
-import { getRdaName } from "./rda-name";
+import { getRdaName, withRdaName } from "./rda-name";
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
 
-import { Download } from "lucide-react";
+import { Download, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  ResponsibleProfileCard,
+  useDirectoryUsers,
+} from "@/components/ui/responsible-profile-card";
+import {
+  MethodologyValidatorCard,
+  evaluateRdaMethodology,
+} from "@/components/ui/methodology-validator-card";
 
 interface Props {
   rda: Rda;
   onChange?: (rda: Rda) => void;
 }
 
-export function RdaPhase1Resumen({ rda }: Props) {
+export function RdaPhase1Resumen({ rda, onChange }: Props) {
   const { t } = useTranslation();
+  const { resolveUser } = useDirectoryUsers();
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+
+  const rdaMethodology = React.useMemo(() => evaluateRdaMethodology(rda), [rda]);
+
+  const responsiblesList = React.useMemo(() => {
+    const fromContext = (rda.context?.responsable || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (fromContext.length > 0) return fromContext;
+    return (rda.portada?.usuariosAsignados || []).map((s) => s.trim()).filter(Boolean);
+  }, [rda.context?.responsable, rda.portada?.usuariosAsignados]);
 
   // Helpers
   const concatenatedProblem = [
@@ -35,7 +55,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
   ]
     .filter(Boolean)
     .map((s) => s?.trim())
-    .join(" ");
+    .join(", ");
 
   const immediateActionText = rda.immediateActions?.[0]?.accion || "No definido";
   const observacionesText = rda.observacionesAdicionales || "No definido";
@@ -58,28 +78,89 @@ export function RdaPhase1Resumen({ rda }: Props) {
     "border border-black/30 bg-[#0078D7] p-1.5 font-bold text-[10px] text-center text-white uppercase";
   const tdClass =
     "border border-black/30 p-1.5 text-xs text-center text-blue-800 font-medium bg-white";
+  const tdJustifyClass =
+    "border border-black/30 p-2 text-xs text-justify text-blue-800 font-medium bg-white";
   const headerDivClass =
     "bg-[#0078D7] border border-black/30 p-1.5 font-bold text-center text-xs uppercase text-white mt-6";
   const textDivClass =
-    "border border-t-0 border-black/30 p-3 text-xs text-blue-800 text-center font-medium bg-white min-h-[40px]";
+    "border border-t-0 border-black/30 p-3 text-xs text-blue-800 text-justify font-medium bg-white min-h-[40px]";
 
   const printRef = useRef<HTMLDivElement>(null);
-  
+
   const handleDownloadPdf = useReactToPrint({
     contentRef: printRef,
-    documentTitle: `Resumen_${rda.context?.folio || rda.id}`,
-    pageStyle: `@page { size: landscape; margin: 10mm; } body { -webkit-print-color-adjust: exact; }`
+    documentTitle: `Resumen_RDA_${rda.context?.folio || rda.id}`,
+    pageStyle: `
+      @page { size: landscape; margin: 8mm; }
+      body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    `,
   });
 
   return (
-    <div className="relative">
-      <div className="absolute top-0 right-0 z-10 print:hidden">
-        <Button onClick={handleDownloadPdf} variant="outline" size="sm" className="gap-2">
-          <Download className="w-4 h-4" />
-          Descargar PDF
-        </Button>
+    <div
+      className={
+        isPresentationMode
+          ? "fixed inset-0 z-50 overflow-y-auto bg-background p-6 sm:p-10 space-y-4"
+          : "space-y-4"
+      }
+    >
+      {/* Barra de controles (Modo Presentación + Exportar PDF) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 print:hidden">
+        {isPresentationMode ? (
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-bold uppercase text-primary">
+              Modo Presentación One-Pager RDA
+            </span>
+            <h2 className="text-base font-bold text-foreground">
+              {getRdaName(rda) || rda.context?.folio || "RDA"}
+            </h2>
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsPresentationMode((v) => !v)}
+            className="gap-2 text-xs font-semibold"
+          >
+            {isPresentationMode ? (
+              <>
+                <Minimize2 className="w-4 h-4" /> Salir de Presentación
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-4 h-4" /> Modo Presentación (One-Pager)
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={handleDownloadPdf}
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 text-xs font-semibold shadow-sm"
+          >
+            <Download className="w-4 h-4" />
+            Exportar One-Pager (PDF)
+          </Button>
+        </div>
       </div>
-      <div id="rda-resumen-content" ref={printRef} className="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-border w-full overflow-x-auto text-black print:p-0 print:border-none print:shadow-none">
+
+      {/* Semáforo de Consistencia Metodológica RDA */}
+      <div className="print:hidden">
+        <MethodologyValidatorCard
+          title="Semáforo de Consistencia Metodológica RDA (Pre-Auditoría)"
+          criteria={rdaMethodology.criteria}
+          scorePct={rdaMethodology.scorePct}
+        />
+      </div>
+
+      <div
+        id="rda-resumen-content"
+        ref={printRef}
+        className="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-border w-full overflow-x-auto text-black print:p-0 print:border-none print:shadow-none"
+      >
       <h1 className="text-xl font-bold tracking-wide uppercase text-center mb-4">
         {t("rda.anomalyReport")}
       </h1>
@@ -100,7 +181,21 @@ export function RdaPhase1Resumen({ rda }: Props) {
             <td className={tdClass}>{formatDate(rda.context.fecha)}</td>
             <td className={tdClass}>{rda.context.turno || "-"}</td>
             <td className={tdClass}>{rda.context.iniciadoPor || "-"}</td>
-            <td className={tdClass}>{rda.context.responsable || "-"}</td>
+            <td className={tdClass}>
+              {responsiblesList.length === 0 ? (
+                "-"
+              ) : (
+                <div className="flex flex-wrap items-center justify-center gap-1.5 py-0.5">
+                  {responsiblesList.map((person) => (
+                    <ResponsibleProfileCard
+                      key={person}
+                      compact
+                      user={resolveUser(person)}
+                    />
+                  ))}
+                </div>
+              )}
+            </td>
             <td className={tdClass}>{rda.context.etapa || "-"}</td>
           </tr>
           <tr>
@@ -196,13 +291,52 @@ export function RdaPhase1Resumen({ rda }: Props) {
       </table>
 
       {/* Ishikawa */}
-      <div className="mb-8 pointer-events-none border border-black/30 p-2">
+      <div className="mb-8 border border-black/30 p-2">
         <IshikawaInteractivo
           tituloPersonalizado={t("rdaInternal.causeEffectDiagram")}
           causasRegistradas={currentIshikawa.causes || {}}
-          alCambiarCausas={() => {}}
+          alCambiarCausas={(newCausesOrUpdater) => {
+            if (!onChange) return;
+            const resolved =
+              typeof newCausesOrUpdater === "function"
+                ? newCausesOrUpdater(currentIshikawa.causes || {})
+                : newCausesOrUpdater;
+            const ishikawas = rda.ishikawa?.length
+              ? [...rda.ishikawa]
+              : [{ id: "ishikawa-0", effect: getRdaName(rda), causes: {}, customLabels: {} }];
+            ishikawas[0] = { ...ishikawas[0], causes: resolved };
+            onChange({ ...rda, ishikawa: ishikawas });
+          }}
           efectoPrincipal={getRdaName(rda)}
-          alCambiarEfecto={() => {}}
+          alCambiarEfecto={(name) => {
+            if (!onChange) return;
+            const ishikawas = rda.ishikawa?.length
+              ? [...rda.ishikawa]
+              : [{ id: "ishikawa-0", effect: name, causes: {}, customLabels: {} }];
+            onChange(withRdaName({ ...rda, ishikawa: ishikawas }, name));
+          }}
+          causasPriorizadas={currentIshikawa.prioritizedCauses || []}
+          alCambiarCausasPriorizadas={(prioritizedCauses) => {
+            if (!onChange) return;
+            const ishikawas = rda.ishikawa?.length
+              ? [...rda.ishikawa]
+              : [{ id: "ishikawa-0", effect: getRdaName(rda), causes: {}, customLabels: {} }];
+            ishikawas[0] = { ...ishikawas[0], prioritizedCauses };
+            onChange({ ...rda, ishikawa: ishikawas });
+          }}
+          etiquetasPersonalizadas={currentIshikawa.customLabels || {}}
+          alCambiarEtiquetas={(labelsOrUpdater) => {
+            if (!onChange) return;
+            const resolved =
+              typeof labelsOrUpdater === "function"
+                ? labelsOrUpdater(currentIshikawa.customLabels || {})
+                : labelsOrUpdater;
+            const ishikawas = rda.ishikawa?.length
+              ? [...rda.ishikawa]
+              : [{ id: "ishikawa-0", effect: getRdaName(rda), causes: {}, customLabels: {} }];
+            ishikawas[0] = { ...ishikawas[0], customLabels: resolved };
+            onChange({ ...rda, ishikawa: ishikawas });
+          }}
           defaultExpanded={true}
           hidePrioritizationTable={true}
         />
@@ -228,8 +362,8 @@ export function RdaPhase1Resumen({ rda }: Props) {
             <tr key={val.id}>
               <td className={tdClass}>{idx + 1}</td>
               <td className={tdClass}>{val.categoria}</td>
-              <td className={tdClass}>{val.causaPotencial}</td>
-              <td className={tdClass}>{val.accion}</td>
+              <td className={tdJustifyClass}>{val.causaPotencial}</td>
+              <td className={tdJustifyClass}>{val.accion}</td>
               <td className={tdClass}>{val.responsable}</td>
               <td className={tdClass}>{formatDate(val.fechaLimite)}</td>
               <td
@@ -312,7 +446,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
               >
                 {rda.checklistEstandarizacion?.[row.id1] ? t("rdaInternal.yes") : t("rdaInternal.no")}
               </td>
-              <td className="border border-black/30 p-1.5 text-xs text-left text-blue-800 bg-white font-medium">
+              <td className="border border-black/30 p-1.5 text-xs text-justify text-blue-800 bg-white font-medium">
                 {row.q1}
               </td>
               <td
@@ -320,7 +454,7 @@ export function RdaPhase1Resumen({ rda }: Props) {
               >
                 {rda.checklistEstandarizacion?.[row.id2] ? t("rdaInternal.yes") : t("rdaInternal.no")}
               </td>
-              <td className="border border-black/30 p-1.5 text-xs text-left text-blue-800 bg-white font-medium">
+              <td className="border border-black/30 p-1.5 text-xs text-justify text-blue-800 bg-white font-medium">
                 {row.q2}
               </td>
             </tr>
@@ -343,32 +477,96 @@ export function RdaPhase1Resumen({ rda }: Props) {
             <th className={thClass}>{t("rdaInternal.responsible")}</th>
             <th className={thClass}>{t("rda.deadline")}</th>
             <th className={thClass}>{t("rda.status")}</th>
+            <th className={thClass}>Análisis 5 medios básicos para cero averías</th>
           </tr>
         </thead>
         <tbody>
-          {rda.pda?.map((action, idx) => (
-            <tr key={action.id}>
-              <td className={tdClass}>{idx + 1}</td>
-              <td className={tdClass}>{formatDate(action.fecha)}</td>
-              <td className={tdClass}>{action.asunto || "-"}</td>
-              <td className={tdClass}>{action.accion || "-"}</td>
-              <td className={tdClass}>{action.comentarios || "-"}</td>
-              <td className={tdClass}>{action.responsable || "-"}</td>
-              <td className={tdClass}>{formatDate(action.fechaLimite)}</td>
-              <td
-                className={`${tdClass} ${action.estatus === "Complete" ? "bg-green-400 text-black" : action.estatus === "In Progress" ? "bg-yellow-200 text-black" : ""}`}
-              >
-                {action.estatus || "-"}
-              </td>
-            </tr>
-          ))}
+          {rda.pda?.map((action, idx) => {
+            const rawStatus = action.estatus || action.status || "-";
+            const isComplete =
+              rawStatus === "Complete" ||
+              rawStatus === "Completada" ||
+              rawStatus === "Completa";
+            const isInProgress =
+              rawStatus === "In Progress" ||
+              rawStatus === "En progreso" ||
+              rawStatus === "En Progreso";
+            return (
+              <tr key={action.id}>
+                <td className={tdClass}>{idx + 1}</td>
+                <td className={tdClass}>
+                  {formatDate(action.fechaCreacion || action.fecha)}
+                </td>
+                <td className={tdJustifyClass}>
+                  {action.asunto || action.causaRaiz || action.tema || "-"}
+                </td>
+                <td className={tdJustifyClass}>{action.accion || "-"}</td>
+                <td className={tdJustifyClass}>{action.comentarios || "-"}</td>
+                <td className={tdClass}>{action.responsable || "-"}</td>
+                <td className={tdClass}>
+                  {formatDate(action.fechaLimite || action.fecha)}
+                </td>
+                <td
+                  className={`${tdClass} ${
+                    isComplete
+                      ? "bg-[#92D050] text-black font-semibold"
+                      : isInProgress
+                        ? "bg-[#FFC000] text-black font-semibold"
+                        : ""
+                  }`}
+                >
+                  {rawStatus}
+                </td>
+                <td className={tdJustifyClass}>
+                  {action.medioBasicoLabel || action.analisis5Medios || "-"}
+                </td>
+              </tr>
+            );
+          })}
           {(!rda.pda || rda.pda.length === 0) && (
             <tr>
-              <td colSpan={8} className={`${tdClass} text-muted-foreground`}>
+              <td colSpan={9} className={`${tdClass} text-muted-foreground`}>
                 {t("rda.noPdaActions")}
               </td>
             </tr>
           )}
+        </tbody>
+      </table>
+
+      {/* Reporte de cierre */}
+      <div className={headerDivClass}>Reporte de cierre</div>
+      <table className="w-full border-collapse mb-6">
+        <thead>
+          <tr>
+            <th className={thClass}>¿Las acciones correctivas eliminaron la causa raíz?</th>
+            <th className={thClass}>¿Es requerido escalarlo a nivel de zona?</th>
+            <th className={thClass}>¿Se necesita CAPEX?</th>
+            <th className={thClass}>¿Se incluye como GOP/Buena Práctica/Innovación?</th>
+            <th className={thClass}>Fecha de finalización</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td
+              className={`border border-black/30 p-2 text-xs text-center font-bold text-white ${
+                rda.closure?.eliminoCausaRaiz ? "bg-[#3C7D22]" : "bg-[#3C7D22]"
+              }`}
+            >
+              {rda.closure?.eliminoCausaRaiz ? t("rdaInternal.yes", "Sí") : t("rdaInternal.no", "No")}
+            </td>
+            <td className="border border-black/30 p-2 text-xs text-center font-bold text-white bg-[#3C7D22]">
+              {rda.closure?.requiereEscalar ? t("rdaInternal.yes", "Sí") : t("rdaInternal.no", "No")}
+            </td>
+            <td className="border border-black/30 p-2 text-xs text-center font-bold text-white bg-[#3C7D22]">
+              {rda.closure?.necesitaCapex ? t("rdaInternal.yes", "Sí") : t("rdaInternal.no", "No")}
+            </td>
+            <td className="border border-black/30 p-2 text-xs text-center font-bold text-white bg-[#3C7D22]">
+              {rda.closure?.incluyeComoGop ? t("rdaInternal.yes", "Sí") : t("rdaInternal.no", "No")}
+            </td>
+            <td className={tdClass}>
+              {rda.closure?.fechaFinalizacion ? formatDate(rda.closure.fechaFinalizacion) : ""}
+            </td>
+          </tr>
         </tbody>
       </table>
 

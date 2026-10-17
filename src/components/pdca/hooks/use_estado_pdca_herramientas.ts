@@ -253,11 +253,12 @@ export const use_estado_pdca_herramientas = (pdcaInicial: Pdca) => {
   const [elementosAccion, setElementosAccion] = useState<ActionItem[]>(pdcaInicial.acciones || []);
 
   const [tieneCorrelacionSabor, setTieneCorrelacionSabor] = useState<boolean>(
-    pdcaInicial.hasFlavorCorrelation || false,
+    pdcaInicial.hasFlavorCorrelation ?? pdcaInicial.has_flavor_correlation ?? false,
   );
-  const [datosCorrelacionSabor, setDatosCorrelacionSabor] = useState<any>(
-    pdcaInicial.flavorCorrelationData || null,
-  );
+  const [datosCorrelacionSabor, setDatosCorrelacionSabor] = useState<any>(() => {
+    const raw = pdcaInicial.flavorCorrelationData ?? pdcaInicial.flavor_correlation_data ?? null;
+    return Array.isArray(raw) ? null : raw;
+  });
 
   const [tieneTemasGop, setTieneTemasGop] = useState<boolean>(
     pdcaInicial.hasGopThemes ?? (pdcaInicial as any).has_gop_themes ?? false,

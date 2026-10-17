@@ -1,13 +1,11 @@
 /**
  * admin.tsx
- * Ruta del panel de administración para gestión de usuarios, roles y permisos.
+ * Ruta del panel de administración para gestión de usuarios, roles, permisos granulares y carga de trabajo.
+ * Reutiliza la suscripción global de `useAuth()` para evitar lecturas duplicadas a Firestore.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { userService } from "@/services/user-service";
 import { Shield } from "lucide-react";
-import type { UserProfile } from "@/context/auth-context";
 import { RegistrationForm } from "@/components/admin/registration-form";
 import { UserList } from "@/components/admin/user-list";
 
@@ -16,23 +14,20 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPanel() {
-  const { currentUser, mockUsers } = useAuth();
-  const [users_list, set_users_list] = useState<UserProfile[]>([]);
+  const { currentUser, permissions, usersList, mockUsers } = useAuth();
 
-  useEffect(() => {
-    const unsub = userService.subscribeToUsers(
-      (users) => {
-        set_users_list(users);
-      },
-      (err) => {
-        console.error("Error en onSnapshot de usuarios:", err);
-      },
-    );
+  const normalizedUsers = usersList.map((u) => ({
+    uid: u.uid || u.email,
+    name: u.name,
+    email: u.email,
+    role: u.role || "user",
+    permissions: u.permissions,
+    area: u.area || "",
+    ...(u.position ? { position: u.position } : {}),
+    ...(u.avatarUrl ? { avatarUrl: u.avatarUrl } : {}),
+  }));
 
-    return () => unsub();
-  }, []);
-
-  if (currentUser?.role !== "admin") {
+  if (currentUser?.role !== "admin" && !permissions.canManageUsers) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Shield className="size-16 text-muted-foreground/30 mb-4" />
@@ -48,15 +43,18 @@ function AdminPanel() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Panel de Administración
         </p>
-        <h1 className="mt-1 text-3xl font-bold uppercase">Gestión de Usuarios y Permisos</h1>
+        <h1 className="mt-1 text-3xl font-bold uppercase">Gestión de Usuarios, Roles y Permisos</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Separa a tu equipo por rol (Administradores, Líderes de Área, Usuarios Generales, Becarios y Visores) y personaliza los permisos individuales de cada colaborador.
+        </p>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Formulario de registro */}
         <RegistrationForm />
 
-        {/* Lista de Usuarios */}
-        <UserList users_list={users_list} mock_users={mockUsers} set_users_list={set_users_list} />
+        {/* Lista de Usuarios con filtros por rol/área, permisos personalizables y carga de trabajo */}
+        <UserList users_list={normalizedUsers} mock_users={mockUsers} />
       </div>
     </div>
   );

@@ -125,14 +125,35 @@ export function subscribe_to_pdcas(
   );
 }
 
+import {
+  DocumentTooLargeError,
+  FIRESTORE_SAFE_DOC_BYTES,
+  estimateDocBytes,
+  externalizeInlineMedia,
+} from "./inline-media";
+
 /**
  * Guarda un PDCA en Firestore usando actualización granular cuando es posible.
- * Si no hay snapshot previo en caché, hace un setDoc completo con merge.
+ * Sube automáticamente a Firebase Storage cualquier imagen/archivo Base64 embebido
+ * para evitar superar el límite de 1 MiB por documento de Firestore.
  */
 export async function save_pdca_to_firestore(pdca: Pdca): Promise<void> {
+  let pdca_with_urls: Pdca = pdca;
+  try {
+    const externalized = await externalizeInlineMedia(pdca, "pdca_images");
+    pdca_with_urls = externalized.value;
+  } catch (media_err) {
+    console.warn("[pdca-firestore] No se pudieron externalizar medios en línea:", media_err);
+  }
+
+  const clean_pdca = JSON.parse(JSON.stringify(pdca_with_urls)) as Record<string, unknown>;
+  const bytes = estimateDocBytes(clean_pdca);
+  if (bytes > FIRESTORE_SAFE_DOC_BYTES) {
+    throw new DocumentTooLargeError(bytes);
+  }
+
   try {
     const doc_ref = doc(db, PDCA_COLLECTION, pdca.id);
-    const clean_pdca = JSON.parse(JSON.stringify(pdca)) as Record<string, unknown>;
 
     const original_snapshot = get_pdca_snapshot(pdca.id);
     if (original_snapshot) {
@@ -145,7 +166,7 @@ export async function save_pdca_to_firestore(pdca: Pdca): Promise<void> {
 
       // Check for new responsables
       const oldActions = (original_pdca["acciones"] as ActionItem[]) || [];
-      const newActions = pdca.acciones || [];
+      const newActions = pdca_with_urls.acciones || [];
 
       newActions.forEach((action) => {
         const oldAction = oldActions.find((a) => a.id === action.id);
@@ -179,7 +200,6 @@ export async function save_pdca_to_firestore(pdca: Pdca): Promise<void> {
 
     try {
       const doc_ref = doc(db, PDCA_COLLECTION, pdca.id);
-      const clean_pdca = JSON.parse(JSON.stringify(pdca));
       await setDoc(doc_ref, clean_pdca, { merge: true });
       set_pdca_snapshot(pdca.id, clean_pdca);
     } catch (fallback_error) {
@@ -216,5 +236,22 @@ export async function update_pdca_deadline(
     patch_pdca_snapshot(pdca_id, { fechaFinalizacion: deadline_value });
   } catch (error) {
     console.error("[pdca-firestore] Error al actualizar fecha límite:", error);
+  }
+}
+
+/**
+ * Actualiza únicamente el campo `asignados` (y `equipo`) de un PDCA desde la tabla principal.
+ */
+export async function update_pdca_assigned_users(
+  pdca_id: string,
+  asignados: { name: string; email: string }[],
+): Promise<void> {
+  try {
+    const doc_ref = doc(db, PDCA_COLLECTION, pdca_id);
+    const equipo = asignados.map((u) => u.name);
+    await updateDoc(doc_ref, { asignados, equipo });
+    patch_pdca_snapshot(pdca_id, { asignados, equipo });
+  } catch (error) {
+    console.error("[pdca-firestore] Error al actualizar usuarios asignados:", error);
   }
 }

@@ -28,7 +28,7 @@ interface RdaDialogProps {
   onOpenChange: (open: boolean) => void;
   rda: Rda | null;
   /** Debe persistir el RDA y devolver la versión guardada; debe lanzar error si falla. */
-  onSave?: (rda: Rda) => Promise<Rda>;
+  onSave?: ((rda: Rda) => Promise<Rda>) | undefined;
 }
 
 const AUTOSAVE_DELAY_MS = 2500;
@@ -71,6 +71,7 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
   const [localRda, setLocalRda] = useState<Rda | null>(null);
   const [activeTab, setActiveTab] = useState<RdaPhase>("1. Resumen");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "error">("idle");
+  const [recoverableDraft, setRecoverableDraft] = useState<{ rda: Rda; savedAt: string } | null>(null);
 
   // JSON de la última versión confirmada por Firestore (para detectar cambios sin guardar).
   const lastSavedJson = useRef<string>("");
@@ -100,14 +101,64 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
         }
       }
 
+      const initialJson = JSON.stringify(normalized);
       setLocalRda(normalized);
-      lastSavedJson.current = JSON.stringify(normalized);
+      lastSavedJson.current = initialJson;
       setSaveState("idle");
       setActiveTab("1. Resumen");
+
+      // Verificar si existe un borrador local no sincronizado en localStorage (0 lecturas a Firestore)
+      try {
+        const rawDraft = localStorage.getItem(`maz_hub_rda_draft_${normalized.id}`);
+        if (rawDraft) {
+          const parsed = JSON.parse(rawDraft) as { rda?: Rda; savedAt?: string };
+          if (parsed?.rda && parsed?.savedAt && JSON.stringify(parsed.rda) !== initialJson) {
+            setRecoverableDraft({ rda: parsed.rda, savedAt: parsed.savedAt });
+          } else {
+            localStorage.removeItem(`maz_hub_rda_draft_${normalized.id}`);
+            setRecoverableDraft(null);
+          }
+        } else {
+          setRecoverableDraft(null);
+        }
+      } catch {
+        setRecoverableDraft(null);
+      }
     }
   }, [rda, open]);
 
   const isDirty = localRda ? JSON.stringify(localRda) !== lastSavedJson.current : false;
+
+  // Respaldo inmediato en localStorage cuando hay cambios pendientes (0 escrituras en Firestore)
+  useEffect(() => {
+    if (!localRda || !isDirty) return;
+    try {
+      localStorage.setItem(
+        `maz_hub_rda_draft_${localRda.id}`,
+        JSON.stringify({ rda: localRda, savedAt: new Date().toISOString() }),
+      );
+    } catch {
+      // Ignorar si localStorage excede cuota
+    }
+  }, [localRda, isDirty]);
+
+  const handleRestoreDraft = () => {
+    if (!recoverableDraft) return;
+    setLocalRda(recoverableDraft.rda);
+    setRecoverableDraft(null);
+    toast.success("Borrador local del RDA restaurado");
+  };
+
+  const handleDiscardDraft = () => {
+    if (localRda) {
+      try {
+        localStorage.removeItem(`maz_hub_rda_draft_${localRda.id}`);
+      } catch {
+        // Ignorar errores de localStorage
+      }
+    }
+    setRecoverableDraft(null);
+  };
 
   const persist = useCallback(async (): Promise<boolean> => {
     if (!onSave) return true;
@@ -129,6 +180,12 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
           // (trae URLs de Storage en lugar de base64 y el nuevo updatedAt).
           lastSavedJson.current = JSON.stringify(saved);
           setLocalRda(saved);
+          try {
+            localStorage.removeItem(`maz_hub_rda_draft_${snapshot.id}`);
+          } catch {
+            // Ignorar errores de localStorage
+          }
+          setRecoverableDraft(null);
         } else {
           lastSavedJson.current = snapshotJson;
         }
@@ -300,6 +357,36 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
 
   return (
     <div id="rda-content" className="space-y-6">
+      {recoverableDraft && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 dark:border-amber-700/70 bg-amber-50 dark:bg-amber-950/30 px-4 py-2.5 text-xs">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-medium">
+            <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <span>
+              Se encontró un borrador local sin guardar en la nube (
+              {new Date(recoverableDraft.savedAt).toLocaleString()}). ¿Deseas restaurarlo?
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleDiscardDraft}
+              className="h-7 px-2.5 text-xs border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300"
+            >
+              Descartar
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleRestoreDraft}
+              className="h-7 px-3 text-xs bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Restaurar borrador
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="space-y-4">
         <button
           type="button"
@@ -510,7 +597,11 @@ export function RdaDialog({ open, onOpenChange, rda, onSave }: RdaDialogProps) {
           <RdaPhase2Problem rda={localRda} onChange={handleRdaChange} />
         )}
         {activeTab === "3. Análisis de Causas Raíz" && (
-          <RdaPhase3Analysis rda={localRda} onChange={handleRdaChange} />
+          <RdaPhase3Analysis
+            rda={localRda}
+            onChange={handleRdaChange}
+            onForceSave={() => void persist()}
+          />
         )}
         {activeTab === "4. Evaluación de Calidad RDA" && (
           <RdaPhase6QualityEval rda={localRda} onChange={handleRdaChange} />

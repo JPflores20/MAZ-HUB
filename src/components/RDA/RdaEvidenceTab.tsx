@@ -4,7 +4,7 @@
  */
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, UploadCloud, X } from "lucide-react";
+import { Loader2, Plus, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import type { RdaEvidenceItem, RdaValidationAction } from "@/data/rda";
 import { subirArchivoAFirebase } from "@/components/pdca/image-upload/utils/upload-utils";
@@ -34,21 +34,41 @@ export function RdaEvidenceTab({
   itemsRef.current = items;
   onChangeRef.current = onChange;
 
-  const handleImageChange = (actionId: string, image: string | undefined) => {
+  const handleAddImages = (actionId: string, newUrls: string[]) => {
+    if (newUrls.length === 0) return;
     const newItems = [...itemsRef.current];
     const index = newItems.findIndex((e) => e.id === actionId);
+    const existingItem = index >= 0 ? newItems[index] : undefined;
 
-    if (image) {
-      const existingItem = index >= 0 ? newItems[index] : undefined;
-      if (existingItem) {
-        newItems[index] = { ...existingItem, images: [image] };
-      } else {
-        newItems.push({ id: actionId, title: "", description: "", images: [image] });
-      }
+    if (existingItem) {
+      newItems[index] = {
+        ...existingItem,
+        images: [...(existingItem.images || []), ...newUrls],
+      };
     } else {
-      if (index >= 0) {
-        newItems.splice(index, 1);
-      }
+      newItems.push({
+        id: actionId,
+        title: "",
+        description: "",
+        images: newUrls,
+      });
+    }
+
+    onChangeRef.current(newItems);
+  };
+
+  const handleRemoveImage = (actionId: string, imgIndex: number) => {
+    const newItems = [...itemsRef.current];
+    const index = newItems.findIndex((e) => e.id === actionId);
+    if (index < 0) return;
+    const existingItem = newItems[index];
+    if (!existingItem) return;
+
+    const updatedImages = (existingItem.images || []).filter((_, idx) => idx !== imgIndex);
+    if (updatedImages.length === 0) {
+      newItems.splice(index, 1);
+    } else {
+      newItems[index] = { ...existingItem, images: updatedImages };
     }
 
     onChangeRef.current(newItems);
@@ -57,13 +77,15 @@ export function RdaEvidenceTab({
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const handleFileChange = async (actionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const fileList = e.target.files ? Array.from(e.target.files) : [];
     e.target.value = "";
-    if (!file) return;
+    if (fileList.length === 0) return;
     setUploadingId(actionId);
     try {
-      const url = await subirArchivoAFirebase(file, "rda_images");
-      handleImageChange(actionId, url);
+      const urls = await Promise.all(
+        fileList.map((file) => subirArchivoAFirebase(file, "rda_images")),
+      );
+      handleAddImages(actionId, urls);
     } catch (error) {
       console.error("[RdaEvidenceTab] Error subiendo evidencia:", error);
       toast.error("No se pudo subir la evidencia. Revisa tu conexión e inténtalo de nuevo.");
@@ -88,7 +110,7 @@ export function RdaEvidenceTab({
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {validationActions.map((action, i) => {
               const label = `${action.causaPotencial || t("rdaInternal.noCause")} - ${action.accion || t("rdaInternal.noAction")}`;
-              const existing = items.find((e) => e.id === action.id)?.images?.[0];
+              const existingImages = items.find((e) => e.id === action.id)?.images || [];
 
               const esCausaRaiz = action.esCausaRaiz === "SI";
               const esNoCausaRaiz = action.esCausaRaiz === "NO";
@@ -102,7 +124,7 @@ export function RdaEvidenceTab({
                     : "bg-white border-border");
 
               const dropzoneClasses =
-                "relative mt-auto h-32 border-2 border-dashed rounded-lg flex items-center justify-center overflow-hidden group " +
+                "relative mt-auto min-h-32 border-2 border-dashed rounded-lg flex flex-col justify-between overflow-hidden group " +
                 (esCausaRaiz
                   ? "bg-red-100/50 border-red-300"
                   : esNoCausaRaiz
@@ -112,40 +134,80 @@ export function RdaEvidenceTab({
               return (
                 <div key={action.id} className={cardClasses}>
                   <p
-                    className="text-xs font-semibold text-slate-700 mb-2 line-clamp-2"
+                    className="text-xs font-semibold text-slate-700 mb-2 line-clamp-2 text-justify"
                     title={label}
                   >
                     {i + 1}. {label}
                   </p>
                   <div className={dropzoneClasses}>
-                    {existing ? (
+                    {uploadingId === action.id ? (
+                      <div className="flex flex-col items-center justify-center w-full h-32 text-primary">
+                        <Loader2 className="size-6 mb-1 animate-spin" />
+                        <span className="text-[10px] uppercase font-semibold">
+                          {t("rda.saving")}
+                        </span>
+                      </div>
+                    ) : existingImages.length > 0 ? (
                       <>
-                        {existing.startsWith("data:application/pdf") ||
-                        existing.toLowerCase().includes(".pdf") ? (
-                          <a
-                            href={existing}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-center w-full h-full text-red-500 dark:text-red-400 font-bold hover:bg-red-50 dark:bg-red-900/20"
-                          >
-                            PDF
-                          </a>
-                        ) : (
-                          <img
-                            src={existing}
-                            alt={`${t("rdaInternal.evidence")} ${i + 1}`}
-                            className="w-full h-full object-contain"
-                          />
-                        )}
-                        <button
-                          onClick={() => handleImageChange(action.id, undefined)}
-                          className="absolute top-1 right-1 bg-white/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-white shadow-sm"
+                        <div
+                          className={`grid gap-1.5 p-2 ${
+                            existingImages.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                          }`}
                         >
-                          <X className="size-4" />
-                        </button>
+                          {existingImages.map((imgUrl, imgIdx) => (
+                            <div
+                              key={`${action.id}-img-${imgIdx}`}
+                              className="relative h-24 rounded border border-border/60 bg-white/80 overflow-hidden flex items-center justify-center group/item"
+                            >
+                              {imgUrl.startsWith("data:application/pdf") ||
+                              imgUrl.toLowerCase().includes(".pdf") ? (
+                                <a
+                                  href={imgUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="flex items-center justify-center w-full h-full text-red-500 dark:text-red-400 font-bold text-xs hover:bg-red-50 dark:bg-red-900/20"
+                                >
+                                  PDF {imgIdx + 1}
+                                </a>
+                              ) : (
+                                <img
+                                  src={imgUrl}
+                                  alt={`${t("rdaInternal.evidence")} ${i + 1} - ${imgIdx + 1}`}
+                                  className="w-full h-full object-contain"
+                                />
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(action.id, imgIdx)}
+                                className="absolute top-1 right-1 bg-white/90 p-1 rounded-full opacity-0 group-hover/item:opacity-100 transition text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-white shadow-sm cursor-pointer"
+                                title="Eliminar imagen"
+                              >
+                                <X className="size-3.5" />
+                              </button>
+                            </div>
+                          ))}
+
+                          <label className="h-24 rounded border border-dashed border-slate-300 bg-white/50 hover:bg-white/80 flex flex-col items-center justify-center cursor-pointer text-slate-500 hover:text-primary transition">
+                            <Plus className="size-5 mb-0.5" />
+                            <span className="text-[9px] uppercase font-bold">Agregar más</span>
+                            <input
+                              type="file"
+                              multiple
+                              accept="image/*,application/pdf"
+                              className="hidden"
+                              onChange={(e) => handleFileChange(action.id, e)}
+                            />
+                          </label>
+                        </div>
 
                         <div
-                          className={`absolute bottom-0 left-0 right-0 py-1 text-center text-[9px] font-bold text-white uppercase ${esCausaRaiz ? "bg-red-600" : esNoCausaRaiz ? "bg-green-600" : "bg-slate-600"}`}
+                          className={`w-full py-1 text-center text-[9px] font-bold text-white uppercase ${
+                            esCausaRaiz
+                              ? "bg-red-600"
+                              : esNoCausaRaiz
+                                ? "bg-green-600"
+                                : "bg-slate-600"
+                          }`}
                         >
                           {esCausaRaiz
                             ? t("rdaInternal.rootCauseValidated")
@@ -154,21 +216,15 @@ export function RdaEvidenceTab({
                               : t("rdaInternal.pending")}
                         </div>
                       </>
-                    ) : uploadingId === action.id ? (
-                      <div className="flex flex-col items-center justify-center w-full h-full text-primary">
-                        <Loader2 className="size-6 mb-1 animate-spin" />
-                        <span className="text-[10px] uppercase font-semibold">
-                          {t("rda.saving")}
-                        </span>
-                      </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-slate-400 hover:text-primary transition hover:bg-slate-100/50">
+                      <label className="flex flex-col items-center justify-center w-full h-32 cursor-pointer text-slate-400 hover:text-primary transition hover:bg-slate-100/50">
                         <UploadCloud className="size-6 mb-1" />
                         <span className="text-[10px] uppercase font-semibold">
                           {t("rdaInternal.uploadPhoto")}
                         </span>
                         <input
                           type="file"
+                          multiple
                           accept="image/*,application/pdf"
                           className="hidden"
                           onChange={(e) => handleFileChange(action.id, e)}

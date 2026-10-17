@@ -4,6 +4,7 @@
  */
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { TabContainer } from "./utils/pdca-tab-container";
 import { PdcaPhaseResumen } from "./RESUMEN/pdca_phase_resumen";
 import { PdcaPhasePlan } from "./1.PLAN/pdca_phase_plan";
@@ -13,6 +14,7 @@ import { PdcaPhaseAct } from "./4.ACT/pdca_phase_act";
 import { PdcaItfR2d2 } from "./EVALUACION RD2D/pdca_itf_r2d2";
 import { PdcaComments } from "./pdca-comments";
 import { PdcaHistory } from "./pdca-history";
+import { crearFilaAccionVacia } from "./2.DO/paso18/utils/action-plan-utils";
 
 export interface PropiedadesRenderizadorPestanas {
   pestañasMontadas: Set<string>;
@@ -55,6 +57,14 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
             final_time_series_data={estadoDialogo.final_time_series_data}
             progreso={progresoCalculado}
             action_items={estadoDialogo.action_items}
+            assigned_users={estadoDialogo.assigned_users}
+            flavor_correlation_data={estadoDialogo.flavor_correlation_data}
+            nueva_correlacion_data={estadoDialogo.nueva_correlacion_data}
+            has_flavor_correlation={estadoDialogo.has_flavor_correlation}
+            has_nueva_correlacion={estadoDialogo.has_nueva_correlacion}
+            ishikawa_causes={estadoDialogo.ishikawa_causes}
+            five_whys_tables={estadoDialogo.five_whys_tables}
+            conclusiones_causa_raiz={estadoDialogo.conclusiones_causa_raiz}
           />
         </TabContainer>
       )}
@@ -86,10 +96,21 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
             }}
             assigned_users={estadoDialogo.assigned_users}
             on_toggle_assigned_user={(u) => {
-              const exists = estadoDialogo.assigned_users.some((a: any) => a.email === u.email);
+              const currentList = estadoDialogo.assigned_users || [];
+              const exists = currentList.some(
+                (a: any) =>
+                  (u.email && a.email?.toLowerCase() === u.email.toLowerCase()) ||
+                  a.name?.toLowerCase() === u.name.toLowerCase(),
+              );
               const next = exists
-                ? estadoDialogo.assigned_users.filter((a: any) => a.email !== u.email)
-                : [...estadoDialogo.assigned_users, u];
+                ? currentList.filter(
+                    (a: any) =>
+                      !(
+                        (u.email && a.email?.toLowerCase() === u.email.toLowerCase()) ||
+                        a.name?.toLowerCase() === u.name.toLowerCase()
+                      ),
+                  )
+                : [...currentList, u];
               estadoDialogo.set_assigned_users(next);
               autoGuardado.mark_as_modified();
             }}
@@ -225,6 +246,41 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
               estadoDialogo.set_conclusiones_causa_raiz(c);
               autoGuardado.mark_as_modified();
             }}
+            on_send_root_causes_to_action_plan={(causasRaiz) => {
+              const accionesActuales = Array.isArray(estadoDialogo.action_items)
+                ? [...estadoDialogo.action_items]
+                : [];
+              let agregadas = 0;
+              causasRaiz.forEach((cr: any) => {
+                const causaTexto = String(cr?.causaRaiz || "").trim();
+                const problemaTexto = String(cr?.problema || "").trim();
+                const conclusionTexto = String(cr?.conclusion || "").trim();
+                const yaExiste = accionesActuales.some(
+                  (a: any) =>
+                    String(a?.causaRaiz || "").trim().toLowerCase() === causaTexto.toLowerCase() &&
+                    String(a?.tema || "").trim().toLowerCase() === problemaTexto.toLowerCase(),
+                );
+                if (!yaExiste) {
+                  accionesActuales.push({
+                    ...crearFilaAccionVacia(),
+                    tema: problemaTexto,
+                    causaRaiz: causaTexto,
+                    accion: conclusionTexto,
+                    priorizar: "SI",
+                  });
+                  agregadas++;
+                }
+              });
+              if (agregadas === 0) {
+                toast.info("Estas causas raíz ya se encuentran registradas en el Plan de Acción.");
+                return;
+              }
+              estadoDialogo.set_action_items(accionesActuales);
+              autoGuardado.mark_as_modified();
+              toast.success(
+                `Se agregaron ${agregadas} acción(es) al Plan de Acción en la Fase 2 (DO).`,
+              );
+            }}
             has_flavor_correlation={estadoDialogo.has_flavor_correlation}
             set_has_flavor_correlation={(val) => {
               estadoDialogo.set_has_flavor_correlation(val);
@@ -358,6 +414,7 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
               estadoDialogo.set_nueva_correlacion_data(d);
               autoGuardado.mark_as_modified();
             }}
+            on_force_save={() => autoGuardado.handle_save_to_firestore()}
             nuevo_performance={estadoDialogo.nuevo_performance}
             on_nuevo_performance_change={(n) => {
               estadoDialogo.set_nuevo_performance(n);

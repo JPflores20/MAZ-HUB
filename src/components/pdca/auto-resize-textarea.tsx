@@ -158,7 +158,7 @@ export function AutoResizeTextarea({
       placeholder={placeholder}
       rows={1}
       className={cn(
-        "w-full resize-none overflow-hidden bg-transparent focus:outline-none focus-visible:ring-1",
+        "w-full resize-none overflow-hidden bg-transparent text-justify focus:outline-none focus-visible:ring-1",
         className,
       )}
       style={{ minHeight: "32px", height: "auto" }}

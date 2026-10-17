@@ -127,13 +127,16 @@ import { StepCard } from "@/components/ui/step-card";
 export function TeamMembersInput({
   members = [],
   onChange,
+  disabled = false,
 }: {
   members?: string[];
   onChange: (m: string[]) => void;
+  disabled?: boolean | undefined;
 }) {
   const [inputValue, setInputValue] = useState("");
 
   const addMember = () => {
+    if (disabled) return;
     const val = inputValue.trim();
     if (val && !members.includes(val)) {
       onChange([...members, val]);
@@ -149,6 +152,7 @@ export function TeamMembersInput({
   };
 
   const removeMember = (indexToRemove: number) => {
+    if (disabled) return;
     onChange(members.filter((_, index) => index !== indexToRemove));
   };
 
@@ -161,29 +165,33 @@ export function TeamMembersInput({
             className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary border border-primary/20"
           >
             <span>{member}</span>
-            <button
-              type="button"
-              onClick={() => removeMember(index)}
-              className="ml-1 rounded-full p-0.5 hover:bg-primary/20 hover:text-destructive transition-colors"
-            >
-              <X className="size-3" />
-            </button>
+            {!disabled && (
+              <button
+                type="button"
+                onClick={() => removeMember(index)}
+                className="ml-1 rounded-full p-0.5 hover:bg-primary/20 hover:text-destructive transition-colors"
+              >
+                <X className="size-3" />
+              </button>
+            )}
           </div>
         ))}
       </div>
-      <div className="flex gap-2">
-        <Input
-          id="equipo"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ej. Ana López (Líder)"
-          className="flex-1"
-        />
-        <Button type="button" variant="secondary" onClick={addMember}>
-          Agregar
-        </Button>
-      </div>
+      {!disabled && (
+        <div className="flex gap-2">
+          <Input
+            id="equipo"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ej. Ana López (Líder)"
+            className="flex-1"
+          />
+          <Button type="button" variant="secondary" onClick={addMember}>
+            Agregar
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

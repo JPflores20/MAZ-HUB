@@ -4,7 +4,8 @@
  */
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import TextareaAutosize from "react-textarea-autosize";
 import {
@@ -21,6 +22,7 @@ import type { ConclusionCausaRaizItem } from "@/data/pdca";
 interface ConclusionesCausaRaizTableProps {
   items: ConclusionCausaRaizItem[];
   onChange: (items: ConclusionCausaRaizItem[]) => void;
+  onSendToActionPlan?: ((items: ConclusionCausaRaizItem[]) => void) | undefined;
   title?: string;
   isStepCompleted?: boolean;
   isNa?: boolean | undefined;
@@ -28,7 +30,16 @@ interface ConclusionesCausaRaizTableProps {
   onToggleNa?: (() => void) | undefined;
 }
 
-export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProps> = ({ items, onChange, title, isStepCompleted, onToggleStep, isNa, onToggleNa }) => {
+export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProps> = ({
+  items,
+  onChange,
+  onSendToActionPlan,
+  title,
+  isStepCompleted,
+  onToggleStep,
+  isNa,
+  onToggleNa,
+}) => {
   const { t } = useTranslation();
   const handleAdd = () => {
     const newItem: ConclusionCausaRaizItem = {
@@ -53,6 +64,18 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
     onChange(items.filter((item) => item.id !== id));
   };
 
+  const handleSendToActionPlan = () => {
+    if (!onSendToActionPlan) return;
+    const validItems = (items || []).filter(
+      (i) => String(i.causaRaiz || "").trim() !== "" || String(i.problema || "").trim() !== "",
+    );
+    if (validItems.length === 0) {
+      toast.error("Define al menos una causa raíz antes de enviarla al Plan de Acción.");
+      return;
+    }
+    onSendToActionPlan(validItems);
+  };
+
   return (
     <StepCard
       title={title ?? "PASO 18: CAUSAS RAÍZ DEFINIDAS"}
@@ -62,8 +85,20 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
       onToggleNa={onToggleNa}
     >
       <div className="space-y-4">
-        <div className="flex items-center justify-end">
-          <Button onClick={handleAdd} variant="outline" size="sm">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {onSendToActionPlan && (
+            <Button
+              type="button"
+              onClick={handleSendToActionPlan}
+              variant="outline"
+              size="sm"
+              className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800"
+              title="Crear acciones en Fase 2 (DO) a partir de las causas raíz definidas"
+            >
+              Enviar al Plan de Acción (DO) <ArrowRight className="size-4 ml-1.5" />
+            </Button>
+          )}
+          <Button type="button" onClick={handleAdd} variant="outline" size="sm">
             <Plus className="size-4 mr-2" /> Agregar Fila
           </Button>
         </div>
@@ -142,6 +177,7 @@ export const ConclusionesCausaRaizTable: React.FC<ConclusionesCausaRaizTableProp
                   </TableCell>
                   <TableCell className="p-1.5 text-center align-middle">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"

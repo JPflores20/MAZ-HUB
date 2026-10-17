@@ -47,6 +47,7 @@ interface PropiedadesIshikawaInteractivo {
   onToggleNa?: () => void;
   defaultExpanded?: boolean;
   hidePrioritizationTable?: boolean;
+  alEnviarA5Porques?: ((causasPriorizadasTexto: string[]) => void) | undefined;
 }
 
 export function IshikawaInteractivo({
@@ -68,6 +69,7 @@ export function IshikawaInteractivo({
   onToggleNa,
   defaultExpanded,
   hidePrioritizationTable,
+  alEnviarA5Porques,
 }: PropiedadesIshikawaInteractivo) {
   const { t } = useTranslation();
 
@@ -121,30 +123,14 @@ export function IshikawaInteractivo({
   };
 
   const renderizarDiagramaPescado = (
-    <div className="relative pt-4 pb-4 overflow-x-auto min-h-[400px]">
-      <div className="min-w-[800px] relative mt-4">
-        <div className="absolute top-1/2 left-0 right-36 h-1.5 bg-border rounded-full -translate-y-1/2 z-0">
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-[8px] border-transparent border-l-border"></div>
-        </div>
-
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 bg-destructive/10 text-destructive text-[11px] font-bold uppercase tracking-widest p-2 rounded-xl border border-destructive/30 z-10 w-36 text-center flex flex-col items-center justify-center shadow-sm min-h-[90px]">
-          <span className="text-[9px] font-semibold text-destructive/70 uppercase tracking-wider mb-1">
-            Efecto / Problema
-          </span>
-          <TextareaAutosize
-            value={efectoPrincipal}
-            onChange={(eventoCajaTexto) => alCambiarEfecto(eventoCajaTexto.target.value)}
-            placeholder="Escribe el efecto..."
-            minRows={2}
-            className="w-full text-center bg-transparent border-none text-destructive font-bold text-xs resize-none focus-visible:ring-1 focus-visible:ring-destructive/40 p-0 shadow-none outline-none"
-          />
-        </div>
-
-        <div className="grid grid-cols-3 gap-4 pr-44 relative z-10">
+    <div className="relative pt-4 pb-4 overflow-x-auto">
+      <div className="min-w-[820px] relative mt-2">
+        {/* Fila superior de categorías (3 espinas superiores) */}
+        <div className="grid grid-cols-3 gap-4 pr-44 relative z-10 items-stretch">
           {arregloCategorias
             .filter((categoriaItem) => categoriaItem.position === "top")
             .map((categoriaFiltrada) => (
-              <div key={categoriaFiltrada.id} className="flex flex-col items-center">
+              <div key={categoriaFiltrada.id} className="flex flex-col items-center h-full">
                 <CajaCategoriaIshikawa
                   categoria={categoriaFiltrada}
                   listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
@@ -152,19 +138,38 @@ export function IshikawaInteractivo({
                   alEliminarCausa={eliminarCausaExistente}
                   alCambiarEtiqueta={manejarCambioEtiquetaCategoria}
                 />
-                <div className="w-0.5 h-8 bg-border"></div>
+                <div className="w-0.5 flex-1 min-h-[28px] bg-slate-300 dark:bg-border"></div>
               </div>
             ))}
         </div>
 
-        <div className="h-4"></div>
+        {/* Espina central horizontal + Cabeza (Efecto / Problema) */}
+        <div className="relative flex items-center my-0">
+          <div className="w-full mr-36 h-1.5 bg-slate-300 dark:bg-border rounded-full relative z-0">
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-[8px] border-transparent border-l-slate-300 dark:border-l-border"></div>
+          </div>
 
-        <div className="grid grid-cols-3 gap-4 pr-44 relative z-10">
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-destructive/10 text-destructive text-[11px] font-bold uppercase tracking-widest p-2.5 rounded-xl border border-destructive/30 z-20 w-36 text-center flex flex-col items-center justify-center shadow-sm min-h-[90px]">
+            <span className="text-[9px] font-semibold text-destructive/70 uppercase tracking-wider mb-1">
+              Efecto / Problema
+            </span>
+            <TextareaAutosize
+              value={efectoPrincipal}
+              onChange={(eventoCajaTexto) => alCambiarEfecto(eventoCajaTexto.target.value)}
+              placeholder="Escribe el efecto..."
+              minRows={2}
+              className="w-full text-center bg-transparent border-none text-destructive font-bold text-xs resize-none focus-visible:ring-1 focus-visible:ring-destructive/40 p-0 shadow-none outline-none cursor-text"
+            />
+          </div>
+        </div>
+
+        {/* Fila inferior de categorías (3 espinas inferiores) */}
+        <div className="grid grid-cols-3 gap-4 pr-44 relative z-10 items-start">
           {arregloCategorias
             .filter((categoriaItem) => categoriaItem.position === "bottom")
             .map((categoriaFiltrada) => (
               <div key={categoriaFiltrada.id} className="flex flex-col items-center">
-                <div className="w-0.5 h-8 bg-border"></div>
+                <div className="w-0.5 h-7 bg-slate-300 dark:bg-border"></div>
                 <CajaCategoriaIshikawa
                   categoria={categoriaFiltrada}
                   listaCausas={causasRegistradas[categoriaFiltrada.id] || []}
@@ -253,6 +258,7 @@ export function IshikawaInteractivo({
           <MatrizPriorizacionIshikawa
             valorMatriz={causasPriorizadas}
             alCambiarValores={alCambiarCausasPriorizadas}
+            alEnviarA5Porques={alEnviarA5Porques}
           />
         )}
       </div>

@@ -5,7 +5,7 @@
  * Presenta tarjetas de métricas clave, gráficas comparativas (Tendencia KPI y Paretos Antes/Después),
  * Project Statement, SDCA Checklist y tabla del Plan de Acción, con exportación a PDF de alta fidelidad.
  */
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import type {
   DefinicionMeta,
   VpoCheckpointItem,
@@ -13,8 +13,12 @@ import type {
   ImpactMatrixRow,
   ActionItem,
 } from "@/data/pdca";
-import { Download } from "lucide-react";
+import { Download, Maximize2, Minimize2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  ResponsibleProfileCard,
+  useDirectoryUsers,
+} from "@/components/ui/responsible-profile-card";
 import { ResumenMetricsCards } from "./components/resumen-metrics-cards";
 import { ResumenCharts } from "./components/resumen-charts";
 import { ResumenActionTable } from "./components/resumen-action-table";
@@ -32,6 +36,14 @@ interface PhaseResumenProps {
   final_time_series_data: { mes: string; target: number; actual: number | null }[] | undefined;
   progreso: number;
   action_items?: ActionItem[] | undefined;
+  assigned_users?: { name: string; email: string }[] | undefined;
+  flavor_correlation_data?: any;
+  nueva_correlacion_data?: any;
+  has_flavor_correlation?: boolean | undefined;
+  has_nueva_correlacion?: boolean | undefined;
+  ishikawa_causes?: Record<string, { text?: string }[]> | undefined;
+  five_whys_tables?: any[] | undefined;
+  conclusiones_causa_raiz?: any[] | undefined;
 }
 
 /**
@@ -50,14 +62,24 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
   final_time_series_data,
   progreso,
   action_items,
+  assigned_users,
+  flavor_correlation_data,
+  nueva_correlacion_data,
+  has_flavor_correlation,
+  has_nueva_correlacion,
+  ishikawa_causes,
+  five_whys_tables,
+  conclusiones_causa_raiz,
 }) => {
   const printRef = useRef<HTMLDivElement>(null);
+  const { resolveUser } = useDirectoryUsers();
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
 
   const handleDownloadPdf = useReactToPrint({
     contentRef: printRef,
     documentTitle: `PDCA_${(document_identifier || pdca_title || "Reporte").replace(/[^a-zA-Z0-9_-]/g, "_")}`,
     pageStyle: `
-      @page { size: landscape; margin: 10mm; }
+      @page { size: landscape; margin: 8mm; }
       body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       @media print {
         .recharts-wrapper, .recharts-surface { max-width: 100% !important; }
@@ -121,16 +143,50 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
   }
 
   return (
-    <div className="space-y-5 pb-6">
-      {/* ── BOTÓN EXPORTAR A PDF ── */}
-      <div className="flex justify-end print:hidden">
-        <Button
-          onClick={handleDownloadPdf}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 h-9 text-xs shadow-sm font-semibold"
-        >
-          <Download className="size-4" />
-          Exportar PDF
-        </Button>
+    <div
+      className={
+        isPresentationMode
+          ? "fixed inset-0 z-50 overflow-y-auto bg-background p-6 sm:p-10 space-y-5"
+          : "space-y-5 pb-6"
+      }
+    >
+      {/* ── BARRA DE ACCIONES: MODO PRESENTACIÓN Y EXPORTAR PDF ── */}
+      <div className="flex flex-wrap items-center justify-between gap-2 print:hidden">
+        {isPresentationMode ? (
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-bold uppercase text-primary">
+              Modo Presentación One-Pager
+            </span>
+            <h2 className="text-base font-bold text-foreground">{pdca_title}</h2>
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsPresentationMode((v) => !v)}
+            className="gap-2 h-9 text-xs font-semibold"
+          >
+            {isPresentationMode ? (
+              <>
+                <Minimize2 className="size-4" /> Salir de Presentación
+              </>
+            ) : (
+              <>
+                <Maximize2 className="size-4" /> Modo Presentación (One-Pager)
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={handleDownloadPdf}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 h-9 text-xs shadow-sm font-semibold"
+          >
+            <Download className="size-4" />
+            Exportar One-Pager (PDF)
+          </Button>
+        </div>
       </div>
 
       {/* ── CONTENIDO IMPRIMIBLE / PANTALLA ── */}
@@ -180,12 +236,35 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
           />
         </div>
 
+        {/* ── RESPONSABLES ASIGNADOS AL PROYECTO ── */}
+        {(assigned_users ?? []).length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 shadow-xs print:break-inside-avoid">
+            <div className="flex items-center gap-2 mb-3">
+              <Users className="size-4 text-primary" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                Responsables del Proyecto
+              </h3>
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5">
+              {(assigned_users ?? []).map((u) => (
+                <ResponsibleProfileCard
+                  key={u.email || u.name}
+                  user={resolveUser(u)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── FILA 2: Gráficos y Visuales ── */}
         <div className="print:break-inside-avoid">
           <ResumenCharts
             timeSeries={timeSeries}
             initialParetoRoot={initialParetoRoot}
             newParetoRoot={newParetoRoot}
+            initialCorrelation={flavor_correlation_data}
+            newCorrelation={nueva_correlacion_data}
+            showCorrelationComparison={Boolean(has_flavor_correlation || has_nueva_correlacion)}
           />
         </div>
 

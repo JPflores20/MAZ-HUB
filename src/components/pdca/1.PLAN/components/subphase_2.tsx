@@ -15,6 +15,7 @@ import { FiveWhysSection } from "../paso17/five-whys-section";
 import { ConclusionesCausaRaizTable } from "../paso18/conclusiones-causa-raiz-table";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +38,7 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
   on_toggle_step,
   on_toggle_na,
   is_admin_user,
+  is_editable = true,
   baseline_image,
   on_baseline_image_change,
   coleccion_datos,
@@ -70,8 +72,104 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
   on_five_whys_tables_change,
   conclusiones_causa_raiz,
   on_conclusiones_causa_raiz_change,
+  on_send_root_causes_to_action_plan,
 }) => {
   const { t } = useTranslation();
+  const can_edit_correlation = is_admin_user || is_editable !== false;
+
+  const manejarEnvioIshikawaA5Porques = (causasPriorizadasTexto: string[]) => {
+    if (!on_five_whys_tables_change) return;
+    const tablasActuales = Array.isArray(five_whys_tables) ? [...five_whys_tables] : [];
+    const primeraTabla = tablasActuales[0] ?? {
+      id: `fivewhys-${Date.now()}`,
+      title: "CAUSAS PRIORIZADAS ISHIKAWA",
+      rows: [],
+    };
+    const filasExistentes = (
+      Array.isArray(primeraTabla.rows)
+        ? primeraTabla.rows
+        : Object.values(primeraTabla.rows || {})
+    ) as any[];
+
+    // Filtrar filas completamente vacías iniciales
+    const filasConContenido = filasExistentes.filter(
+      (f) => String(f?.q1 || "").trim() !== "" || String(f?.w1 || "").trim() !== "",
+    );
+
+    const nuevasFilas = [...filasConContenido];
+    let agregadas = 0;
+
+    causasPriorizadasTexto.forEach((textoCausa, idx) => {
+      const yaExiste = nuevasFilas.some(
+        (f) => String(f?.q1 || "").trim().toLowerCase() === textoCausa.toLowerCase(),
+      );
+      if (!yaExiste) {
+        nuevasFilas.push({
+          id: Date.now() + idx + Math.random(),
+          q1: textoCausa,
+          q2: "",
+          q3: "",
+          q4: "",
+          q5: "",
+          w1: "",
+          w2: "",
+          w3: "",
+          w4: "",
+          w5: "",
+          accion: "",
+        });
+        agregadas++;
+      }
+    });
+
+    if (agregadas === 0) {
+      toast.info("Las causas seleccionadas ya se encuentran en la tabla de 5 Porqués.");
+      return;
+    }
+
+    const tablaActualizada = { ...primeraTabla, rows: nuevasFilas };
+    on_five_whys_tables_change(
+      tablasActuales.length > 0
+        ? [tablaActualizada, ...tablasActuales.slice(1)]
+        : [tablaActualizada],
+    );
+    toast.success(`Se enviaron ${agregadas} causa(s) priorizada(s) al Paso 17 (5 Why's).`);
+  };
+
+  const manejarEnvio5PorquesAConclusiones = (
+    hallazgos: { problema: string; causaRaiz: string; accion: string }[],
+  ) => {
+    if (!on_conclusiones_causa_raiz_change) return;
+    const actuales = Array.isArray(conclusiones_causa_raiz) ? [...conclusiones_causa_raiz] : [];
+    let agregadas = 0;
+
+    hallazgos.forEach((h) => {
+      const yaExiste = actuales.some(
+        (item) =>
+          String(item?.causaRaiz || "").trim().toLowerCase() === h.causaRaiz.toLowerCase() &&
+          String(item?.problema || "").trim().toLowerCase() === h.problema.toLowerCase(),
+      );
+      if (!yaExiste) {
+        actuales.push({
+          id: crypto.randomUUID(),
+          problema: h.problema,
+          causaRaiz: h.causaRaiz,
+          validacion: "Análisis 5 Porqués",
+          valorP: "Validada",
+          conclusion: h.accion || "Causa raíz confirmada para Plan de Acción",
+        });
+        agregadas++;
+      }
+    });
+
+    if (agregadas === 0) {
+      toast.info("Estas causas raíz ya fueron agregadas al Paso 18.");
+      return;
+    }
+
+    on_conclusiones_causa_raiz_change(actuales);
+    toast.success(`Se enviaron ${agregadas} causa(s) raíz al Paso 18.`);
+  };
 
   return (
     <div className="space-y-6">
@@ -127,10 +225,11 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
               isNa={na_steps?.has("step-flavor")}
               onToggleNa={() => on_toggle_na?.("step-flavor")}
               removeNode={
-                is_admin_user ? (
+                can_edit_correlation ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
@@ -163,9 +262,10 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
             />
           </div>
         ) : (
-          is_admin_user && (
+          can_edit_correlation && (
             <div className="flex justify-center mt-4">
               <Button
+                type="button"
                 onClick={() => set_has_flavor_correlation?.(true)}
                 variant="outline"
                 className="gap-2 shadow-sm bg-card hover:bg-card/80"
@@ -227,6 +327,7 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
       <IshikawaSection
         ishikawas={ishikawas || []}
         onChange={on_ishikawas_change!}
+        onSendToFiveWhys={manejarEnvioIshikawaA5Porques}
         isStepCompleted={completed_steps.has("step-14")}
         onToggleStep={() => on_toggle_step("step-14")}
         isNa={na_steps?.has("step-14")}
@@ -237,6 +338,7 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
       <FiveWhysSection
         tables={five_whys_tables || []}
         onChange={on_five_whys_tables_change!}
+        onSendToConclusions={manejarEnvio5PorquesAConclusiones}
         isStepCompleted={completed_steps.has("step-15")}
         onToggleStep={() => on_toggle_step("step-15")}
         isNa={na_steps?.has("step-15")}
@@ -248,6 +350,7 @@ export const Subphase2: React.FC<PhasePlanProps> = ({
         title={t("pdcaPlan.step18Title")}
         items={conclusiones_causa_raiz || []}
         onChange={on_conclusiones_causa_raiz_change!}
+        onSendToActionPlan={on_send_root_causes_to_action_plan}
         isStepCompleted={completed_steps.has("step-17")}
         onToggleStep={() => on_toggle_step("step-17")}
         isNa={na_steps?.has("step-17")}

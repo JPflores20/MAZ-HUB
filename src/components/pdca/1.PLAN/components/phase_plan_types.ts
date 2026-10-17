@@ -92,6 +92,7 @@ export interface PhasePlanProps {
   on_benchmark_image_change?: ((img?: string) => void) | undefined;
   conclusiones_causa_raiz?: any[] | undefined;
   on_conclusiones_causa_raiz_change?: ((items: any[]) => void) | undefined;
+  on_send_root_causes_to_action_plan?: ((items: any[]) => void) | undefined;
   has_flavor_correlation?: boolean | undefined;
   set_has_flavor_correlation?: ((val: boolean) => void) | undefined;
   flavor_correlation_data?: any;

@@ -4,7 +4,7 @@
  */
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { X, LogOut } from "lucide-react";
+import { X, LogOut, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./layout-types";
 
@@ -48,21 +48,45 @@ export const LayoutMobileMenu: React.FC<Props> = ({
           </Button>
         </div>
         <nav className="flex-1 space-y-1.5 p-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                currentPath === item.href
-                  ? "bg-brand text-white shadow-sm"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <item.icon className="size-5" />
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            item.placeholder ? (
+              <button
+                key={item.href}
+                type="button"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors text-white/70 hover:bg-white/10 hover:text-white cursor-default"
+              >
+                <item.icon className="size-5" />
+                <span>{item.label}</span>
+              </button>
+            ) : item.external ? (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-white/70 hover:bg-white/10 hover:text-white"
+              >
+                <item.icon className="size-5" />
+                <span>{item.label}</span>
+                <ExternalLink className="ml-auto size-3.5 text-white/50" />
+              </a>
+            ) : (
+              <Link
+                key={item.href}
+                to={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  currentPath === item.href
+                    ? "bg-brand text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <item.icon className="size-5" />
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
         <div className="border-t border-white/10 p-4">
           <Button

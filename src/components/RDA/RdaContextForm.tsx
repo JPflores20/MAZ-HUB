@@ -4,6 +4,7 @@
  */
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Plus, UserPlus } from "lucide-react";
 import type { RdaAnomalyContext } from "@/data/rda";
 import { AREAS } from "@/data/pdca-defaults";
 import {
@@ -15,20 +16,58 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  ResponsibleProfileCard,
+  ResponsibleSelectorItem,
+  useDirectoryUsers,
+} from "@/components/ui/responsible-profile-card";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parse, isValid } from "date-fns";
 import { es } from "date-fns/locale";
+import { useRdas } from "@/context/rda-context";
+import { generateNextRdaFolio } from "@/components/RDA/rda-name";
 
 interface RdaContextFormProps {
   context: RdaAnomalyContext;
   onChange: (context: RdaAnomalyContext) => void;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export function RdaContextForm({ context, onChange, disabled }: RdaContextFormProps) {
   const { t } = useTranslation();
+  const { directory: availableUsers, resolveUser } = useDirectoryUsers();
+  const { allRdas } = useRdas();
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+  const [customResponsible, setCustomResponsible] = React.useState("");
+
+  const assignedList = React.useMemo(() => {
+    return (context.responsable || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [context.responsable]);
+
+  const toggleResponsibleUser = (name: string) => {
+    if (disabled) return;
+    const normalized = name.trim();
+    if (!normalized) return;
+    const exists = assignedList.some((r) => r.toLowerCase() === normalized.toLowerCase());
+    const next = exists
+      ? assignedList.filter((r) => r.toLowerCase() !== normalized.toLowerCase())
+      : [...assignedList, normalized];
+    handleChange("responsable", next.join(", "));
+  };
+
+  const handleAddCustomResponsible = () => {
+    const val = customResponsible.trim();
+    if (!val) return;
+    if (!assignedList.some((r) => r.toLowerCase() === val.toLowerCase())) {
+      handleChange("responsable", [...assignedList, val].join(", "));
+    }
+    setCustomResponsible("");
+  };
 
   const handleChange = (field: keyof RdaAnomalyContext, value: string) => {
     if (disabled) return;
@@ -126,12 +165,76 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
               />
             </TableCell>
             <TableCell className={cellClass}>
-              <Input
-                className={inputClass}
-                value={context.responsable}
-                onChange={(e) => handleChange("responsable", e.target.value)}
-                placeholder={t('rdaInternal.phResponsable')}
-              />
+              <div className="flex flex-wrap items-center gap-1.5 min-w-[230px]">
+                {assignedList.map((person) => (
+                  <ResponsibleProfileCard
+                    key={person}
+                    compact
+                    user={resolveUser(person)}
+                    onRemove={!disabled ? () => toggleResponsibleUser(person) : undefined}
+                  />
+                ))}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      className={
+                        assignedList.length === 0
+                          ? "w-full min-h-[34px] rounded-md border border-input bg-transparent px-2 py-1 text-left text-xs flex items-center gap-1.5 text-muted-foreground hover:bg-secondary/40 transition-colors cursor-pointer"
+                          : "inline-flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer shrink-0"
+                      }
+                    >
+                      <UserPlus className="size-3.5 text-primary" />
+                      {assignedList.length === 0 && <span>Asignar responsables...</span>}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-3 space-y-2.5" align="start">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Seleccionar Usuarios Responsables
+                    </p>
+                    <div className="max-h-56 overflow-y-auto space-y-1 border-b border-border pb-2">
+                      {availableUsers.map((u) => {
+                        const resolved = resolveUser(u);
+                        const isSelected = assignedList.some(
+                          (r) => r.toLowerCase() === resolved.name.toLowerCase(),
+                        );
+                        return (
+                          <ResponsibleSelectorItem
+                            key={u.email || u.name}
+                            user={resolved}
+                            selected={isSelected}
+                            onToggle={() => toggleResponsibleUser(resolved.name)}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center gap-1.5 pt-0.5">
+                      <Input
+                        value={customResponsible}
+                        onChange={(e) => setCustomResponsible(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleAddCustomResponsible();
+                          }
+                        }}
+                        placeholder="Otro nombre..."
+                        className="h-7 text-xs"
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        onClick={handleAddCustomResponsible}
+                        className="h-7 w-7 shrink-0"
+                      >
+                        <Plus className="size-3.5" />
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </TableCell>
             <TableCell className="p-2 align-top">
               <Input
@@ -196,12 +299,23 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
               />
             </TableCell>
             <TableCell className="p-2 align-top">
-              <Input
-                className={inputClass}
-                value={context.folio}
-                onChange={(e) => handleChange("folio", e.target.value)}
-                placeholder={t('rdaInternal.phFolioRda')}
-              />
+              <div className="space-y-1">
+                <Input
+                  className={`${inputClass} font-mono font-semibold`}
+                  value={context.folio}
+                  onChange={(e) => handleChange("folio", e.target.value)}
+                  placeholder="RDA_2026_01"
+                />
+                {!context.folio?.trim() && !disabled && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange("folio", generateNextRdaFolio(allRdas))}
+                    className="w-full text-center text-[10px] font-semibold text-primary hover:underline cursor-pointer"
+                  >
+                    + Generar automático
+                  </button>
+                )}
+              </div>
             </TableCell>
           </TableRow>
 

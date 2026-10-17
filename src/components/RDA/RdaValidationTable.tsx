@@ -4,11 +4,11 @@
  */
 import { useTranslation } from "react-i18next";
 import React from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ArrowDownToLine, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
 import {
   Table,
   TableBody,
@@ -29,6 +29,8 @@ import type { RdaValidationAction } from "@/data/rda";
 interface RdaValidationTableProps {
   items: RdaValidationAction[];
   onChange: (items: RdaValidationAction[]) => void;
+  onImportFromIshikawa?: (() => void) | undefined;
+  onSendToPda?: (() => void) | undefined;
 }
 
 const getStatusColor = (status: string) => {
@@ -45,7 +47,12 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function RdaValidationTable({ items, onChange }: RdaValidationTableProps) {
+export function RdaValidationTable({
+  items,
+  onChange,
+  onImportFromIshikawa,
+  onSendToPda,
+}: RdaValidationTableProps) {
   const { t } = useTranslation();
 
   const addRow = () => {
@@ -74,6 +81,39 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+          ✓ Las causas con <strong>¿Es Causa Raíz? = Sí</strong> se colocan automáticamente en el Paso 12 (Causa Raíz)
+        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          {onImportFromIshikawa && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onImportFromIshikawa}
+              className="h-8 text-xs font-semibold gap-1.5"
+              title="Traer causas registradas en el Diagrama de Ishikawa (Paso 5)"
+            >
+              <ArrowDownToLine className="size-3.5" />
+              Importar causas del Ishikawa
+            </Button>
+          )}
+          {onSendToPda && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onSendToPda}
+              className="h-8 text-xs font-semibold text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 gap-1.5"
+              title="Enviar causas raíz validadas (Sí) al Plan de Acción / PDA (Paso 12)"
+            >
+              Enviar Causas Raíz al PDA (Paso 12)
+              <ArrowRight className="size-3.5" />
+            </Button>
+          )}
+        </div>
+      </div>
       <div className="rounded-md border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
@@ -82,10 +122,10 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                 <TableHead className="w-[150px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
                   {t("rdaInternal.categoryM")}
                 </TableHead>
-                <TableHead className="w-[200px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                <TableHead className="w-[240px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
                   {t("rda.potentialCause")}
                 </TableHead>
-                <TableHead className="w-[250px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
+                <TableHead className="w-[280px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
                   {t("rdaInternal.validationAction")}
                 </TableHead>
                 <TableHead className="w-[120px] font-bold uppercase text-[10px] tracking-wider text-white border-r border-white/20">
@@ -125,15 +165,17 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                     </Select>
                   </TableCell>
                   <TableCell className="align-top p-2">
-                    <Textarea
-                      className="min-h-[60px] resize-none"
+                    <TextareaAutosize
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-justify shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none overflow-hidden leading-relaxed"
                       value={row.causaPotencial}
                       onChange={(e) => updateRow(row.id, "causaPotencial", e.target.value)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
-                    <Textarea
-                      className="min-h-[60px] resize-none"
+                    <TextareaAutosize
+                      minRows={2}
+                      className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-justify shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none overflow-hidden leading-relaxed"
                       value={row.accion}
                       onChange={(e) => updateRow(row.id, "accion", e.target.value)}
                     />
@@ -143,7 +185,13 @@ export function RdaValidationTable({ items, onChange }: RdaValidationTableProps)
                       value={row.esCausaRaiz}
                       onValueChange={(val) => updateRow(row.id, "esCausaRaiz", val)}
                     >
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger
+                        className={`h-9 ${
+                          String(row.esCausaRaiz || "").toUpperCase() === "SI"
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300 font-semibold dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800"
+                            : ""
+                        }`}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

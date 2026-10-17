@@ -160,7 +160,7 @@ export interface Rda {
   participantesRC?: string;
   ishikawa?: any[];
   pareto_data_map?: Record<string, ParetoItem[]>;
-  correlaciones?: any[]; // To match PDCA flavorCorrelationData or simple string/images
+  correlaciones?: any; // Stores full FlavorCorrelationData (seriesList, titles, quadrantColors) or legacy array
   statistical_analysis_files?: string[];
   rendimientoActualItems?: any[];
   rendimientoActualImage?: string;

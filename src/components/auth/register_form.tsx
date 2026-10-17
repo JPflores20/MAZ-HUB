@@ -64,6 +64,9 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
 
       await userService.createUser(user.uid, {
         name: full_name,
+        firstName: nombre.trim().toUpperCase(),
+        paternalLastName: paterno.trim().toUpperCase(),
+        maternalLastName: materno.trim().toUpperCase(),
         email: email_lower,
         role: "user",
         area: "Usuario",
