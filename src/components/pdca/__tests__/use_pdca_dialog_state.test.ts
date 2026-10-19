@@ -5,6 +5,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { use_pdca_dialog_state } from "../hooks/use_pdca_dialog_state";
+import { extraerDatosParetoResumen } from "../RESUMEN/pdca_phase_resumen";
 import type { Pdca } from "@/data/pdca";
 
 const mock_pdca: Pdca = {
@@ -49,5 +50,21 @@ describe("use_pdca_dialog_state", () => {
 
     expect(result.current.active_tab).toBe("Do");
     expect(result.current.title_value).toBe("Nuevo Título de Prueba");
+  });
+
+  it("extraerDatosParetoResumen recupera datos de 'root' o de 'root-*' cuando 'root' está vacío o no existe", () => {
+    const mapaConRootTimestamp = {
+      "root-1760000001": [
+        { id: 1, area: "Llenadora", gap: 4 },
+        { id: 2, area: "Etiquetadora", gap: 12 },
+      ],
+    };
+
+    const resultado = extraerDatosParetoResumen(mapaConRootTimestamp);
+    expect(resultado).toHaveLength(2);
+    expect(resultado[0]?.area).toBe("Etiquetadora");
+    expect(resultado[0]?.gap).toBe(12);
+    expect(resultado[1]?.area).toBe("Llenadora");
+    expect(resultado[1]?.gap).toBe(4);
   });
 });

@@ -96,7 +96,13 @@ drillDowns: nivelesDesglose,
     asignarMapaDatosParetos(mapaDatosCopia);
   };
 
-  const manejarCreacionParetoRaiz = () => asignarMapaDatosParetos({ ...mapaDatosParetos, [`root-${Date.now()}`]: [] });
+  const manejarCreacionParetoRaiz = () => {
+    const baseMapa = { ...mapaDatosParetos };
+    if (llavesParetosRaiz.includes("root") && !("root" in baseMapa)) {
+      baseMapa["root"] = [];
+    }
+    asignarMapaDatosParetos({ ...baseMapa, [`root-${Date.now()}`]: [] });
+  };
 
   const analizarRutaNiveles = (rutaCompleta: string, indiceArray: number) => {
     if (!rutaCompleta.includes("level-"))
@@ -131,6 +137,8 @@ drillDowns: nivelesDesglose,
           {...(alCambiarUnidadMedida ? { onUnitChange: alCambiarUnidadMedida } : {})}
           {...(indiceRaiz === 0 && pasoEstaCompletado !== undefined ? { isStepCompleted: pasoEstaCompletado } : {})}
           {...(indiceRaiz === 0 && alAlternarEstadoPaso ? { onToggleStep: alAlternarEstadoPaso } : {})}
+          {...(indiceRaiz === 0 && pasoEsNoAplica !== undefined ? { isNa: pasoEsNoAplica } : {})}
+          {...(indiceRaiz === 0 && alAlternarNoAplica ? { onToggleNa: alAlternarNoAplica } : {})}
           chart_title={mapaTitulosFinal[llaveIteracion] ?? ""}
           on_chart_title_change={(textoCambiado) => actualizarTituloEspecifico(llaveIteracion, textoCambiado)}
         />

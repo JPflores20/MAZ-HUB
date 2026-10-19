@@ -35,7 +35,10 @@ import type { TablaEstandarizacionItem, TablaEstandarizacionVpoItem } from "./ac
 export type Pdca = {
   id: string;
   titulo: string;
+  planta?: string;
+  departamento?: string;
   area: string;
+  etapa?: string;
   fase: Phase;
   actualizado: string;
   progreso: number;
@@ -193,10 +196,15 @@ export type Pdca = {
   nuevo_performance?: NuevoPerformanceItem[] | undefined;
   nuevo_performance_image?: string | undefined;
   nuevo_pareto_image?: string | undefined;
+  nuevoParetoImage?: string | undefined;
   nuevo_pareto_data_map?: Record<string, ParetoItem[]> | undefined;
+  nuevoParetoDataMap?: Record<string, ParetoItem[]> | undefined;
   nuevo_pareto_drill_downs?: string[] | undefined;
+  nuevoParetoDrillDowns?: string[] | undefined;
   nuevo_pareto_unit?: string | undefined;
+  nuevoParetoUnit?: string | undefined;
   nuevo_pareto_titles?: Record<string, string> | undefined;
+  nuevoParetoTitles?: Record<string, string> | undefined;
   nueva_correlacion_image?: string | undefined;
   has_nueva_correlacion?: boolean | undefined;
   nueva_correlacion_data?: FlavorCorrelationChart[] | undefined;

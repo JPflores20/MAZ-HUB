@@ -6,7 +6,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, UserPlus } from "lucide-react";
 import type { RdaAnomalyContext } from "@/data/rda";
-import { AREAS } from "@/data/pdca-defaults";
+import {
+  OFFICIAL_PLANTAS,
+  OFFICIAL_DEPARTAMENTOS,
+  OFFICIAL_AREAS,
+  OFFICIAL_ETAPAS,
+} from "@/data/pdca-defaults";
 import {
   Table,
   TableBody,
@@ -33,6 +38,20 @@ interface RdaContextFormProps {
   context: RdaAnomalyContext;
   onChange: (context: RdaAnomalyContext) => void;
   disabled?: boolean | undefined;
+}
+
+function resolveSelectOptions(official: readonly string[], currentVal?: string): string[] {
+  const trimmed = (currentVal || "").trim();
+  if (!trimmed) return [...official];
+  const exists = official.some((opt) => opt.toLowerCase() === trimmed.toLowerCase());
+  return exists ? [...official] : [trimmed, ...official];
+}
+
+function normalizeOfficialValue(official: readonly string[], currentVal?: string): string {
+  const trimmed = (currentVal || "").trim();
+  if (!trimmed) return "";
+  const match = official.find((opt) => opt.toLowerCase() === trimmed.toLowerCase());
+  return match ?? trimmed;
 }
 
 export function RdaContextForm({ context, onChange, disabled }: RdaContextFormProps) {
@@ -101,6 +120,13 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
   const cellClass = "p-2 align-top border-r border-border";
   const inputClass =
     "w-full rounded-md border border-input bg-transparent px-2 py-1.5 text-xs shadow-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+  const selectClass =
+    "w-full h-9 rounded-md border border-input bg-background px-2 py-1.5 text-xs shadow-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer";
+
+  const plantaOptions = resolveSelectOptions(OFFICIAL_PLANTAS, context.planta);
+  const departamentoOptions = resolveSelectOptions(OFFICIAL_DEPARTAMENTOS, context.departamento);
+  const areaOptions = resolveSelectOptions(OFFICIAL_AREAS, context.area);
+  const etapaOptions = resolveSelectOptions(OFFICIAL_ETAPAS, context.etapa);
 
   return (
     <div className="border rounded-md overflow-x-auto bg-white shadow-sm">
@@ -119,12 +145,19 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
           {/* Row 1 Inputs */}
           <TableRow className="border-b border-border">
             <TableCell className={cellClass}>
-              <Input
-                className={inputClass}
-                value={context.planta}
+              <select
+                className={selectClass}
+                disabled={disabled}
+                value={normalizeOfficialValue(OFFICIAL_PLANTAS, context.planta)}
                 onChange={(e) => handleChange("planta", e.target.value)}
-                placeholder={t('rdaInternal.phPlanta')}
-              />
+              >
+                <option value="">Seleccionar planta...</option>
+                {plantaOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             </TableCell>
             <TableCell className={cellClass}>
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -237,12 +270,19 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
               </div>
             </TableCell>
             <TableCell className="p-2 align-top">
-              <Input
-                className={inputClass}
-                value={context.etapa}
+              <select
+                className={selectClass}
+                disabled={disabled}
+                value={normalizeOfficialValue(OFFICIAL_ETAPAS, context.etapa)}
                 onChange={(e) => handleChange("etapa", e.target.value)}
-                placeholder={t('rdaInternal.phEtapa')}
-              />
+              >
+                <option value="">Seleccionar etapa...</option>
+                {etapaOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             </TableCell>
           </TableRow>
 
@@ -260,27 +300,34 @@ export function RdaContextForm({ context, onChange, disabled }: RdaContextFormPr
           {/* Row 2 Inputs */}
           <TableRow className="border-b border-border">
             <TableCell className={cellClass}>
-              <Input
-                className={inputClass}
-                value={context.departamento}
+              <select
+                className={selectClass}
+                disabled={disabled}
+                value={normalizeOfficialValue(OFFICIAL_DEPARTAMENTOS, context.departamento)}
                 onChange={(e) => handleChange("departamento", e.target.value)}
-                placeholder={t('rdaInternal.phDepartamento')}
-              />
+              >
+                <option value="">Seleccionar departamento...</option>
+                {departamentoOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             </TableCell>
             <TableCell className={cellClass}>
-              <Input
-                className={inputClass}
-                list="rda-context-area-list"
-                value={context.area}
+              <select
+                className={selectClass}
+                disabled={disabled}
+                value={normalizeOfficialValue(OFFICIAL_AREAS, context.area)}
                 onChange={(e) => handleChange("area", e.target.value)}
-                onBlur={(e) => handleChange("area", e.target.value.trim())}
-                placeholder={t('rdaInternal.phArea')}
-              />
-              <datalist id="rda-context-area-list">
-                {AREAS.map((a) => (
-                  <option key={a.value} value={a.label} />
+              >
+                <option value="">Seleccionar área...</option>
+                {areaOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
                 ))}
-              </datalist>
+              </select>
             </TableCell>
             <TableCell className={cellClass}>
               <Input

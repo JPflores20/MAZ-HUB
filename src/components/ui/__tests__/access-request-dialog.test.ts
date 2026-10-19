@@ -201,4 +201,37 @@ describe("Access control & request targets for PDCA and RDA", () => {
     expect(rdaTarget.creatorName).toBe("Elena Diaz");
     expect(rdaTarget.responsibles).toEqual([{ name: "Roberto Solis" }]);
   });
+
+  it("permite a usuarios de BLOQUE FRIO con permiso canViewArea acceder a PDCAs y RDAs de Fermentación y Filtración", () => {
+    const areaPerms: UserPermissions = {
+      ...userPerms,
+      canViewArea: true,
+    };
+    const bloqueFrioUser = {
+      uid: "bf-1",
+      name: "Supervisor Bloque Frío",
+      email: "bf@corona.com",
+      role: "user" as const,
+      area: "BLOQUE FRIO",
+    };
+
+    const pdcaFermentacion: Pdca = {
+      ...samplePdca,
+      area: "fermentacion",
+    };
+    const pdcaFiltracion: Pdca = {
+      ...samplePdca,
+      area: "Filtración",
+    };
+    const rdaFermentacion: Rda = {
+      ...defaultRda,
+      id: "2001",
+      portada: { ...defaultRda.portada!, area: "Fermentación" },
+      context: { ...defaultRda.context, area: "Fermentación" },
+    };
+
+    expect(canUserAccessPdca(pdcaFermentacion, bloqueFrioUser, areaPerms)).toBe(true);
+    expect(canUserAccessPdca(pdcaFiltracion, bloqueFrioUser, areaPerms)).toBe(true);
+    expect(canUserAccessRda(rdaFermentacion, bloqueFrioUser, areaPerms)).toBe(true);
+  });
 });

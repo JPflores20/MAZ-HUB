@@ -4,7 +4,7 @@
  */
 import { useState } from "react";
 import type { Pdca, ConclusionesKpiData, ConclusionesPiItem } from "@/data/pdca";
-import { DEFAULT_TARGET_VS_ACTUAL } from "@/data/pdca";
+import { DEFAULT_TARGET_VS_ACTUAL, DEFAULT_PARETO_DATA_MAP } from "@/data/pdca";
 
 export const use_estado_pdca_resultados = (pdcaInicial: Pdca) => {
   const [imagenLineaBase, setImagenLineaBase] = useState<string | undefined>(
@@ -61,23 +61,25 @@ export const use_estado_pdca_resultados = (pdcaInicial: Pdca) => {
     pdcaInicial.nuevoPerformance || pdcaInicial.nuevo_performance || [],
   );
   const [imagenNuevoRendimiento, setImagenNuevoRendimiento] = useState<string | undefined>(
-    pdcaInicial.nuevo_performance_image,
+    pdcaInicial.nuevo_performance_image || (pdcaInicial as any).nuevoPerformanceImage,
   );
 
   const [imagenNuevoPareto, setImagenNuevoPareto] = useState<string | undefined>(
-    pdcaInicial.nuevo_pareto_image,
+    pdcaInicial.nuevo_pareto_image || (pdcaInicial as any).nuevoParetoImage,
   );
   const [desgloseNuevoPareto, setDesgloseNuevoPareto] = useState<string[]>(
-    pdcaInicial.nuevo_pareto_drill_downs || [],
+    pdcaInicial.nuevo_pareto_drill_downs || (pdcaInicial as any).nuevoParetoDrillDowns || [],
   );
   const [mapaDatosNuevoPareto, setMapaDatosNuevoPareto] = useState<Record<string, any[]>>(
-    pdcaInicial.nuevo_pareto_data_map || {},
+    pdcaInicial.nuevo_pareto_data_map ||
+      (pdcaInicial as any).nuevoParetoDataMap ||
+      DEFAULT_PARETO_DATA_MAP,
   );
   const [unidadNuevoPareto, setUnidadNuevoPareto] = useState<string>(
-    pdcaInicial.nuevo_pareto_unit || "",
+    pdcaInicial.nuevo_pareto_unit || (pdcaInicial as any).nuevoParetoUnit || "",
   );
   const [titulosNuevoPareto, setTitulosNuevoPareto] = useState<Record<string, string>>(
-    pdcaInicial.nuevo_pareto_titles || {},
+    pdcaInicial.nuevo_pareto_titles || (pdcaInicial as any).nuevoParetoTitles || {},
   );
 
   const [imagenNuevaCorrelacion, setImagenNuevaCorrelacion] = useState<string | undefined>(

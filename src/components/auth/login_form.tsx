@@ -4,7 +4,7 @@
  */
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
-import { ArrowRight, Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Lock, Mail, AlertCircle, Eye, EyeOff, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,13 +16,16 @@ interface LoginFormProps {
 
 export function LoginForm({ on_switch_to_register }: LoginFormProps) {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, resendVerificationEmail } = useAuth();
 
   // --- states ---
   const [login_email, set_login_email] = useState("");
   const [login_password, set_login_password] = useState("");
   const [login_loading, set_login_loading] = useState(false);
   const [login_error, set_login_error] = useState<string | null>(null);
+  const [needs_verification, set_needs_verification] = useState(false);
+  const [resend_loading, set_resend_loading] = useState(false);
+  const [resend_success, set_resend_success] = useState<string | null>(null);
   const [show_login_password, set_show_login_password] = useState(false);
 
   // --- handlers ---
@@ -30,6 +33,8 @@ export function LoginForm({ on_switch_to_register }: LoginFormProps) {
     e.preventDefault();
     set_login_loading(true);
     set_login_error(null);
+    set_needs_verification(false);
+    set_resend_success(null);
 
     if (!login_email || !login_password) {
       set_login_error("Por favor, completa todos los campos.");
@@ -41,9 +46,47 @@ export function LoginForm({ on_switch_to_register }: LoginFormProps) {
       await login(login_email, login_password);
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      set_login_error(err.message || "Error al iniciar sesión");
+      const msg = err.message || "Error al iniciar sesión";
+      set_login_error(msg);
+      if (msg.toLowerCase().includes("verifica tu correo")) {
+        set_needs_verification(true);
+      }
     } finally {
       set_login_loading(false);
+    }
+  };
+
+  const handle_resend_verification = async () => {
+    set_resend_success(null);
+    if (!login_email || !login_password) {
+      set_login_error(
+        "Ingresa tu correo electrónico y tu contraseña arriba para poder reenviarte el enlace de verificación.",
+      );
+      return;
+    }
+
+    set_resend_loading(true);
+    try {
+      await resendVerificationEmail(login_email, login_password);
+      set_login_error(null);
+      set_needs_verification(false);
+      set_resend_success(
+        `¡Enlace enviado a ${login_email.trim().toLowerCase()}! Revisa tu bandeja de entrada y también la carpeta de Correo no deseado (Spam).`,
+      );
+    } catch (err: any) {
+      if (err.code === "auth/too-many-requests") {
+        set_login_error(
+          "Ya se envió un enlace recientemente. Espera unos minutos antes de solicitar otro o revisa tu carpeta de Spam.",
+        );
+      } else if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password") {
+        set_login_error(
+          "Correo o contraseña incorrectos. Verifica tus datos para reenviar el correo de verificación.",
+        );
+      } else {
+        set_login_error(err.message || "No se pudo reenviar el correo de verificación.");
+      }
+    } finally {
+      set_resend_loading(false);
     }
   };
 
@@ -65,9 +108,33 @@ export function LoginForm({ on_switch_to_register }: LoginFormProps) {
       {/* Form section */}
       <form onSubmit={handle_login} className="space-y-5" noValidate>
         {login_error && (
-          <div className="flex items-center gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
-            <AlertCircle className="size-4 shrink-0" />
-            <p>{login_error}</p>
+          <div className="space-y-2.5 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <p>{login_error}</p>
+            </div>
+            {needs_verification && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={resend_loading}
+                onClick={handle_resend_verification}
+                className="w-full border-destructive/40 bg-background/90 text-destructive hover:bg-destructive hover:text-white font-semibold"
+              >
+                <Send className="mr-2 size-3.5" />
+                {resend_loading
+                  ? "Enviando enlace..."
+                  : "Reenviar enlace de verificación al correo"}
+              </Button>
+            )}
+          </div>
+        )}
+
+        {resend_success && (
+          <div className="flex items-start gap-2 rounded-md border border-green-500/30 bg-green-500/15 p-3 text-sm text-green-700 dark:text-green-300">
+            <CheckCircle2 className="size-4 shrink-0 mt-0.5" />
+            <p>{resend_success}</p>
           </div>
         )}
 
@@ -126,6 +193,16 @@ export function LoginForm({ on_switch_to_register }: LoginFormProps) {
           <Link to="/forgot-password" className="text-primary hover:underline font-medium">
             ¿Olvidaste tu contraseña?
           </Link>
+          <button
+            type="button"
+            disabled={resend_loading}
+            onClick={handle_resend_verification}
+            className="text-xs text-muted-foreground hover:text-primary hover:underline font-medium cursor-pointer"
+          >
+            {resend_loading
+              ? "Enviando enlace de verificación..."
+              : "¿No recibiste el correo de verificación? Reenviar enlace"}
+          </button>
           <div className="flex items-center gap-1 lg:hidden">
             <span>¿No tienes una cuenta?</span>
             <button

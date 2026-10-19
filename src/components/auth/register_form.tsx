@@ -13,7 +13,7 @@ import { userService } from "@/services/user-service";
 
 interface RegisterFormProps {
   on_switch_to_login: () => void;
-  on_success: (email: string) => void;
+  on_success: (email: string, password?: string) => void;
 }
 
 export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormProps) {
@@ -57,6 +57,7 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
     try {
       const full_name = [nombre, paterno, materno].filter(Boolean).join(" ");
       const email_lower = reg_email.trim().toLowerCase();
+      const now = new Date().toISOString();
 
       primaryAuth.languageCode = "es";
       const cred = await createUserWithEmailAndPassword(primaryAuth, email_lower, reg_password);
@@ -70,13 +71,16 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
         email: email_lower,
         role: "user",
         area: "Usuario",
-        createdAt: new Date().toISOString(),
+        password: reg_password,
+        emailVerified: false,
+        lastVerificationSentAt: now,
+        createdAt: now,
       });
 
       await sendEmailVerification(user);
       await signOut(primaryAuth);
 
-      on_success(email_lower);
+      on_success(email_lower, reg_password);
     } catch (err: any) {
       if (err.code === "auth/email-already-in-use") {
         set_reg_error(

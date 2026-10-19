@@ -12,8 +12,9 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   sendPasswordResetEmail,
+  sendEmailVerification,
 } from "firebase/auth";
-import { primaryAuth } from "@/lib/firebase";
+import { primaryAuth, secondaryAuth } from "@/lib/firebase";
 import {
   userService,
   UserRole,
@@ -48,6 +49,11 @@ export interface DirectoryUser {
   avatarUrl?: string | undefined;
   role?: UserRole | undefined;
   permissions?: Partial<UserPermissions> | undefined;
+  password?: string | undefined;
+  emailVerified?: boolean | undefined;
+  verifiedByAdmin?: boolean | undefined;
+  lastVerificationSentAt?: string | undefined;
+  createdAt?: string | undefined;
 }
 
 interface AuthContextType {
@@ -56,10 +62,17 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
+  resendVerificationEmail: (email: string, pass: string) => Promise<void>;
+  sendAdminVerificationLink: (target: {
+    uid?: string | undefined;
+    email: string;
+  }) => Promise<"verification_email" | "activation_reset_email">;
+  approveUserVerification: (uid: string) => Promise<void>;
   updateUserProfile: (
     updates: Partial<Omit<UserProfile, "uid" | "email" | "role">>,
   ) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  syncCurrentPassword: (passwordToVerify: string) => Promise<void>;
   sendPasswordReset: () => Promise<void>;
   // For the admin panel to add users to state
   setMockUsers: React.Dispatch<React.SetStateAction<UserProfile[]>>;
@@ -76,6 +89,7 @@ const INITIAL_MOCK_USERS: (UserProfile & { pass: string })[] = [
     name: "Administrador Global",
     email: "admin@gmodelo.com.mx",
     pass: "admin123",
+    password: "admin123",
     role: "admin",
     area: "COCIMIENTOS",
     position: "GERENTE",
@@ -85,6 +99,7 @@ const INITIAL_MOCK_USERS: (UserProfile & { pass: string })[] = [
     name: "Ana López",
     email: "ana.lopez@gmodelo.com.mx",
     pass: "ana123",
+    password: "ana123",
     role: "user",
     area: "BLOQUE FRIO",
     position: "SUPERVISOR",
@@ -105,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Local state for fallback users (allows Admin to add to it)
   const [mockUsers, setMockUsers] = useState<UserProfile[]>(
-    INITIAL_MOCK_USERS.map(({ pass, ...rest }) => rest),
+    INITIAL_MOCK_USERS.map(({ pass, ...rest }) => ({ ...rest, password: rest.password || pass })),
   );
 
   const [mockCredentials, setMockCredentials] = useState(INITIAL_MOCK_USERS);
@@ -117,17 +132,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const creationTime = new Date(user.metadata.creationTime || 0).getTime();
         const isLegacyUser = creationTime < threshold;
 
-        if (!user.emailVerified && !isLegacyUser) {
-          setCurrentUser(null);
-          localStorage.removeItem("pdca_auth_user");
-          setLoading(false);
-          return;
-        }
         try {
           const userProfile = await userService.getUser(user.uid);
+          const isVerifiedByProfile = Boolean(
+            userProfile?.emailVerified || userProfile?.verifiedByAdmin,
+          );
+
+          if (!user.emailVerified && !isLegacyUser && !isVerifiedByProfile) {
+            setCurrentUser(null);
+            localStorage.removeItem("pdca_auth_user");
+            setLoading(false);
+            return;
+          }
+
+          if (user.emailVerified && userProfile && userProfile.emailVerified !== true) {
+            userService.markUserVerified(user.uid, false).catch(() => {});
+          }
+
+          let storedPassword: string | undefined;
+          try {
+            const rawStored = localStorage.getItem("pdca_auth_user");
+            if (rawStored) {
+              const parsedStored = JSON.parse(rawStored);
+              if (parsedStored?.uid === user.uid && parsedStored?.password) {
+                storedPassword = parsedStored.password;
+              }
+            }
+          } catch {}
+
           const isAutoAdmin = isAdminEmail(user.email || "");
           if (userProfile) {
             const role: UserRole = isAutoAdmin ? "admin" : userProfile.role || "user";
+            const effectivePassword = userProfile.password || storedPassword;
+            if (!userProfile.password && storedPassword) {
+              userService.updateUserProfile(user.uid, { password: storedPassword }).catch(() => {});
+            }
             persistSession({
               ...userProfile,
               uid: user.uid,
@@ -135,6 +174,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: user.email || "",
               role,
               area: userProfile.area || "Usuario",
+              ...(effectivePassword ? { password: effectivePassword } : {}),
+              emailVerified: true,
             });
           } else {
             const autoProfile: UserProfile = {
@@ -145,6 +186,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: user.email || "",
               role: isAutoAdmin ? "admin" : "user",
               area: "Usuario",
+              ...(storedPassword ? { password: storedPassword } : {}),
+              emailVerified: true,
             };
             persistSession(autoProfile);
           }
@@ -189,6 +232,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               avatarUrl: u.avatarUrl,
               role: u.role,
               permissions: u.permissions,
+              password: u.password,
+              emailVerified: u.emailVerified,
+              verifiedByAdmin: u.verifiedByAdmin,
+              lastVerificationSentAt: u.lastVerificationSentAt,
+              createdAt: u.createdAt,
             })),
           );
           const selfUpdated = users.find((u) => u.uid === currentUser.uid);
@@ -205,6 +253,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 ...(selfUpdated.permissions ? { permissions: selfUpdated.permissions } : {}),
                 ...(selfUpdated.position || prev.position
                   ? { position: selfUpdated.position || prev.position }
+                  : {}),
+                ...(selfUpdated.password || prev.password
+                  ? { password: selfUpdated.password || prev.password }
                   : {}),
               };
               localStorage.setItem("pdca_auth_user", JSON.stringify(next));
@@ -247,28 +298,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Autenticar con Firebase Auth
     const userCredential = await signInWithEmailAndPassword(primaryAuth, emailLower, pass);
     const firebaseUser = userCredential.user;
+    const uid = firebaseUser.uid;
 
     const threshold = new Date("2026-09-01T21:00:00Z").getTime();
     const creationTime = new Date(firebaseUser.metadata.creationTime || 0).getTime();
     const isLegacyUser = creationTime < threshold;
 
-    if (!firebaseUser.emailVerified && !isLegacyUser) {
+    // Obtener perfil de Firestore para verificar si fue aprobado o verificado previamente
+    const userProfile = await userService.getUser(uid);
+    const isVerifiedByProfile = Boolean(
+      userProfile?.emailVerified || userProfile?.verifiedByAdmin,
+    );
+
+    if (!firebaseUser.emailVerified && !isLegacyUser && !isVerifiedByProfile) {
       await signOut(primaryAuth);
       throw new Error(
         "Por favor, verifica tu correo electrónico usando el enlace que te enviamos antes de iniciar sesión.",
       );
     }
 
-    const uid = firebaseUser.uid;
+    if (firebaseUser.emailVerified && userProfile && userProfile.emailVerified !== true) {
+      userService.markUserVerified(uid, false).catch(() => {});
+    }
 
-    // Obtener perfil de Firestore
-    const userProfile = await userService.getUser(uid);
     if (userProfile) {
       const role: UserRole = isAutoAdmin ? "admin" : userProfile.role || "user";
       if (isAutoAdmin && userProfile.role !== "admin") {
         await userService.updateUserRole(uid, "admin");
       }
-      persistSession({ ...userProfile, role, email: emailLower });
+      if (userProfile.password !== pass) {
+        userService.updateUserProfile(uid, { password: pass }).catch(() => {});
+      }
+      persistSession({
+        ...userProfile,
+        role,
+        email: emailLower,
+        password: pass,
+        emailVerified: true,
+      });
     } else {
       // El perfil no existía en Firestore (posible fallo durante registro).
       // Lo creamos automáticamente con los datos disponibles.
@@ -278,12 +345,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: emailLower,
         role: isAutoAdmin ? "admin" : "user",
         area: "Usuario",
+        password: pass,
+        emailVerified: true,
       };
       await userService.createUser(uid, {
         name: autoProfile.name,
         email: autoProfile.email,
         role: autoProfile.role,
         area: autoProfile.area,
+        password: pass,
+        emailVerified: true,
         createdAt: new Date().toISOString(),
       });
       persistSession(autoProfile);
@@ -339,6 +410,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const credential = EmailAuthProvider.credential(fbUser.email, currentPassword);
     await reauthenticateWithCredential(fbUser, credential);
     await updatePassword(fbUser, newPassword);
+
+    await userService.updateUserProfile(fbUser.uid, { password: newPassword }).catch(() => {});
+    if (currentUser) {
+      persistSession({
+        ...currentUser,
+        password: newPassword,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  };
+
+  const syncCurrentPassword = async (passwordToVerify: string) => {
+    const trimmed = passwordToVerify.trim();
+    if (!trimmed) {
+      throw new Error("Ingresa tu contraseña actual.");
+    }
+    const fbUser = primaryAuth.currentUser;
+    if (fbUser && fbUser.email) {
+      const credential = EmailAuthProvider.credential(fbUser.email, trimmed);
+      await reauthenticateWithCredential(fbUser, credential);
+    }
+    if (currentUser) {
+      await userService.updateUserProfile(currentUser.uid, { password: trimmed }).catch(() => {});
+      persistSession({
+        ...currentUser,
+        password: trimmed,
+        updatedAt: new Date().toISOString(),
+      });
+    }
   };
 
   const sendPasswordReset = async () => {
@@ -349,10 +449,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await sendPasswordResetEmail(primaryAuth, email);
   };
 
+  const resendVerificationEmail = async (email: string, pass: string) => {
+    const emailLower = email.trim().toLowerCase();
+    if (!emailLower || !pass) {
+      throw new Error("Ingresa tu correo electrónico y contraseña para reenviar el enlace de verificación.");
+    }
+    secondaryAuth.languageCode = "es";
+    const cred = await signInWithEmailAndPassword(secondaryAuth, emailLower, pass);
+    try {
+      await sendEmailVerification(cred.user);
+      await userService.recordVerificationSent(cred.user.uid, false).catch(() => {});
+    } finally {
+      await signOut(secondaryAuth).catch(() => {});
+    }
+  };
+
+  const sendAdminVerificationLink = async (target: {
+    uid?: string | undefined;
+    email: string;
+  }): Promise<"verification_email" | "activation_reset_email"> => {
+    const emailLower = target.email.trim().toLowerCase();
+    if (!emailLower) {
+      throw new Error("El usuario no tiene un correo electrónico válido.");
+    }
+    secondaryAuth.languageCode = "es";
+
+    const knownCred = mockCredentials.find(
+      (c) => c.email.trim().toLowerCase() === emailLower && Boolean(c.pass),
+    );
+    const knownDirUser = usersList.find(
+      (u) => u.email.trim().toLowerCase() === emailLower && Boolean(u.password),
+    );
+    const passToUse = knownCred?.pass || knownDirUser?.password;
+
+    if (passToUse) {
+      try {
+        const cred = await signInWithEmailAndPassword(secondaryAuth, emailLower, passToUse);
+        await sendEmailVerification(cred.user);
+        const uid = target.uid || cred.user.uid;
+        if (uid) {
+          await userService.recordVerificationSent(uid, false).catch(() => {});
+        }
+        await signOut(secondaryAuth).catch(() => {});
+        return "verification_email";
+      } catch {
+        await signOut(secondaryAuth).catch(() => {});
+      }
+    }
+
+    await sendPasswordResetEmail(secondaryAuth, emailLower);
+    if (target.uid && !target.uid.includes("@")) {
+      await userService.recordVerificationSent(target.uid, true).catch(() => {});
+    }
+    return "activation_reset_email";
+  };
+
+  const approveUserVerification = async (uid: string) => {
+    if (!uid || uid.includes("@")) {
+      throw new Error("No se encontró el identificador del usuario en Firestore.");
+    }
+    await userService.markUserVerified(uid, true);
+  };
+
   // Exposed utility for admin to add mock users (in case Firebase is down)
   const addMockUser = (user: UserProfile & { pass: string }) => {
     setMockCredentials((prev) => [...prev, user]);
-    setMockUsers((prev) => [...prev, { ...user }]);
+    setMockUsers((prev) => [...prev, { ...user, password: user.password || user.pass }]);
   };
 
   const permissions = getEffectivePermissions(currentUser);
@@ -363,8 +525,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     login,
     logout,
+    resendVerificationEmail,
+    sendAdminVerificationLink,
+    approveUserVerification,
     updateUserProfile,
     changePassword,
+    syncCurrentPassword,
     sendPasswordReset,
     mockUsers,
     setMockUsers: (action: any) => {

@@ -13,19 +13,100 @@ export const phases = PHASES;
 export interface AreaOption {
   value: string;
   label: string;
+  parentArea?: string;
 }
 
+export const OFFICIAL_PLANTAS = ["Zacatecas"] as const;
+
+export const OFFICIAL_DEPARTAMENTOS = [
+  "Elaboración",
+  "S&E",
+  "Tratamiento de Agua",
+] as const;
+
+export const OFFICIAL_AREAS = [
+  "Cocimientos",
+  "Cuartos Frios",
+  "Mantenimiento",
+] as const;
+
+export const OFFICIAL_ETAPAS = [
+  "Agua de Proceso",
+  "Materiales Auxiliares",
+  "CIP Cocimientos",
+  "Materias Primas",
+  "Ensilado",
+  "Molienda",
+  "Reclamo de malta",
+  "Dislucion de Grits",
+  "Cocedor",
+  "Maceración",
+  "Filtración de Mosto",
+  "Ebullicion",
+  "Lupulado de Mosto",
+  "Evaporador",
+  "Reposo de Mosto",
+  "Enfriamiento de Mosto",
+  "CIP Bloque Frio",
+  "Fermentación",
+  "Manejo de levadura",
+  "CMF/Cerveza Recuperada",
+  "Reposo",
+  "Filtración de Cerveza",
+  "Estabilizacion de Cerveza",
+  "BBT",
+  "Multiblender",
+  "Servicios y Energia",
+  "Procesos de Mantto",
+] as const;
+
 export const AREAS: AreaOption[] = [
-  { value: "cocimientos", label: "Cocimientos" },
-  { value: "fermentacion", label: "Fermentación" },
-  { value: "filtracion", label: "Filtración" },
-  { value: "bloque_frio", label: "Bloque Frío" },
-  { value: "elaboracion", label: "Elaboración" },
-  { value: "envasado", label: "Envasado" },
-  { value: "mantenimiento", label: "Mantenimiento" },
-  { value: "logistica", label: "Logística" },
-  { value: "calidad", label: "Calidad" },
+  { value: "Cocimientos", label: "Cocimientos" },
+  { value: "Cuartos Frios", label: "Cuartos Frios" },
+  { value: "Mantenimiento", label: "Mantenimiento" },
 ];
+
+function normalizeAreaKey(val?: string): string {
+  return (val || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/_/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Determina si un área corresponde a Bloque Frío / Cuartos Fríos (incluyendo Fermentación y Filtración).
+ */
+export function isBloqueFrioArea(area?: string): boolean {
+  const norm = normalizeAreaKey(area);
+  if (!norm) return false;
+  return (
+    norm.includes("frio") ||
+    norm.includes("fermentacion") ||
+    norm.includes("filtracion")
+  );
+}
+
+/**
+ * Determina si el área de un documento (PDCA o RDA) coincide o pertenece al área objetivo (usuario o filtro).
+ * Considera que "Fermentación" y "Filtración" pertenecen a "Bloque Frío" / "Cuartos Frios".
+ */
+export function doesAreaBelongToParentOrMatch(
+  docArea?: string,
+  targetArea?: string,
+): boolean {
+  const docNorm = normalizeAreaKey(docArea);
+  const targetNorm = normalizeAreaKey(targetArea);
+  if (!docNorm || !targetNorm) return false;
+  if (docNorm === targetNorm) return true;
+
+  if (targetNorm.includes("bloque frio") || targetNorm.includes("cuartos frios")) {
+    return isBloqueFrioArea(docArea);
+  }
+
+  return false;
+}
 
 export const PHASE_STYLES: Record<Phase, string> = {
   Resumen:

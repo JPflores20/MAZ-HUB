@@ -116,4 +116,24 @@ describe("syncRootCausesToPda — Paso 9 (Plan de Validación) -> Paso 12 (PDA C
     expect(secondSync.changed).toBe(true);
     expect(secondSync.nextPda).toHaveLength(0);
   });
+
+  it("no vuelve a recrear en el Paso 12 una acción que el usuario eliminó manualmente aunque su causa siga en 'SI' en el Paso 9", () => {
+    const validation: RdaValidationAction[] = [
+      {
+        id: "val_1",
+        categoria: "Mano de obra",
+        causaPotencial: "Exceso de despunte al arranque de filtro",
+        accion: "Validar",
+        responsable: "Iván",
+        fechaLimite: "",
+        estatus: "Completa",
+        esCausaRaiz: "SI",
+      },
+    ];
+
+    // El usuario eliminó la fila en el Paso 12 (PDA queda vacío)
+    const afterDeleteSync = syncRootCausesToPda(validation, [], "DQO", validation);
+    expect(afterDeleteSync.changed).toBe(false);
+    expect(afterDeleteSync.nextPda).toHaveLength(0);
+  });
 });

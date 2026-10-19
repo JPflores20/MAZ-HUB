@@ -206,6 +206,10 @@ export interface UserProfile {
   phone?: string;
   avatarUrl?: string;
   bio?: string;
+  password?: string | undefined;
+  emailVerified?: boolean | undefined;
+  verifiedByAdmin?: boolean | undefined;
+  lastVerificationSentAt?: string | undefined;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -271,6 +275,32 @@ export const userService = {
     );
   },
 
+  async markUserVerified(uid: string, verifiedByAdmin = false): Promise<void> {
+    const now = new Date().toISOString();
+    await setDoc(
+      doc(db, USERS_COLLECTION, uid),
+      {
+        emailVerified: true,
+        ...(verifiedByAdmin ? { verifiedByAdmin: true } : {}),
+        updatedAt: now,
+      },
+      { merge: true },
+    );
+  },
+
+  async recordVerificationSent(uid: string, alsoApprove = false): Promise<void> {
+    const now = new Date().toISOString();
+    await setDoc(
+      doc(db, USERS_COLLECTION, uid),
+      {
+        lastVerificationSentAt: now,
+        ...(alsoApprove ? { verifiedByAdmin: true, emailVerified: true } : {}),
+        updatedAt: now,
+      },
+      { merge: true },
+    );
+  },
+
   async deleteUser(uid: string): Promise<void> {
     await deleteDoc(doc(db, USERS_COLLECTION, uid));
   },
@@ -300,6 +330,12 @@ export const userService = {
             phone: (d["phone"] as string) || "",
             avatarUrl: (d["avatarUrl"] as string) || "",
             bio: (d["bio"] as string) || "",
+            password: (d["password"] as string) || undefined,
+            emailVerified:
+              typeof d["emailVerified"] === "boolean" ? d["emailVerified"] : undefined,
+            verifiedByAdmin:
+              typeof d["verifiedByAdmin"] === "boolean" ? d["verifiedByAdmin"] : undefined,
+            lastVerificationSentAt: (d["lastVerificationSentAt"] as string) || undefined,
             createdAt: d["createdAt"] as string,
             updatedAt: d["updatedAt"] as string,
           });

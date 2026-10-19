@@ -18,8 +18,15 @@ import {
   GraduationCap,
   Briefcase,
   Eye,
+  EyeOff,
+  Copy,
+  Check,
+  Lock,
   SlidersHorizontal,
   RotateCcw,
+  Send,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { userService } from "@/services/user-service";
@@ -56,6 +63,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
+  useAuth,
   ROLE_LABELS,
   ROLE_DESCRIPTIONS,
   ROLE_DEFAULT_PERMISSIONS,
@@ -137,6 +145,7 @@ function userMatchesIdentifier(
 
 export function UserList({ users_list, mock_users, set_users_list }: UserListProps) {
   const navigate = useNavigate();
+  const { sendAdminVerificationLink, approveUserVerification } = useAuth();
   const { allPdcas } = usePdcas();
   const { allRdas } = useRdas();
 
@@ -145,6 +154,14 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
   const [perm_overrides, set_perm_overrides] = useState<
     Record<string, Partial<UserPermissions>>
   >({});
+  const [verified_overrides, set_verified_overrides] = useState<Record<string, boolean>>({});
+  const [password_overrides, set_password_overrides] = useState<Record<string, string>>({});
+  const [visible_passwords, set_visible_passwords] = useState<Record<string, boolean>>({});
+  const [show_all_passwords, set_show_all_passwords] = useState(false);
+  const [copied_uid, set_copied_uid] = useState<string | null>(null);
+  const [draft_passwords, set_draft_passwords] = useState<Record<string, string>>({});
+  const [saving_pass_uid, set_saving_pass_uid] = useState<string | null>(null);
+  const [sending_uid, set_sending_uid] = useState<string | null>(null);
   const [selected_photo_user, set_selected_photo_user] = useState<UserProfile | null>(null);
 
   // Filtros de búsqueda
@@ -156,13 +173,19 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
     return base_users.map((u) => {
       const overriddenRole = role_overrides[u.uid];
       const overriddenPerms = perm_overrides[u.uid];
+      const overriddenVerified = verified_overrides[u.uid];
+      const overriddenPassword = password_overrides[u.uid];
       return {
         ...u,
         role: overriddenRole ?? u.role ?? "user",
         permissions: overriddenPerms ?? u.permissions,
+        ...(overriddenPassword !== undefined ? { password: overriddenPassword } : {}),
+        ...(typeof overriddenVerified === "boolean"
+          ? { emailVerified: overriddenVerified, verifiedByAdmin: overriddenVerified }
+          : {}),
       };
     });
-  }, [base_users, role_overrides, perm_overrides]);
+  }, [base_users, role_overrides, perm_overrides, verified_overrides, password_overrides]);
 
   // Conteo de usuarios por rol para las pestañas superiores
   const counts_by_role = useMemo(() => {
@@ -364,6 +387,85 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
     }
   };
 
+  const handle_send_verification_link = async (user: UserProfile) => {
+    if (!user.email) {
+      toast.error("Este usuario no tiene un correo electrónico válido.");
+      return;
+    }
+    set_sending_uid(user.uid);
+    try {
+      const mode = await sendAdminVerificationLink({ uid: user.uid, email: user.email });
+      set_verified_overrides((prev) => ({ ...prev, [user.uid]: true }));
+      if (mode === "verification_email") {
+        toast.success(
+          `Se reenvió el enlace de verificación oficial a ${user.email}. Pídele que revise también su carpeta de Spam.`,
+          { duration: 6000 },
+        );
+      } else {
+        toast.success(
+          `Se envió a ${user.email} un enlace oficial para completar su registro/contraseña y su cuenta quedó habilitada para iniciar sesión.`,
+          { duration: 6000 },
+        );
+      }
+    } catch (err: any) {
+      console.error("Error al reenviar enlace de verificación:", err);
+      if (err?.code === "auth/too-many-requests") {
+        toast.warning(
+          "Firebase envió un enlace recientemente a este correo. Espera unos minutos antes de reenviar otro.",
+        );
+      } else {
+        toast.error(err?.message || "No se pudo enviar el enlace al correo del usuario.");
+      }
+    } finally {
+      set_sending_uid(null);
+    }
+  };
+
+  const handle_approve_user = async (user: UserProfile) => {
+    try {
+      await approveUserVerification(user.uid);
+      set_verified_overrides((prev) => ({ ...prev, [user.uid]: true }));
+      toast.success(
+        `La cuenta de ${user.name} (${user.email}) ha sido verificada y habilitada manualmente.`,
+      );
+    } catch (err: any) {
+      console.error("Error al aprobar verificación:", err);
+      toast.error(err?.message || "No se pudo verificar manualmente la cuenta.");
+    }
+  };
+
+  const handle_copy_password = async (user: UserProfile) => {
+    if (!user.password) return;
+    try {
+      await navigator.clipboard.writeText(user.password);
+      set_copied_uid(user.uid);
+      toast.success(`Contraseña de ${user.name} copiada al portapapeles.`);
+      setTimeout(() => set_copied_uid(null), 2000);
+    } catch {
+      toast.error("No se pudo copiar la contraseña.");
+    }
+  };
+
+  const handle_save_user_password = async (user: UserProfile) => {
+    const draft = (draft_passwords[user.uid] || "").trim();
+    if (!draft) {
+      toast.error("Escribe la contraseña para guardarla en el registro del usuario.");
+      return;
+    }
+    set_saving_pass_uid(user.uid);
+    try {
+      await userService.updateUserProfile(user.uid, { password: draft });
+      set_password_overrides((prev) => ({ ...prev, [user.uid]: draft }));
+      set_visible_passwords((prev) => ({ ...prev, [user.uid]: true }));
+      set_draft_passwords((prev) => ({ ...prev, [user.uid]: "" }));
+      toast.success(`Contraseña de ${user.name} registrada.`);
+    } catch (err: any) {
+      toast.error(err?.message || "No se pudo guardar la contraseña.");
+    } finally {
+      set_saving_pass_uid(null);
+    }
+  };
+
   return (
     <div className="lg:col-span-2 overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
       {/* Cabecera, Pestañas de Rol y Filtros */}
@@ -374,24 +476,45 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
               Usuarios Registrados ({filtered_users.length} de {merged_users.length})
             </h2>
             <p className="text-xs text-muted-foreground">
-              Filtra por categoría de usuario o personaliza permisos individuales con el botón de ajustes
+              Filtra por categoría de usuario, consulta contraseñas, personaliza permisos o reenvía el enlace de verificación por correo
             </p>
           </div>
-          {(search_query || area_filter !== "all" || role_filter !== "all") && (
+          <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="sm"
-              onClick={() => {
-                set_search_query("");
-                set_area_filter("all");
-                set_role_filter("all");
-              }}
-              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => set_show_all_passwords((v) => !v)}
+              className="h-7 gap-1.5 text-xs"
             >
-              Limpiar filtros
+              {show_all_passwords ? (
+                <>
+                  <EyeOff className="size-3.5" />
+                  Ocultar contraseñas
+                </>
+              ) : (
+                <>
+                  <Eye className="size-3.5" />
+                  Ver todas las contraseñas
+                </>
+              )}
             </Button>
-          )}
+            {(search_query || area_filter !== "all" || role_filter !== "all") && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  set_search_query("");
+                  set_area_filter("all");
+                  set_role_filter("all");
+                }}
+                className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Pestañas rápidas para separar usuarios por Rol (incluyendo Becarios) */}
@@ -462,12 +585,13 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
         <TableHeader>
           <TableRow className="bg-secondary/80">
             <TableHead className="font-semibold text-foreground/80">NOMBRE</TableHead>
+            <TableHead className="font-semibold text-foreground/80">CONTRASEÑA</TableHead>
             <TableHead className="font-semibold text-foreground/80">ÁREA / PUESTO</TableHead>
             <TableHead className="font-semibold text-foreground/80">CARGA ACTIVA</TableHead>
             <TableHead className="w-60 font-semibold text-foreground/80">
               ROL Y PERMISOS
             </TableHead>
-            <TableHead className="w-24 font-semibold text-foreground/80 text-center">
+            <TableHead className="w-32 font-semibold text-foreground/80 text-center">
               ACCIONES
             </TableHead>
           </TableRow>
@@ -475,7 +599,7 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
         <TableBody>
           {filtered_users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
+              <TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
                 No se encontraron usuarios con los filtros seleccionados.
               </TableCell>
             </TableRow>
@@ -488,6 +612,10 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
               };
               const effectivePerms = getEffectivePermissions(u);
               const isCustomized = hasCustomPermissions(u);
+              const isUnverified = u.emailVerified === false && !u.verifiedByAdmin;
+              const isVerifiedExplicit = Boolean(u.emailVerified || u.verifiedByAdmin);
+              const isSendingThis = sending_uid === u.uid;
+              const isPassVisible = Boolean(show_all_passwords || visible_passwords[u.uid]);
 
               return (
                 <TableRow key={u.uid} className="transition-colors hover:bg-secondary/30">
@@ -519,8 +647,115 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
                         <span className="block text-[11px] text-muted-foreground truncate">
                           {u.email}
                         </span>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          {isUnverified ? (
+                            <>
+                              <span className="inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                                <Clock className="size-2.5" />
+                                Sin verificar correo
+                              </span>
+                              <button
+                                type="button"
+                                disabled={isSendingThis}
+                                onClick={() => void handle_send_verification_link(u)}
+                                className="inline-flex items-center gap-1 rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                                title="Reenviar enlace al correo para completar su registro y verificación"
+                              >
+                                <Send className="size-2.5" />
+                                {isSendingThis ? "Enviando..." : "Reenviar enlace"}
+                              </button>
+                            </>
+                          ) : isVerifiedExplicit ? (
+                            <span className="inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                              <CheckCircle2 className="size-2.5" />
+                              Verificado
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    {u.password ? (
+                      <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary/40 px-2 py-1">
+                        <Lock className="size-3 text-muted-foreground shrink-0" />
+                        <span className="font-mono text-xs font-semibold text-foreground select-all">
+                          {isPassVisible ? u.password : "••••••••"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            set_visible_passwords((prev) => ({
+                              ...prev,
+                              [u.uid]: !isPassVisible,
+                            }))
+                          }
+                          title={isPassVisible ? "Ocultar contraseña" : "Ver contraseña"}
+                          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          {isPassVisible ? (
+                            <EyeOff className="size-3.5" />
+                          ) : (
+                            <Eye className="size-3.5" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handle_copy_password(u)}
+                          title="Copiar contraseña"
+                          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          {copied_uid === u.uid ? (
+                            <Check className="size-3.5 text-emerald-500" />
+                          ) : (
+                            <Copy className="size-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1 rounded border border-dashed border-border px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors cursor-pointer"
+                            title="Se sincroniza automáticamente cuando el usuario inicia sesión, o puedes registrarla aquí"
+                          >
+                            <Lock className="size-3" />
+                            <span>Pendiente de login</span>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3 space-y-2" align="start">
+                          <p className="text-[11px] font-semibold text-foreground">
+                            Registrar contraseña de {u.name}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Se guardará automáticamente cuando el usuario inicie sesión, o puedes anotarla manualmente aquí:
+                          </p>
+                          <div className="flex items-center gap-1.5">
+                            <Input
+                              value={draft_passwords[u.uid] || ""}
+                              onChange={(e) =>
+                                set_draft_passwords((prev) => ({
+                                  ...prev,
+                                  [u.uid]: e.target.value,
+                                }))
+                              }
+                              placeholder="Contraseña..."
+                              className="h-7 text-xs"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              disabled={saving_pass_uid === u.uid}
+                              onClick={() => void handle_save_user_password(u)}
+                              className="h-7 px-2.5 text-xs"
+                            >
+                              Guardar
+                            </Button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     <div className="flex flex-col">
@@ -687,6 +922,31 @@ export function UserList({ users_list, mock_users, set_users_list }: UserListPro
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="inline-flex items-center justify-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        disabled={isSendingThis}
+                        title={`Enviar enlace a ${u.email} para completar registro y verificación`}
+                        onClick={() => void handle_send_verification_link(u)}
+                        className="h-8 w-8 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      >
+                        <Send className="size-4" />
+                      </Button>
+
+                      {isUnverified && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          title={`Aprobar y verificar manualmente la cuenta de ${u.name}`}
+                          onClick={() => void handle_approve_user(u)}
+                          className="h-8 w-8 text-amber-600 hover:text-emerald-600 dark:text-amber-400 dark:hover:text-emerald-400 transition-colors"
+                        >
+                          <CheckCircle2 className="size-4" />
+                        </Button>
+                      )}
+
                       <Button
                         type="button"
                         variant="ghost"

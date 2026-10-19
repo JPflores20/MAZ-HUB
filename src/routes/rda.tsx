@@ -39,7 +39,7 @@ const LazyRdaDialog = lazy(() =>
 import { updateRda, deleteRda } from "@/services/rda-service";
 import { useRdas } from "@/context/rda-context";
 import { Rda, defaultRda } from "@/data/rda";
-import { AREAS } from "@/data/pdca-defaults";
+import { AREAS, isBloqueFrioArea, doesAreaBelongToParentOrMatch } from "@/data/pdca-defaults";
 import { getRdaDisplayName, generateNextRdaFolio } from "@/components/RDA/rda-name";
 import { getRdaStatus } from "@/components/RDA/rda-status";
 import {
@@ -262,6 +262,9 @@ function RdaPage() {
           );
           areaMap.set(key, matched ? matched.label : raw);
         }
+        if (isBloqueFrioArea(raw) && !areaMap.has("bloque frío")) {
+          areaMap.set("bloque frío", "Bloque Frío");
+        }
       }
     });
     return Array.from(areaMap.values()).sort((a, b) =>
@@ -278,8 +281,9 @@ function RdaPage() {
     const matchesSearch =
       title.includes(term) || folio.includes(term) || resp.includes(term) || author.includes(term);
 
-    const rdaArea = (rda.context?.area || rda.portada?.area || "").trim().toLowerCase();
-    const matchesArea = areaFilter === "all" || rdaArea === areaFilter.trim().toLowerCase();
+    const rawRdaArea = (rda.context?.area || rda.portada?.area || "").trim();
+    const matchesArea =
+      areaFilter === "all" || doesAreaBelongToParentOrMatch(rawRdaArea, areaFilter);
 
     const rdaStatus = getRdaStatus(rda);
     const matchesStatus = statusFilter === "all" || rdaStatus === statusFilter;

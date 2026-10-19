@@ -4,6 +4,7 @@
 import { useMemo } from "react";
 import { startOfDay, isBefore, isValid, parseISO } from "date-fns";
 import type { Pdca } from "@/data/pdca-types";
+import { isBloqueFrioArea } from "@/data/pdca-defaults";
 
 export interface PdcaMetrics {
   activos: number;
@@ -67,7 +68,7 @@ export function use_pdca_metrics(pdcas: Pdca[]): PdcaMetrics {
       }
 
       const area_lower = (p.area || "").toLowerCase();
-      if (area_lower.includes("frio") || area_lower.includes("frío")) {
+      if (isBloqueFrioArea(p.area)) {
         bloque_frio++;
       } else if (area_lower.includes("cocimiento")) {
         cocimientos++;

@@ -77,9 +77,24 @@ export const RenderizadorPestanasPdca: React.FC<PropiedadesRenderizadorPestanas>
               estadoDialogo.set_title_value(t);
               autoGuardado.mark_as_modified();
             }}
+            planta_value={estadoDialogo.planta_value}
+            on_planta_change={(p) => {
+              estadoDialogo.set_planta_value(p);
+              autoGuardado.mark_as_modified();
+            }}
+            departamento_value={estadoDialogo.departamento_value}
+            on_departamento_change={(d) => {
+              estadoDialogo.set_departamento_value(d);
+              autoGuardado.mark_as_modified();
+            }}
             area_value={estadoDialogo.area_value}
             on_area_change={(a) => {
               estadoDialogo.set_area_value(a);
+              autoGuardado.mark_as_modified();
+            }}
+            etapa_value={estadoDialogo.etapa_value}
+            on_etapa_change={(e) => {
+              estadoDialogo.set_etapa_value(e);
               autoGuardado.mark_as_modified();
             }}
             deadline_date={estadoDialogo.deadline_date || new Date()}

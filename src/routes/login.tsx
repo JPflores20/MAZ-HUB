@@ -4,10 +4,11 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Send, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LoginForm } from "@/components/auth/login_form";
 import { RegisterForm } from "@/components/auth/register_form";
+import { useAuth } from "@/context/auth-context";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -17,15 +18,47 @@ export const Route = createFileRoute("/login")({
 });
 
 function AuthPage() {
+  const { resendVerificationEmail } = useAuth();
+
   // --- States ---
   const [is_registering, set_is_registering] = useState(false);
   const [reg_success, set_reg_success] = useState(false);
   const [registered_email, set_registered_email] = useState("");
+  const [registered_password, set_registered_password] = useState("");
+  const [resending, set_resending] = useState(false);
+  const [resend_msg, set_resend_msg] = useState<string | null>(null);
+  const [resend_err, set_resend_err] = useState<string | null>(null);
 
   // --- Handlers ---
-  const handle_success = (email: string) => {
+  const handle_success = (email: string, password?: string) => {
     set_registered_email(email);
+    set_registered_password(password || "");
+    set_resend_msg(null);
+    set_resend_err(null);
     set_reg_success(true);
+  };
+
+  const handle_resend_on_success = async () => {
+    if (!registered_email || !registered_password) return;
+    set_resending(true);
+    set_resend_msg(null);
+    set_resend_err(null);
+    try {
+      await resendVerificationEmail(registered_email, registered_password);
+      set_resend_msg(
+        "¡Hemos enviado nuevamente el enlace de verificación! Revisa tu bandeja de entrada y tu carpeta de Spam / Correo no deseado.",
+      );
+    } catch (err: any) {
+      if (err.code === "auth/too-many-requests") {
+        set_resend_err(
+          "Acabamos de enviarte un enlace hace unos momentos. Espera un minuto antes de solicitar otro.",
+        );
+      } else {
+        set_resend_err(err.message || "No se pudo reenviar el enlace.");
+      }
+    } finally {
+      set_resending(false);
+    }
   };
 
   // --- Success view ---
@@ -37,22 +70,57 @@ function AuthPage() {
             <CheckCircle2 className="size-8 text-green-600 dark:text-green-400" />
           </div>
           <h1 className="mb-2 font-display text-2xl font-bold text-green-700 dark:text-green-300">
-            ¡Registro Exitoso!
+            ¡Casi listo! Verifica tu correo
           </h1>
-          <p className="mb-6 text-sm text-green-600/80 dark:text-green-400/80">
-            Hemos enviado un correo de verificación oficial a <strong>{registered_email}</strong>.
-            Por razones de seguridad, debes activar tu cuenta desde tu bandeja de entrada antes de
-            poder iniciar sesión en el sistema.
+          <p className="mb-4 text-sm text-green-700/90 dark:text-green-300/90">
+            Hemos enviado un enlace de verificación a <strong>{registered_email}</strong>.
           </p>
-          <Button
-            onClick={() => {
-              set_reg_success(false);
-              set_is_registering(false);
-            }}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-          >
-            Volver al Inicio de Sesión
-          </Button>
+          <div className="mb-5 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-left text-xs text-amber-900 dark:text-amber-200 space-y-1">
+            <p className="font-bold flex items-center gap-1.5">
+              <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              PASO OBLIGATORIO PARA COMPLETAR TU REGISTRO:
+            </p>
+            <p>
+              Debes abrir el correo que te enviamos y hacer clic en el{" "}
+              <strong>enlace de verificación</strong> antes de poder iniciar sesión. Revisa también
+              tu carpeta de <strong>Spam o Correo no deseado</strong>.
+            </p>
+          </div>
+
+          {resend_msg && (
+            <div className="mb-4 rounded-lg border border-green-600/30 bg-green-600/15 p-2.5 text-xs font-medium text-green-800 dark:text-green-200">
+              {resend_msg}
+            </div>
+          )}
+          {resend_err && (
+            <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/15 p-2.5 text-xs font-medium text-destructive">
+              {resend_err}
+            </div>
+          )}
+
+          <div className="space-y-2.5">
+            {registered_password && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={resending}
+                onClick={handle_resend_on_success}
+                className="w-full border-green-600/40 text-green-700 hover:bg-green-600/10 dark:text-green-300"
+              >
+                <Send className="mr-2 size-4" />
+                {resending ? "Reenviando enlace..." : "Volver a enviar enlace de verificación"}
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                set_reg_success(false);
+                set_is_registering(false);
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              Ir a Iniciar Sesión
+            </Button>
+          </div>
         </div>
       </div>
     );

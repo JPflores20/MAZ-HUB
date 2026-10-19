@@ -7,10 +7,13 @@ export const OPCIONES_ESTADO = ["Pendiente", "En progreso", "Retrasado", "Comple
 export const OPCIONES_SDCA = ["", "SDCA", "SOP", "OPL", "Lección de 1 Punto", "Otra"] as const;
 
 export const COLOR_POR_ESTADO: Record<string, string> = {
-  Pendiente: "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30",
-  "En progreso": "bg-[#e8f0fe] text-[#1a73e8] border-[#1a73e8]/30",
+  Pendiente: "bg-slate-100 text-slate-700 border-slate-300",
+  "En progreso": "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30",
+  "En proceso": "bg-[#fef7e0] text-[#b06000] border-[#b06000]/30",
   Retrasado: "bg-[#fce8e6] text-[#c5221f] border-[#c5221f]/30",
   Completada: "bg-[#e6f4ea] text-[#137333] border-[#137333]/30",
+  Completa: "bg-[#e6f4ea] text-[#137333] border-[#137333]/30",
+  Completo: "bg-[#e6f4ea] text-[#137333] border-[#137333]/30",
 };
 
 export const OPCIONES_PUNTAJE = [

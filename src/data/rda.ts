@@ -211,7 +211,7 @@ export const defaultRda: Rda = {
     descripcionProblema: "",
   },
   context: {
-    planta: "ZACATECAS",
+    planta: "Zacatecas",
     fecha: "",
     turno: "",
     iniciadoPor: "",

@@ -5,7 +5,7 @@
  */
 import { useState } from "react";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { AlertCircle, UserPlus, SlidersHorizontal, RotateCcw } from "lucide-react";
+import { AlertCircle, UserPlus, SlidersHorizontal, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { secondaryAuth } from "@/lib/firebase";
 import { userService } from "@/services/user-service";
 import {
@@ -35,6 +35,7 @@ export function RegistrationForm() {
   const [user_name, set_user_name] = useState("");
   const [user_email, set_user_email] = useState("");
   const [user_password, set_user_password] = useState("");
+  const [show_password, set_show_password] = useState(false);
   const [user_role, set_user_role] = useState<UserRole>("user");
   const [user_area, set_user_area] = useState("");
   const [user_position, set_user_position] = useState("");
@@ -77,8 +78,10 @@ export function RegistrationForm() {
 
     try {
       // Crear usuario en Firebase Auth (App Secundaria para no cerrar la sesión activa)
+      secondaryAuth.languageCode = "es";
       const cred = await createUserWithEmailAndPassword(secondaryAuth, email_lower, user_password);
       const uid = cred.user.uid;
+      const now = new Date().toISOString();
 
       // Enviar correo de verificación
       await sendEmailVerification(cred.user);
@@ -95,8 +98,11 @@ export function RegistrationForm() {
         role: user_role,
         permissions: final_permissions,
         area: user_area.trim().toUpperCase(),
+        password: user_password,
         ...(user_position.trim() ? { position: user_position.trim().toUpperCase() } : {}),
-        createdAt: new Date().toISOString(),
+        emailVerified: false,
+        lastVerificationSentAt: now,
+        createdAt: now,
       });
 
       // Actualizar lista local de usuarios
@@ -105,9 +111,12 @@ export function RegistrationForm() {
         name: user_name.trim().toUpperCase(),
         email: email_lower,
         pass: user_password,
+        password: user_password,
         role: user_role,
         permissions: final_permissions,
         area: user_area.trim().toUpperCase(),
+        emailVerified: false,
+        lastVerificationSentAt: now,
         ...(user_position.trim() ? { position: user_position.trim().toUpperCase() } : {}),
       });
 
@@ -184,14 +193,24 @@ export function RegistrationForm() {
           <Label htmlFor="password" className="text-xs font-semibold">
             CONTRASEÑA TEMPORAL *
           </Label>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={user_password}
-            onChange={(e) => set_user_password(e.target.value)}
-            placeholder="••••••••"
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={show_password ? "text" : "password"}
+              required
+              value={user_password}
+              onChange={(e) => set_user_password(e.target.value)}
+              placeholder="••••••••"
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => set_show_password((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {show_password ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

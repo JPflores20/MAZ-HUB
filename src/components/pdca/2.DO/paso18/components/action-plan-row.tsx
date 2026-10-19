@@ -293,10 +293,15 @@ export const FilaAccionPlan: React.FC<PropiedadesFilaAccion> = ({
       {/* Eliminar */}
       <TableCell className="p-1 text-center">
         <Button
+          type="button"
           variant="ghost"
           size="icon"
-          onClick={() => alEliminar(fila.id)}
-          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            alEliminar(fila.id);
+          }}
+          title="Eliminar acción"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
         >
           <X className="size-4" />
         </Button>

@@ -4,7 +4,7 @@
  */
 import { createContext, useContext, ReactNode } from "react";
 import { fetchPdcasFromFirestore } from "@/services/pdca-service";
-import { type Pdca } from "@/data/pdca";
+import { type Pdca, doesAreaBelongToParentOrMatch } from "@/data/pdca";
 import { useAuth } from "@/context/auth-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -64,17 +64,17 @@ export function PdcaProvider({ children }: { children: ReactNode }) {
 
   const pdcaList: Pdca[] = (() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin" || permissions.canViewAll) return rawPdcas;
+    if (currentUser.role === "admin" || permissions?.canViewAll) return rawPdcas;
     const emailLower = (currentUser.email || "").trim().toLowerCase();
     const nameLower = (currentUser.name || "").trim().toLowerCase();
     const userAreaNorm = normalizeStr(currentUser.area);
 
     return rawPdcas.filter((p) => {
       if (
-        permissions.canViewArea &&
+        permissions?.canViewArea &&
         userAreaNorm &&
         userAreaNorm !== "usuario" &&
-        normalizeStr(p.area) === userAreaNorm
+        doesAreaBelongToParentOrMatch(p.area, currentUser.area)
       ) {
         return true;
       }

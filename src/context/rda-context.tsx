@@ -7,6 +7,7 @@
 import { createContext, useContext, ReactNode } from "react";
 import { fetchRdas } from "@/services/rda-service";
 import type { Rda } from "@/data/rda";
+import { doesAreaBelongToParentOrMatch } from "@/data/pdca-defaults";
 import { useAuth } from "@/context/auth-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -86,19 +87,19 @@ export function RdaProvider({ children }: { children: ReactNode }) {
 
   const rdaList: Rda[] = (() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin" || permissions.canViewAll) return rawRdas;
+    if (currentUser.role === "admin" || permissions?.canViewAll) return rawRdas;
 
     const emailLower = (currentUser.email || "").trim().toLowerCase();
     const nameLower = (currentUser.name || "").trim().toLowerCase();
     const userAreaNorm = normalizeStr(currentUser.area);
 
     return rawRdas.filter((r) => {
-      const rdaArea = normalizeStr(r.context?.area || r.portada?.area);
+      const rawRdaArea = r.context?.area || r.portada?.area;
       if (
-        permissions.canViewArea &&
+        permissions?.canViewArea &&
         userAreaNorm &&
         userAreaNorm !== "usuario" &&
-        rdaArea === userAreaNorm
+        doesAreaBelongToParentOrMatch(rawRdaArea, currentUser.area)
       ) {
         return true;
       }

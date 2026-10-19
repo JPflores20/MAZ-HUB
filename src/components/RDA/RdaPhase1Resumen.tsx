@@ -80,6 +80,56 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
     "border border-black/30 p-1.5 text-xs text-center text-blue-800 font-medium bg-white";
   const tdJustifyClass =
     "border border-black/30 p-2 text-xs text-justify text-blue-800 font-medium bg-white";
+
+  const getStatusCellProps = (
+    rawStatus?: string,
+  ): { className: string; style?: React.CSSProperties } => {
+    const norm = String(rawStatus || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase();
+
+    if (
+      norm === "completa" ||
+      norm === "completada" ||
+      norm === "completo" ||
+      norm === "complete" ||
+      norm === "completed"
+    ) {
+      return {
+        className: "border border-black/30 p-1.5 text-xs text-center font-bold bg-[#92D050] text-black",
+        style: { backgroundColor: "#92D050", color: "#000000" },
+      };
+    }
+
+    if (
+      norm === "en progreso" ||
+      norm === "en proceso" ||
+      norm === "in progress"
+    ) {
+      return {
+        className: "border border-black/30 p-1.5 text-xs text-center font-bold bg-[#FFC000] text-black",
+        style: { backgroundColor: "#FFC000", color: "#000000" },
+      };
+    }
+
+    if (
+      norm === "retrasado" ||
+      norm === "retrasada" ||
+      norm === "delayed" ||
+      norm === "vencido" ||
+      norm === "vencida"
+    ) {
+      return {
+        className: "border border-black/30 p-1.5 text-xs text-center font-bold bg-[#FF0000] text-white",
+        style: { backgroundColor: "#FF0000", color: "#FFFFFF" },
+      };
+    }
+
+    return { className: tdClass };
+  };
+
   const headerDivClass =
     "bg-[#0078D7] border border-black/30 p-1.5 font-bold text-center text-xs uppercase text-white mt-6";
   const textDivClass =
@@ -366,9 +416,7 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
               <td className={tdJustifyClass}>{val.accion}</td>
               <td className={tdClass}>{val.responsable}</td>
               <td className={tdClass}>{formatDate(val.fechaLimite)}</td>
-              <td
-                className={`${tdClass} ${val.estatus === "Completa" ? "bg-green-400 text-black" : ""}`}
-              >
+              <td {...getStatusCellProps(val.estatus)}>
                 {val.estatus}
               </td>
               <td
@@ -442,7 +490,11 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
           ].map((row, i) => (
             <tr key={i}>
               <td
-                className={`border border-black/30 p-1.5 text-center font-bold text-white w-[60px] ${rda.checklistEstandarizacion?.[row.id1] ? "bg-[#00B050]" : "bg-red-500 dark:bg-red-600"}`}
+                className={`border border-black/30 p-1.5 text-center font-bold text-white w-[60px] ${rda.checklistEstandarizacion?.[row.id1] ? "bg-red-500 dark:bg-red-600" : "bg-[#00B050]"}`}
+                style={{
+                  backgroundColor: rda.checklistEstandarizacion?.[row.id1] ? "#EF4444" : "#00B050",
+                  color: "#FFFFFF",
+                }}
               >
                 {rda.checklistEstandarizacion?.[row.id1] ? t("rdaInternal.yes") : t("rdaInternal.no")}
               </td>
@@ -450,7 +502,11 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
                 {row.q1}
               </td>
               <td
-                className={`border border-black/30 p-1.5 text-center font-bold text-white w-[60px] ${rda.checklistEstandarizacion?.[row.id2] ? "bg-[#00B050]" : "bg-red-500 dark:bg-red-600"}`}
+                className={`border border-black/30 p-1.5 text-center font-bold text-white w-[60px] ${rda.checklistEstandarizacion?.[row.id2] ? "bg-red-500 dark:bg-red-600" : "bg-[#00B050]"}`}
+                style={{
+                  backgroundColor: rda.checklistEstandarizacion?.[row.id2] ? "#EF4444" : "#00B050",
+                  color: "#FFFFFF",
+                }}
               >
                 {rda.checklistEstandarizacion?.[row.id2] ? t("rdaInternal.yes") : t("rdaInternal.no")}
               </td>
@@ -483,14 +539,6 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
         <tbody>
           {rda.pda?.map((action, idx) => {
             const rawStatus = action.estatus || action.status || "-";
-            const isComplete =
-              rawStatus === "Complete" ||
-              rawStatus === "Completada" ||
-              rawStatus === "Completa";
-            const isInProgress =
-              rawStatus === "In Progress" ||
-              rawStatus === "En progreso" ||
-              rawStatus === "En Progreso";
             return (
               <tr key={action.id}>
                 <td className={tdClass}>{idx + 1}</td>
@@ -506,15 +554,7 @@ export function RdaPhase1Resumen({ rda, onChange }: Props) {
                 <td className={tdClass}>
                   {formatDate(action.fechaLimite || action.fecha)}
                 </td>
-                <td
-                  className={`${tdClass} ${
-                    isComplete
-                      ? "bg-[#92D050] text-black font-semibold"
-                      : isInProgress
-                        ? "bg-[#FFC000] text-black font-semibold"
-                        : ""
-                  }`}
-                >
+                <td {...getStatusCellProps(rawStatus)}>
                   {rawStatus}
                 </td>
                 <td className={tdJustifyClass}>

@@ -61,16 +61,18 @@ describe("use_pdca_metrics", () => {
     expect(result.current.activos).toBe(2);
   });
 
-  it("clasifica por áreas usando coincidencias parciales case-insensitive", () => {
+  it("clasifica por áreas incluyendo Fermentación y Filtración dentro de Bloque Frío", () => {
     const data = [
       create_pdca({ area: "Cuartos Fríos" }),
       create_pdca({ area: "bloque frio" }),
+      create_pdca({ area: "fermentacion" }),
+      create_pdca({ area: "Filtración" }),
       create_pdca({ area: "Cocimientos L1" }),
       create_pdca({ area: "Envasado" }), // Ninguno
     ];
 
     const { result } = renderHook(() => use_pdca_metrics(data));
-    expect(result.current.bloque_frio).toBe(2);
+    expect(result.current.bloque_frio).toBe(4);
     expect(result.current.cocimientos).toBe(1);
   });
 

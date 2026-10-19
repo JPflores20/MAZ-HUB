@@ -3,7 +3,7 @@
  * Tabla para validar o descartar causas potenciales mediante pruebas y evidencias en el RDA.
  */
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useState } from "react";
 import { Plus, Trash2, ArrowDownToLine, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -24,6 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { RdaValidationAction } from "@/data/rda";
 
 interface RdaValidationTableProps {
@@ -36,11 +46,15 @@ interface RdaValidationTableProps {
 const getStatusColor = (status: string) => {
   switch (status) {
     case "En progreso":
-      return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 border-blue-200 dark:border-blue-800 hover:bg-blue-200";
+    case "En proceso":
+      return "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:bg-amber-200 font-semibold";
     case "Completa":
-      return "bg-green-100 text-green-800 border-green-200 hover:bg-green-200";
+    case "Completada":
+    case "Completo":
+      return "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800 hover:bg-green-200 font-semibold";
     case "Retrasado":
-      return "bg-red-100 text-red-800 border-red-200 hover:bg-red-200";
+    case "Retrasada":
+      return "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800 hover:bg-red-200 font-semibold";
     case "Pendiente":
     default:
       return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
@@ -54,12 +68,17 @@ export function RdaValidationTable({
   onSendToPda,
 }: RdaValidationTableProps) {
   const { t } = useTranslation();
+  const [rowToDelete, setRowToDelete] = useState<{
+    id: string;
+    index: number;
+    description: string;
+  } | null>(null);
 
   const addRow = () => {
     onChange([
       ...items,
       {
-        id: Date.now().toString(),
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         categoria: "Mano de obra",
         causaPotencial: "",
         accion: "",
@@ -71,12 +90,37 @@ export function RdaValidationTable({
     ]);
   };
 
-  const updateRow = (id: string, field: keyof RdaValidationAction, value: string) => {
-    onChange(items.map((it) => (it.id === id ? { ...it, [field]: value } : it)));
+  const updateRow = (
+    id: string,
+    field: keyof RdaValidationAction,
+    value: string,
+    index?: number,
+  ) => {
+    onChange(
+      items.map((it, idx) =>
+        (it.id && it.id === id) || (index !== undefined && idx === index)
+          ? { ...it, id: it.id || id, [field]: value }
+          : it,
+      ),
+    );
   };
 
-  const deleteRow = (id: string) => {
-    onChange(items.filter((it) => it.id !== id));
+  const requestDeleteRow = (row: RdaValidationAction, index: number) => {
+    const desc =
+      (row.accion || row.causaPotencial || "").trim() || `Acción de validación #${index + 1}`;
+    setRowToDelete({ id: row.id, index, description: desc });
+  };
+
+  const confirmDeleteRow = () => {
+    if (!rowToDelete) return;
+    const { id, index } = rowToDelete;
+    const nextItems = items.filter((it, idx) => {
+      if (idx === index) return false;
+      if (id && it.id === id && items.filter((x) => x.id === id).length === 1) return false;
+      return true;
+    });
+    setRowToDelete(null);
+    onChange(nextItems);
   };
 
   return (
@@ -144,12 +188,12 @@ export function RdaValidationTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((row) => (
-                <TableRow key={row.id}>
+              {items.map((row, idx) => (
+                <TableRow key={row.id || `val-row-${idx}`}>
                   <TableCell className="align-top p-2">
                     <Select
                       value={row.categoria}
-                      onValueChange={(val) => updateRow(row.id, "categoria", val)}
+                      onValueChange={(val) => updateRow(row.id, "categoria", val, idx)}
                     >
                       <SelectTrigger className={`h-9 ${getStatusColor(row.estatus)}`}>
                         <SelectValue />
@@ -169,7 +213,7 @@ export function RdaValidationTable({
                       minRows={2}
                       className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-justify shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none overflow-hidden leading-relaxed"
                       value={row.causaPotencial}
-                      onChange={(e) => updateRow(row.id, "causaPotencial", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "causaPotencial", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
@@ -177,13 +221,13 @@ export function RdaValidationTable({
                       minRows={2}
                       className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-justify shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none overflow-hidden leading-relaxed"
                       value={row.accion}
-                      onChange={(e) => updateRow(row.id, "accion", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "accion", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Select
                       value={row.esCausaRaiz}
-                      onValueChange={(val) => updateRow(row.id, "esCausaRaiz", val)}
+                      onValueChange={(val) => updateRow(row.id, "esCausaRaiz", val, idx)}
                     >
                       <SelectTrigger
                         className={`h-9 ${
@@ -205,14 +249,14 @@ export function RdaValidationTable({
                     <Input
                       className="h-9"
                       value={row.responsable}
-                      onChange={(e) => updateRow(row.id, "responsable", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "responsable", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <DatePicker
                       date={row.fechaLimite ? new Date(row.fechaLimite) : undefined}
                       setDate={(date) =>
-                        updateRow(row.id, "fechaLimite", date ? date.toISOString() : "")
+                        updateRow(row.id, "fechaLimite", date ? date.toISOString() : "", idx)
                       }
                       className="h-9 w-full"
                     />
@@ -220,7 +264,7 @@ export function RdaValidationTable({
                   <TableCell className="align-top p-2">
                     <Select
                       value={row.estatus}
-                      onValueChange={(val) => updateRow(row.id, "estatus", val)}
+                      onValueChange={(val) => updateRow(row.id, "estatus", val, idx)}
                     >
                       <SelectTrigger className={`h-9 ${getStatusColor(row.estatus)}`}>
                         <SelectValue />
@@ -235,10 +279,15 @@ export function RdaValidationTable({
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => deleteRow(row.id)}
-                      className="text-muted-foreground hover:text-destructive h-9 w-9"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        requestDeleteRow(row, idx);
+                      }}
+                      title="Eliminar acción de validación"
+                      className="text-muted-foreground hover:text-destructive h-9 w-9 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -256,10 +305,39 @@ export function RdaValidationTable({
           </Table>
         </div>
       </div>
-      <Button variant="outline" size="sm" onClick={addRow} className="gap-2">
+      <Button type="button" variant="outline" size="sm" onClick={addRow} className="gap-2">
         <Plus className="h-4 w-4" />
         {t("rdaInternal.addValidationAction")}
       </Button>
+
+      <AlertDialog
+        open={Boolean(rowToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setRowToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro de eliminar esta acción?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se eliminará la acción de validación{" "}
+              <span className="font-semibold text-foreground">
+                &ldquo;{rowToDelete?.description}&rdquo;
+              </span>
+              . Esta operación no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteRow}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sí, eliminar acción
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

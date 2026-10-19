@@ -33,14 +33,45 @@ export const PdcaDialog: React.FC<{
   pdca: Pdca | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}> = ({ pdca, onOpenChange }) => {
+}> = ({ pdca, open, onOpenChange }) => {
+  const [restored_pdca, set_restored_pdca] = useState<Pdca | null>(null);
+  const [restore_version, set_restore_version] = useState(0);
+
+  useEffect(() => {
+    set_restored_pdca(null);
+  }, [pdca?.id]);
+
+  const effective_pdca = useMemo(
+    () => restored_pdca ?? pdca ?? create_empty_pdca_draft(),
+    [restored_pdca, pdca],
+  );
+
+  if (!open) return null;
+
+  return (
+    <PdcaDialogContent
+      key={`${effective_pdca.id}-${restore_version}`}
+      current_pdca={effective_pdca}
+      onOpenChange={onOpenChange}
+      onRestoreDraft={(draftPayload) => {
+        set_restored_pdca(draftPayload);
+        set_restore_version((v) => v + 1);
+      }}
+    />
+  );
+};
+
+const PdcaDialogContent: React.FC<{
+  current_pdca: Pdca;
+  onOpenChange: (open: boolean) => void;
+  onRestoreDraft: (draftPayload: Pdca) => void;
+}> = ({ current_pdca, onOpenChange, onRestoreDraft }) => {
   const { t } = useTranslation();
-  const current_pdca = useMemo(() => pdca ?? create_empty_pdca_draft(), [pdca]);
   const { currentUser: auth_user, permissions, usersList: available_users } = useAuth();
   const is_admin = auth_user?.role === "admin";
 
   const is_deadline_locked = use_pdca_deadline(is_admin, current_pdca.fechaFinalizacion);
-  const is_editable = permissions.canEdit && (is_admin || !is_deadline_locked);
+  const is_editable = (permissions?.canEdit ?? true) && (is_admin || !is_deadline_locked);
 
   const state = use_pdca_dialog_state(current_pdca, auth_user);
 
@@ -139,8 +170,6 @@ export const PdcaDialog: React.FC<{
     }
   };
 
-  if (!open) return null;
-
   return (
     <div className="flex flex-col gap-6 p-6 max-w-[1400px] mx-auto animate-in fade-in zoom-in duration-300">
       {autosave.local_draft && (
@@ -165,7 +194,11 @@ export const PdcaDialog: React.FC<{
               size="sm"
               className="h-7 text-xs bg-amber-600 hover:bg-amber-700 text-white"
               onClick={async () => {
-                await autosave.restore_and_sync_local_draft();
+                const draftPayload = autosave.local_draft?.payload;
+                const ok = await autosave.restore_and_sync_local_draft();
+                if (ok && draftPayload) {
+                  onRestoreDraft(draftPayload);
+                }
               }}
             >
               Sincronizar borrador con BD

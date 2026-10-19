@@ -7,7 +7,10 @@ import { DEFAULT_VPO_CHECKPOINTS, type Pdca } from "@/data/pdca";
 export const create_empty_pdca_draft = (): Pdca => ({
   id: `PDCA-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
   titulo: "",
-  area: "cocimientos",
+  planta: "Zacatecas",
+  departamento: "Elaboración",
+  area: "Cocimientos",
+  etapa: "",
   fase: "Plan",
   actualizado: new Date().toLocaleDateString("es-ES", {
     day: "numeric",

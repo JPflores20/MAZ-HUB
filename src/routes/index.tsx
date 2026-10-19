@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { deletePdcaFromFirestore, updatePdcaDeadline } from "@/services/pdca-service";
-import { type Phase, type Pdca } from "@/data/pdca";
+import { type Phase, type Pdca, isBloqueFrioArea } from "@/data/pdca";
 import { useAuth } from "@/context/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -172,7 +172,7 @@ function MisPdcas() {
       }
 
       const area_str = p.area.toLowerCase();
-      if (area_str.includes("frio") || area_str.includes("frío")) {
+      if (isBloqueFrioArea(p.area)) {
         bloque_frio++;
       } else if (area_str.includes("cocimiento")) {
         cocimientos++;

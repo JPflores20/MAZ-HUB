@@ -17,10 +17,10 @@ export const use_estado_pdca_plan_graficas = (pdcaInicial: Pdca) => {
   );
 
   const [desglosePareto, setDesglosePareto] = useState<string[]>(
-    pdcaInicial.paretoDrillDowns || [],
+    pdcaInicial.paretoDrillDowns || pdcaInicial.pareto_drill_downs || [],
   );
   const [mapaDatosPareto, setMapaDatosPareto] = useState<Record<string, ParetoItem[]>>(
-    pdcaInicial.paretoDataMap || DEFAULT_PARETO_DATA_MAP,
+    pdcaInicial.paretoDataMap || pdcaInicial.pareto_data_map || DEFAULT_PARETO_DATA_MAP,
   );
   const [unidadPareto, setUnidadPareto] = useState<string>(
     pdcaInicial.paretoUnit || pdcaInicial.pareto_unit || "",

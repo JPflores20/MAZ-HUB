@@ -20,8 +20,14 @@ export interface PhasePlanProps {
   // Meta fields
   title_value: string;
   on_title_change: (v: string) => void;
+  planta_value?: string | undefined;
+  on_planta_change?: ((v: string) => void) | undefined;
+  departamento_value?: string | undefined;
+  on_departamento_change?: ((v: string) => void) | undefined;
   area_value: string;
   on_area_change: (v: string) => void;
+  etapa_value?: string | undefined;
+  on_etapa_change?: ((v: string) => void) | undefined;
   deadline_date?: Date;
   on_deadline_change: (d?: Date) => void;
   author_name: string;

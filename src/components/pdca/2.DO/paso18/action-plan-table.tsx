@@ -2,7 +2,7 @@
  * action-plan-table.tsx
  * Tabla interactiva del Plan de Acción (5W2H, priorización, Quick Wins, responsable, fecha compromiso y estatus).
  */
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StepCard } from "@/components/ui/step-card";
 import { StepInstructions } from "../../step-instructions";
 import { useTranslation } from "react-i18next";
@@ -71,13 +81,41 @@ export function ActionPlanTable({
   bottomContent,
 }: PropiedadesActionPlanTable) {
   const { t } = useTranslation();
+  const [filaAEliminar, setFilaAEliminar] = useState<{
+    id: string;
+    index: number;
+    descripcion: string;
+  } | null>(null);
+
   const agregarFila = () => onChange([...items, crearFilaAccionVacia()]);
 
-  const actualizarFila = (id: string, campo: keyof ActionItem, valor: string) => {
-    onChange(items.map((r) => (r.id === id ? { ...r, [campo]: valor } : r)));
+  const actualizarFila = (id: string, campo: keyof ActionItem, valor: string, index?: number) => {
+    onChange(
+      items.map((r, idx) =>
+        (r.id && r.id === id) || (index !== undefined && idx === index)
+          ? { ...r, id: r.id || id, [campo]: valor }
+          : r,
+      ),
+    );
   };
 
-  const eliminarFila = (id: string) => onChange(items.filter((r) => r.id !== id));
+  const solicitarEliminarFila = (id: string, index: number, fila: ActionItem) => {
+    const desc =
+      (fila.accion || fila.causaRaiz || fila.tema || "").trim() || `Acción #${index + 1}`;
+    setFilaAEliminar({ id, index, descripcion: desc });
+  };
+
+  const confirmarEliminarFila = () => {
+    if (!filaAEliminar) return;
+    const { id, index } = filaAEliminar;
+    const nextItems = items.filter((r, idx) => {
+      if (idx === index) return false;
+      if (id && r.id === id && items.filter((it) => it.id === id).length === 1) return false;
+      return true;
+    });
+    setFilaAEliminar(null);
+    onChange(nextItems);
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -118,6 +156,7 @@ export function ActionPlanTable({
       onToggleNa={onToggleNa}
       headerRight={
         <Button
+          type="button"
           variant="outline"
           size="sm"
           onClick={(e) => {
@@ -204,7 +243,7 @@ export function ActionPlanTable({
 
             <TableBody>
               <SortableContext
-                items={items.map((i) => i.id)}
+                items={items.map((i, idx) => i.id || `row-${idx}`)}
                 strategy={verticalListSortingStrategy}
               >
                 {items.length === 0 && (
@@ -214,12 +253,12 @@ export function ActionPlanTable({
                     </TableCell>
                   </TableRow>
                 )}
-                {items.map((fila) => (
+                {items.map((fila, idx) => (
                   <FilaAccionPlan
-                    key={fila.id}
-                    fila={fila}
-                    alActualizar={actualizarFila}
-                    alEliminar={eliminarFila}
+                    key={fila.id || `row-${idx}`}
+                    fila={{ ...fila, id: fila.id || `row-${idx}` }}
+                    alActualizar={(id, campo, valor) => actualizarFila(id, campo, valor, idx)}
+                    alEliminar={(id) => solicitarEliminarFila(id, idx, fila)}
                   />
                 ))}
               </SortableContext>
@@ -227,6 +266,36 @@ export function ActionPlanTable({
           </Table>
         </div>
       </DndContext>
+
+      <AlertDialog
+        open={Boolean(filaAEliminar)}
+        onOpenChange={(open) => {
+          if (!open) setFilaAEliminar(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro de eliminar esta acción?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se eliminará del plan la acción{" "}
+              <span className="font-semibold text-foreground">
+                &ldquo;{filaAEliminar?.descripcion}&rdquo;
+              </span>
+              . Esta operación no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmarEliminarFila}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sí, eliminar acción
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {bottomContent}
     </StepCard>
   );

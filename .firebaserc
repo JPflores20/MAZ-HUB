@@ -1,6 +1,7 @@
 {
   "projects": {
-    "maz-pdca-hub": "maz-pdca-hub"
+    "maz-pdca-hub": "maz-pdca-hub",
+    "MAZ-HUB": "maz-pdca-hub"
   },
   "targets": {},
   "etags": {}

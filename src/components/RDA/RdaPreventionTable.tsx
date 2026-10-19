@@ -3,7 +3,7 @@
  * Tabla de acciones de prevención de recurrencia y expansión horizontal del RDA.
  */
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { RdaPreventionAction } from "@/data/rda";
 
 interface RdaPreventionTableProps {
@@ -32,12 +42,17 @@ interface RdaPreventionTableProps {
 
 export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps) {
   const { t } = useTranslation();
+  const [rowToDelete, setRowToDelete] = useState<{
+    id: string;
+    index: number;
+    description: string;
+  } | null>(null);
 
   const addRow = () => {
     onChange([
       ...items,
       {
-        id: Date.now().toString(),
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         fecha: "",
         asunto: "",
         accion: "",
@@ -49,12 +64,36 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
     ]);
   };
 
-  const updateRow = (id: string, field: keyof RdaPreventionAction, value: string) => {
-    onChange(items.map((it) => (it.id === id ? { ...it, [field]: value } : it)));
+  const updateRow = (
+    id: string,
+    field: keyof RdaPreventionAction,
+    value: string,
+    index?: number,
+  ) => {
+    onChange(
+      items.map((it, idx) =>
+        (it.id && it.id === id) || (index !== undefined && idx === index)
+          ? { ...it, id: it.id || id, [field]: value }
+          : it,
+      ),
+    );
   };
 
-  const deleteRow = (id: string) => {
-    onChange(items.filter((it) => it.id !== id));
+  const requestDeleteRow = (row: RdaPreventionAction, index: number) => {
+    const desc = (row.accion || row.asunto || "").trim() || `Acción #${index + 1}`;
+    setRowToDelete({ id: row.id, index, description: desc });
+  };
+
+  const confirmDeleteRow = () => {
+    if (!rowToDelete) return;
+    const { id, index } = rowToDelete;
+    const nextItems = items.filter((it, idx) => {
+      if (idx === index) return false;
+      if (id && it.id === id && items.filter((x) => x.id === id).length === 1) return false;
+      return true;
+    });
+    setRowToDelete(null);
+    onChange(nextItems);
   };
 
   return (
@@ -75,14 +114,14 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((row) => (
-                <TableRow key={row.id}>
+              {items.map((row, idx) => (
+                <TableRow key={row.id || `prev-row-${idx}`}>
                   <TableCell className="align-top p-2">
                     <Input
                       type="date"
                       className="h-9"
                       value={row.fecha}
-                      onChange={(e) => updateRow(row.id, "fecha", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "fecha", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
@@ -90,28 +129,28 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
                       className="min-h-[60px] resize-none"
                       value={row.asunto}
                       placeholder="Estandarización, GOP, etc."
-                      onChange={(e) => updateRow(row.id, "asunto", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "asunto", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Textarea
                       className="min-h-[60px] resize-none"
                       value={row.accion}
-                      onChange={(e) => updateRow(row.id, "accion", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "accion", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Textarea
                       className="min-h-[60px] resize-none"
                       value={row.comentarios}
-                      onChange={(e) => updateRow(row.id, "comentarios", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "comentarios", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Input
                       className="h-9"
                       value={row.responsable}
-                      onChange={(e) => updateRow(row.id, "responsable", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "responsable", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
@@ -119,13 +158,13 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
                       type="date"
                       className="h-9"
                       value={row.fechaLimite}
-                      onChange={(e) => updateRow(row.id, "fechaLimite", e.target.value)}
+                      onChange={(e) => updateRow(row.id, "fechaLimite", e.target.value, idx)}
                     />
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Select
                       value={row.estatus}
-                      onValueChange={(val) => updateRow(row.id, "estatus", val)}
+                      onValueChange={(val) => updateRow(row.id, "estatus", val, idx)}
                     >
                       <SelectTrigger className="h-9">
                         <SelectValue />
@@ -140,10 +179,15 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
                   </TableCell>
                   <TableCell className="align-top p-2">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => deleteRow(row.id)}
-                      className="text-muted-foreground hover:text-destructive h-9 w-9"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        requestDeleteRow(row, idx);
+                      }}
+                      title="Eliminar acción"
+                      className="text-muted-foreground hover:text-destructive h-9 w-9 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -161,10 +205,39 @@ export function RdaPreventionTable({ items, onChange }: RdaPreventionTableProps)
           </Table>
         </div>
       </div>
-      <Button variant="outline" size="sm" onClick={addRow} className="gap-2">
+      <Button type="button" variant="outline" size="sm" onClick={addRow} className="gap-2">
         <Plus className="h-4 w-4" />
         {t("rdaInternal.addPreventionAction")}
       </Button>
+
+      <AlertDialog
+        open={Boolean(rowToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setRowToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro de eliminar esta acción?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se eliminará la acción{" "}
+              <span className="font-semibold text-foreground">
+                &ldquo;{rowToDelete?.description}&rdquo;
+              </span>
+              . Esta operación no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteRow}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sí, eliminar acción
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

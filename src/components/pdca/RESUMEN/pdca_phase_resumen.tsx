@@ -46,6 +46,62 @@ interface PhaseResumenProps {
   conclusiones_causa_raiz?: any[] | undefined;
 }
 
+export function extraerDatosParetoResumen(
+  mapa: Record<string, ParetoItem[]> | undefined,
+): ParetoItem[] {
+  if (!mapa || typeof mapa !== "object") return [];
+
+  const tieneDatosReales = (items: ParetoItem[] | undefined): boolean =>
+    Array.isArray(items) &&
+    items.some(
+      (item) =>
+        (item?.area !== undefined && String(item.area).trim() !== "") ||
+        Number(item?.gap) > 0,
+    );
+
+  const todasLasLlaves = Object.keys(mapa);
+  const llavesRaizSecundarias = todasLasLlaves
+    .filter((k) => k.startsWith("root-"))
+    .sort();
+  const otrasLlaves = todasLasLlaves.filter(
+    (k) => k !== "root" && !k.startsWith("root-"),
+  );
+
+  const ordenCandidatas = ["root", ...llavesRaizSecundarias, ...otrasLlaves];
+
+  let seleccion: ParetoItem[] = [];
+  for (const llave of ordenCandidatas) {
+    if (tieneDatosReales(mapa[llave])) {
+      seleccion = mapa[llave]!;
+      break;
+    }
+  }
+
+  if (seleccion.length === 0) {
+    for (const llave of ordenCandidatas) {
+      if (Array.isArray(mapa[llave]) && mapa[llave]!.length > 0) {
+        seleccion = mapa[llave]!;
+        break;
+      }
+    }
+  }
+
+  const filtrados = seleccion
+    .filter(
+      (orig) =>
+        (orig?.area !== undefined && String(orig.area).trim() !== "") ||
+        Number(orig?.gap) > 0,
+    )
+    .map((item, idx) => ({
+      ...item,
+      id: item?.id ?? idx + 1,
+      area: String(item?.area ?? "").trim() || `Categoría ${idx + 1}`,
+      gap: Number(item?.gap) || 0,
+    }));
+
+  return [...filtrados].sort((a, b) => (Number(b.gap) || 0) - (Number(a.gap) || 0));
+}
+
 /**
  * Resumen del PDCA.
  * Muestra KPIs, estado de avance, métricas, tabla de acciones e información base de forma consolidada.
@@ -95,8 +151,8 @@ export const PdcaPhaseResumen: React.FC<PhaseResumenProps> = ({
     unidadMedida: "",
   };
   const vpoChecks = vpo_checkpoints || [];
-  const initialParetoRoot = pareto_data_map?.["root"] || [];
-  const newParetoRoot = nuevo_pareto_data_map?.["root"] || [];
+  const initialParetoRoot = extraerDatosParetoResumen(pareto_data_map);
+  const newParetoRoot = extraerDatosParetoResumen(nuevo_pareto_data_map);
   const matrix = impact_matrix || [];
 
   // YTD Jan-Dec time series from Paso 26 / Paso 7

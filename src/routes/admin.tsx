@@ -25,6 +25,11 @@ function AdminPanel() {
     area: u.area || "",
     ...(u.position ? { position: u.position } : {}),
     ...(u.avatarUrl ? { avatarUrl: u.avatarUrl } : {}),
+    ...(u.password ? { password: u.password } : {}),
+    ...(typeof u.emailVerified === "boolean" ? { emailVerified: u.emailVerified } : {}),
+    ...(typeof u.verifiedByAdmin === "boolean" ? { verifiedByAdmin: u.verifiedByAdmin } : {}),
+    ...(u.lastVerificationSentAt ? { lastVerificationSentAt: u.lastVerificationSentAt } : {}),
+    ...(u.createdAt ? { createdAt: u.createdAt } : {}),
   }));
 
   if (currentUser?.role !== "admin" && !permissions.canManageUsers) {

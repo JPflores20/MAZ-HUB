@@ -83,7 +83,7 @@ export function RdaChecklistEstandarizacion({ data, onChange }: Props) {
         onClick={() => toggle(id)}
         className={cn(
           "px-4 py-1 text-xs font-bold text-white transition-colors w-[60px] text-center rounded-sm",
-          isYes ? "bg-[#00B050] hover:bg-[#009040]" : "bg-red-500 dark:bg-red-600 hover:bg-red-600",
+          isYes ? "bg-red-500 dark:bg-red-600 hover:bg-red-600" : "bg-[#00B050] hover:bg-[#009040]",
         )}
       >
         {isYes ? t('rdaInternal.yes') : t('rdaInternal.no')}

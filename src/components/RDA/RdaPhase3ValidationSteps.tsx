@@ -69,14 +69,22 @@ export function syncRootCausesToPda(
     }
   });
 
+  // Causas que ya estaban confirmadas ("SI") en el estado previo
+  const prevConfirmedIds = new Set<string>();
+  const prevConfirmedCausesLower = new Set<string>();
   // Causas que antes estaban en "SI" y ahora cambiaron a "NO"/"Pendiente" o se eliminaron
   const unconfirmedCausesLower = new Set<string>();
   const unconfirmedIds = new Set<string>();
   (prevValidationActions || []).forEach((prev) => {
-    if (isRootCauseConfirmed(prev.esCausaRaiz) && !confirmedMap.has(prev.id)) {
-      unconfirmedIds.add(prev.id);
+    if (isRootCauseConfirmed(prev.esCausaRaiz)) {
+      prevConfirmedIds.add(prev.id);
       const text = String(prev.causaPotencial || "").trim().toLowerCase();
-      if (text) unconfirmedCausesLower.add(text);
+      if (text) prevConfirmedCausesLower.add(text);
+
+      if (!confirmedMap.has(prev.id)) {
+        unconfirmedIds.add(prev.id);
+        if (text) unconfirmedCausesLower.add(text);
+      }
     }
   });
   (validationActions || []).forEach((curr) => {
@@ -138,6 +146,15 @@ export function syncRootCausesToPda(
         changed = true;
       }
     } else {
+      // Si había estado previo y la causa ya estaba en "SI", significa que el usuario
+      // eliminó manualmente su fila en el Paso 12 (PDA); no volver a recrearla.
+      if (
+        prevValidationActions &&
+        (prevConfirmedIds.has(v.id) || (causaLower && prevConfirmedCausesLower.has(causaLower)))
+      ) {
+        return;
+      }
+
       // Buscar si hay una fila completamente vacía sin usar para reutilizarla
       const blankIdx = list.findIndex(
         (p) =>
@@ -253,10 +270,17 @@ export function RdaPhase3ValidationSteps({ rda, onChange }: Props) {
   };
 
   const efectoProblema = getRdaName(rda) || rda.title || "Anomalía RDA";
+  const initialSyncDoneForRdaIdRef = React.useRef<string | null>(null);
 
-  // Sincronización automática: si en el Paso 9 ya hay causas con "¿Es Causa Raíz? = Sí"
-  // que aún no están en el Paso 12 (PDA), colocarlas automáticamente al cargar/actualizar.
+  // Sincronización inicial única: solo si al abrir el RDA el Paso 12 (PDA) está completamente vacío
+  // y en el Paso 9 ya existen causas con "¿Es Causa Raíz? = Sí".
+  // No volver a re-sincronizar en autoguardados para no recrear acciones eliminadas por el usuario.
   React.useEffect(() => {
+    if (initialSyncDoneForRdaIdRef.current === rda.id) return;
+    initialSyncDoneForRdaIdRef.current = rda.id;
+
+    if (Array.isArray(rda.pda) && rda.pda.length > 0) return;
+
     const { nextPda, changed } = syncRootCausesToPda(
       rda.validationActions || [],
       rda.pda || [],
@@ -265,7 +289,7 @@ export function RdaPhase3ValidationSteps({ rda, onChange }: Props) {
     if (changed) {
       onChange({ ...rda, pda: nextPda });
     }
-  }, [rda.validationActions]);
+  }, [rda.id]);
 
   const handleValidationActionsChange = (newActions: RdaValidationAction[]) => {
     const { nextPda } = syncRootCausesToPda(

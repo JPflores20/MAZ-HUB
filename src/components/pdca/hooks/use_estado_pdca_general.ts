@@ -13,7 +13,12 @@ export const use_estado_pdca_general = (
 ) => {
   const [pestañaActiva, setPestañaActiva] = useState<Phase>("Resumen");
   const [tituloProyecto, setTituloProyecto] = useState<string>(pdcaInicial.titulo || "");
-  const [areaProyecto, setAreaProyecto] = useState<string>(pdcaInicial.area || "cocimientos");
+  const [plantaProyecto, setPlantaProyecto] = useState<string>(pdcaInicial.planta || "Zacatecas");
+  const [departamentoProyecto, setDepartamentoProyecto] = useState<string>(
+    pdcaInicial.departamento || "",
+  );
+  const [areaProyecto, setAreaProyecto] = useState<string>(pdcaInicial.area || "Cocimientos");
+  const [etapaProyecto, setEtapaProyecto] = useState<string>(pdcaInicial.etapa || "");
   const [problemaDeclarado, setProblemaDeclarado] = useState<string>(pdcaInicial.problema || "");
   const [causaRaizIdentificada, setCausaRaizIdentificada] = useState<string>(
     pdcaInicial.causaRaiz || "",
@@ -62,8 +67,14 @@ export const use_estado_pdca_general = (
     setPestañaActiva,
     tituloProyecto,
     setTituloProyecto,
+    plantaProyecto,
+    setPlantaProyecto,
+    departamentoProyecto,
+    setDepartamentoProyecto,
     areaProyecto,
     setAreaProyecto,
+    etapaProyecto,
+    setEtapaProyecto,
     problemaDeclarado,
     setProblemaDeclarado,
     causaRaizIdentificada,

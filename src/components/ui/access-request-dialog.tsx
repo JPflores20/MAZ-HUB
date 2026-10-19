@@ -24,6 +24,7 @@ import { useAuth, type UserProfile } from "@/context/auth-context";
 import type { UserPermissions } from "@/services/user-service";
 import { useDirectoryUsers } from "@/components/ui/responsible-profile-card";
 import type { Pdca } from "@/data/pdca";
+import { doesAreaBelongToParentOrMatch } from "@/data/pdca-defaults";
 import type { Rda } from "@/data/rda";
 import { getRdaDisplayName } from "@/components/RDA/rda-name";
 
@@ -63,7 +64,7 @@ export function canUserAccessPdca(
     permissions?.canViewArea &&
     userAreaNorm &&
     userAreaNorm !== "usuario" &&
-    normalizeStr(pdca.area) === userAreaNorm
+    doesAreaBelongToParentOrMatch(pdca.area, currentUser.area)
   ) {
     return true;
   }
@@ -101,13 +102,13 @@ export function canUserAccessRda(
   const emailLower = normalizeStr(currentUser.email);
   const nameLower = normalizeStr(currentUser.name);
   const userAreaNorm = normalizeStr(currentUser.area);
-  const rdaArea = normalizeStr(rda.context?.area || rda.portada?.area);
+  const rawRdaArea = rda.context?.area || rda.portada?.area;
 
   if (
     permissions?.canViewArea &&
     userAreaNorm &&
     userAreaNorm !== "usuario" &&
-    rdaArea === userAreaNorm
+    doesAreaBelongToParentOrMatch(rawRdaArea, currentUser.area)
   ) {
     return true;
   }
@@ -256,15 +257,8 @@ export const AccessRequestDialog: React.FC<AccessRequestDialogProps> = ({
 
   useEffect(() => {
     if (open && recipientOptions.length > 0) {
-      // Preseleccionar al Creador y Responsables por defecto, o al primer Admin si no hay
-      const primary = recipientOptions
-        .filter((r) => r.roleLabel === "Creador" || r.roleLabel === "Responsable")
-        .map((r) => r.key);
-      if (primary.length > 0) {
-        setSelectedKeys(primary);
-      } else {
-        setSelectedKeys(recipientOptions.slice(0, 1).map((r) => r.key));
-      }
+      // Preseleccionar a todos los destinatarios relevantes (Creador, Responsables y Administradores)
+      setSelectedKeys(recipientOptions.map((r) => r.key));
       setCustomNote("");
     }
   }, [open, recipientOptions]);
@@ -287,28 +281,43 @@ export const AccessRequestDialog: React.FC<AccessRequestDialogProps> = ({
     try {
       const noteSuffix = customNote.trim() ? ` — Motivo: "${customNote.trim()}"` : "";
       const baseMessage = `${currentUser.name} solicita permiso para ver el ${target.module} "${target.title}" (${target.folioOrCode})${noteSuffix}`;
+      const actionId = `access-req-${target.module}-${target.id}-${currentUser.uid}`;
+      const responsibleNames = target.responsibles.map((r) => r.name).filter(Boolean);
+      const responsibleEmails = target.responsibles
+        .map((r) => r.email)
+        .filter((e): e is string => Boolean(e));
 
       await Promise.all(
         chosen.map((recipient) =>
           addDoc(collection(db, "notifications"), {
             userId: recipient.name,
+            recipientEmail: recipient.email || "",
+            recipientRole: recipient.roleLabel,
+            forAdmins: true,
+            creatorName: target.creatorName || "",
+            creatorEmail: target.creatorEmail || "",
+            responsibleNames,
+            responsibleEmails,
             type: "access_request",
             module: target.module,
+            folioOrCode: target.folioOrCode,
             ...(target.module === "PDCA" ? { pdcaId: target.id } : { rdaId: target.id }),
             pdcaTitle: `${target.module}: ${target.title}`,
-            actionId: `access-req-${target.id}-${currentUser.uid}`,
+            actionId,
             requesterUid: currentUser.uid,
             requesterName: currentUser.name,
             requesterEmail: currentUser.email,
+            customNote: customNote.trim(),
             message: baseMessage,
             read: false,
+            approved: false,
             createdAt: new Date().toISOString(),
           }),
         ),
       );
 
       toast.success(
-        `Solicitud enviada a ${chosen.map((c) => c.name).join(", ")}. Recibirás acceso cuando la aprueben.`,
+        `Solicitud enviada a ${chosen.map((c) => c.name).join(", ")}. Recibirás una notificación cuando la aprueben.`,
       );
       onOpenChange(false);
     } catch (error) {

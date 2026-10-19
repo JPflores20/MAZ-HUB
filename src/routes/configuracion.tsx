@@ -25,6 +25,8 @@ import {
   FileText,
   Sparkles,
   RotateCcw,
+  Copy,
+  Check,
 } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "sonner";
@@ -135,8 +137,14 @@ function getUserNameParts(user: UserProfile | null | undefined): {
 }
 
 function UserSettingsPage() {
-  const { currentUser, mockUsers, updateUserProfile, changePassword, sendPasswordReset } =
-    useAuth();
+  const {
+    currentUser,
+    mockUsers,
+    updateUserProfile,
+    changePassword,
+    syncCurrentPassword,
+    sendPasswordReset,
+  } = useAuth();
   const { allPdcas } = usePdcas();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -187,7 +195,7 @@ function UserSettingsPage() {
     map.set(currentUser.uid, currentUser);
     for (const u of base) {
       if (u.uid === currentUser.uid) {
-        map.set(u.uid, { ...u, ...currentUser });
+        map.set(u.uid, { ...u, ...currentUser, password: currentUser.password || u.password });
       } else {
         map.set(u.uid, u);
       }
@@ -224,12 +232,22 @@ function UserSettingsPage() {
   const [avatarUrl, setAvatarUrl] = useState(targetUser?.avatarUrl || "");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  // Estado de cambio de contraseña
+  // Estado de visualización y cambio de contraseña
+  const [showSavedPassword, setShowSavedPassword] = useState(false);
+  const [copiedSavedPassword, setCopiedSavedPassword] = useState(false);
+  const [syncPasswordValue, setSyncPasswordValue] = useState("");
+  const [showSyncPasswordInput, setShowSyncPasswordInput] = useState(false);
+  const [isSyncingPassword, setIsSyncingPassword] = useState(false);
+  const [adminVisiblePasswords, setAdminVisiblePasswords] = useState<Record<string, boolean>>({});
+  const [showAllAdminPasswords, setShowAllAdminPasswords] = useState(false);
+  const [copiedAdminUid, setCopiedAdminUid] = useState<string | null>(null);
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
 
@@ -245,6 +263,8 @@ function UserSettingsPage() {
       setPhone(targetUser.phone || "");
       setBio(targetUser.bio || "");
       setAvatarUrl(targetUser.avatarUrl || "");
+      setShowSavedPassword(false);
+      setCopiedSavedPassword(false);
     }
   }, [targetUser]);
 
@@ -462,6 +482,61 @@ function UserSettingsPage() {
     }
   };
 
+  const savedPassword = targetUser.password || "";
+
+  const handleCopySavedPassword = async () => {
+    if (!savedPassword) return;
+    try {
+      await navigator.clipboard.writeText(savedPassword);
+      setCopiedSavedPassword(true);
+      toast.success("Contraseña copiada al portapapeles.");
+      setTimeout(() => setCopiedSavedPassword(false), 2000);
+    } catch {
+      toast.error("No se pudo copiar la contraseña.");
+    }
+  };
+
+  const handleSyncCurrentPassword = async () => {
+    if (!syncPasswordValue.trim()) {
+      toast.error("Ingresa la contraseña para sincronizarla.");
+      return;
+    }
+    setIsSyncingPassword(true);
+    try {
+      if (isEditingOtherUser) {
+        await saveTargetUserData({ password: syncPasswordValue.trim() });
+        setSyncPasswordValue("");
+        setShowSavedPassword(true);
+        toast.success(`Contraseña de ${targetUser.name} registrada.`);
+      } else {
+        await syncCurrentPassword(syncPasswordValue.trim());
+        setSyncPasswordValue("");
+        setShowSavedPassword(true);
+        toast.success("Contraseña sincronizada. Ahora puedes visualizarla en tu perfil.");
+      }
+    } catch (err: any) {
+      if (err?.code === "auth/wrong-password" || err?.code === "auth/invalid-credential") {
+        toast.error("La contraseña ingresada no coincide con tu contraseña actual.");
+      } else {
+        toast.error(err?.message || "No se pudo verificar la contraseña.");
+      }
+    } finally {
+      setIsSyncingPassword(false);
+    }
+  };
+
+  const handleCopyAdminUserPassword = async (u: UserProfile) => {
+    if (!u.password) return;
+    try {
+      await navigator.clipboard.writeText(u.password);
+      setCopiedAdminUid(u.uid);
+      toast.success(`Contraseña de ${u.name} copiada al portapapeles.`);
+      setTimeout(() => setCopiedAdminUid(null), 2000);
+    } catch {
+      toast.error("No se pudo copiar la contraseña.");
+    }
+  };
+
   const handleSendResetEmail = async () => {
     setIsSendingReset(true);
     try {
@@ -657,6 +732,35 @@ function UserSettingsPage() {
                   <span className="font-medium text-foreground truncate max-w-[200px]">
                     {targetUser.email}
                   </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <Lock className="size-3.5" />
+                    Contraseña
+                  </span>
+                  {savedPassword ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-semibold text-foreground select-all">
+                        {showSavedPassword ? savedPassword : "••••••••••"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowSavedPassword((v) => !v)}
+                        title={showSavedPassword ? "Ocultar contraseña" : "Ver mi contraseña"}
+                        className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        {showSavedPassword ? (
+                          <EyeOff className="size-3.5" />
+                        ) : (
+                          <Eye className="size-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground italic">
+                      Ver en Seguridad ↓
+                    </span>
+                  )}
                 </div>
                 {phone && (
                   <div className="flex items-center justify-between">
@@ -912,8 +1016,8 @@ function UserSettingsPage() {
                   </h2>
                   <p className="text-xs text-muted-foreground">
                     {isEditingOtherUser
-                      ? `Envía un enlace de restablecimiento de contraseña al correo corporativo de ${targetUser.name}.`
-                      : "Actualiza tu contraseña de acceso o solicita un enlace de recuperación a tu correo."}
+                      ? `Consulta la contraseña registrada o envía un enlace de restablecimiento al correo de ${targetUser.name}.`
+                      : "Consulta tu contraseña actual, actualízala o solicita un enlace de recuperación a tu correo."}
                   </p>
                 </div>
               </div>
@@ -935,9 +1039,147 @@ function UserSettingsPage() {
               </Button>
             </div>
 
+            {/* Bloque para visualizar la contraseña actual */}
+            <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-foreground">
+                    {isEditingOtherUser ? "Contraseña Registrada del Usuario" : "Mi Contraseña Actual"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {savedPassword
+                      ? "Haz clic en el icono del ojo para mostrar u ocultar tu contraseña de acceso."
+                      : isEditingOtherUser
+                        ? "El usuario aún no ha iniciado sesión desde que se habilitó el visor de contraseña."
+                        : "Confirma tu contraseña actual una sola vez para poder visualizarla siempre desde aquí."}
+                  </p>
+                </div>
+              </div>
+
+              {savedPassword ? (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <div className="relative flex-1">
+                    <Lock className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Input
+                      id="saved-password-viewer"
+                      readOnly
+                      type={showSavedPassword ? "text" : "password"}
+                      value={savedPassword}
+                      className="pl-9 pr-10 font-mono font-semibold bg-card"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSavedPassword((v) => !v)}
+                      title={showSavedPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      {showSavedPassword ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSavedPassword((v) => !v)}
+                      className="gap-1.5 text-xs h-9"
+                    >
+                      {showSavedPassword ? (
+                        <>
+                          <EyeOff className="size-3.5" />
+                          Ocultar
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="size-3.5" />
+                          Ver contraseña
+                        </>
+                      )}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCopySavedPassword}
+                      className="gap-1.5 text-xs h-9"
+                    >
+                      {copiedSavedPassword ? (
+                        <>
+                          <Check className="size-3.5 text-emerald-500" />
+                          Copiada
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3.5" />
+                          Copiar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <div className="relative flex-1">
+                    <Lock className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Input
+                      id="sync-current-password"
+                      type={showSyncPasswordInput ? "text" : "password"}
+                      value={syncPasswordValue}
+                      onChange={(e) => setSyncPasswordValue(e.target.value)}
+                      placeholder={
+                        isEditingOtherUser
+                          ? `Registrar contraseña de ${targetUser.name}`
+                          : "Escribe tu contraseña actual para mostrarla aquí"
+                      }
+                      className="pl-9 pr-10 bg-card"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSyncPasswordInput((v) => !v)}
+                      title={showSyncPasswordInput ? "Ocultar" : "Ver"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      {showSyncPasswordInput ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                    </button>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    disabled={isSyncingPassword || !syncPasswordValue.trim()}
+                    onClick={handleSyncCurrentPassword}
+                    className="gap-1.5 text-xs h-9 shrink-0"
+                  >
+                    <Eye className="size-3.5" />
+                    {isSyncingPassword
+                      ? "Guardando..."
+                      : isEditingOtherUser
+                        ? "Registrar y Ver Contraseña"
+                        : "Sincronizar y Ver Contraseña"}
+                  </Button>
+                </div>
+              )}
+            </div>
+
             {!isEditingOtherUser && (
               <>
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2 pt-2 border-t border-border/60">
+                  <div className="sm:col-span-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Cambiar Contraseña
+                    </h3>
+                  </div>
+
                   {/* Contraseña Actual */}
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="current-password" className="text-xs font-bold uppercase tracking-wider">
@@ -956,7 +1198,7 @@ function UserSettingsPage() {
                       <button
                         type="button"
                         onClick={() => setShowCurrentPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         {showCurrentPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
@@ -981,7 +1223,7 @@ function UserSettingsPage() {
                       <button
                         type="button"
                         onClick={() => setShowNewPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         {showNewPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
@@ -1014,12 +1256,19 @@ function UserSettingsPage() {
                       <CheckCircle2 className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                       <Input
                         id="confirm-password"
-                        type={showNewPassword ? "text" : "password"}
+                        type={showConfirmPassword ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Repite la nueva contraseña"
-                        className="pl-9"
+                        className="pl-9 pr-10"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
                     </div>
                     {confirmPassword && confirmPassword !== newPassword && (
                       <p className="text-[11px] text-destructive font-medium">
@@ -1048,6 +1297,121 @@ function UserSettingsPage() {
               </>
             )}
           </form>
+
+          {/* Tarjeta 3: Contraseñas de Todos los Usuarios (Exclusivo Administradores) */}
+          {isAdmin && (
+            <div className="rounded-2xl border border-amber-500/30 bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                    <Shield className="size-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-lg font-bold uppercase tracking-wide">
+                      Contraseñas de Todos los Usuarios ({availableUsers.length})
+                    </h2>
+                    <p className="text-xs text-muted-foreground">
+                      Vista exclusiva para administradores. Consulta o copia la contraseña de cualquier usuario registrado.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllAdminPasswords((v) => !v)}
+                  className="text-xs gap-1.5"
+                >
+                  {showAllAdminPasswords ? (
+                    <>
+                      <EyeOff className="size-3.5" />
+                      Ocultar todas
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="size-3.5" />
+                      Ver todas las contraseñas
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <div className="max-h-96 overflow-y-auto divide-y divide-border rounded-xl border border-border">
+                {availableUsers.map((u) => {
+                  const isVisible = Boolean(showAllAdminPasswords || adminVisiblePasswords[u.uid]);
+                  return (
+                    <div
+                      key={u.uid}
+                      className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold uppercase text-foreground truncate">
+                            {u.name}
+                          </span>
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                            {ROLE_LABELS[u.role] || "Usuario"}
+                          </span>
+                        </div>
+                        <span className="block text-[11px] text-muted-foreground truncate">
+                          {u.email}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {u.password ? (
+                          <div className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-2.5 py-1">
+                            <Lock className="size-3.5 text-muted-foreground shrink-0" />
+                            <span className="font-mono text-xs font-semibold text-foreground select-all">
+                              {isVisible ? u.password : "••••••••••"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setAdminVisiblePasswords((prev) => ({
+                                  ...prev,
+                                  [u.uid]: !isVisible,
+                                }))
+                              }
+                              title={isVisible ? "Ocultar contraseña" : "Ver contraseña"}
+                              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                            >
+                              {isVisible ? (
+                                <EyeOff className="size-3.5" />
+                              ) : (
+                                <Eye className="size-3.5" />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void handleCopyAdminUserPassword(u)}
+                              title="Copiar contraseña"
+                              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                            >
+                              {copiedAdminUid === u.uid ? (
+                                <Check className="size-3.5 text-emerald-500" />
+                              ) : (
+                                <Copy className="size-3.5" />
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedUid(u.uid)}
+                            className="text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                          >
+                            Seleccionar para registrar contraseña
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

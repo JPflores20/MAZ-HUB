@@ -32,9 +32,34 @@ import {
   ResponsibleSelectorItem,
   useDirectoryUsers,
 } from "@/components/ui/responsible-profile-card";
-import { AREAS } from "@/data/pdca";
+import {
+  OFFICIAL_PLANTAS,
+  OFFICIAL_DEPARTAMENTOS,
+  OFFICIAL_AREAS,
+  OFFICIAL_ETAPAS,
+} from "@/data/pdca";
 import { RichTextEditor } from "./rich_text_editor";
 import { PhasePlanProps } from "./phase_plan_types";
+
+function resolvePdcaOptions(official: readonly string[], currentVal?: string): string[] {
+  const trimmed = (currentVal || "").trim();
+  if (!trimmed) return [...official];
+  const exists = official.some((opt) => opt.toLowerCase() === trimmed.toLowerCase());
+  return exists ? [...official] : [trimmed, ...official];
+}
+
+function normalizePdcaOption(official: readonly string[], currentVal?: string): string {
+  const trimmed = (currentVal || "").trim();
+  if (!trimmed) return "";
+  const lower = trimmed.toLowerCase();
+  if (lower === "cocimientos") return "Cocimientos";
+  if (lower === "bloque_frio" || lower === "cuartos_frios" || lower === "cuartos frios") {
+    return "Cuartos Frios";
+  }
+  if (lower === "mantenimiento") return "Mantenimiento";
+  const match = official.find((opt) => opt.toLowerCase() === lower);
+  return match ?? trimmed;
+}
 
 /**
  * Subfase 1 component: Contains steps 1 to 7 for PDCA Plan Phase.
@@ -42,8 +67,14 @@ import { PhasePlanProps } from "./phase_plan_types";
 export const Subphase1: React.FC<PhasePlanProps> = ({
   title_value,
   on_title_change,
+  planta_value,
+  on_planta_change,
+  departamento_value,
+  on_departamento_change,
   area_value,
   on_area_change,
+  etapa_value,
+  on_etapa_change,
   deadline_date,
   on_deadline_change,
   author_name,
@@ -90,6 +121,16 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
   const { directory: directory_users, resolveUser } = useDirectoryUsers(available_users);
   const selectable_users = directory_users.length > 0 ? directory_users : (available_users ?? []);
 
+  const normalized_planta = normalizePdcaOption(OFFICIAL_PLANTAS, planta_value || "Zacatecas");
+  const normalized_departamento = normalizePdcaOption(OFFICIAL_DEPARTAMENTOS, departamento_value);
+  const normalized_area = normalizePdcaOption(OFFICIAL_AREAS, area_value);
+  const normalized_etapa = normalizePdcaOption(OFFICIAL_ETAPAS, etapa_value);
+
+  const planta_options = resolvePdcaOptions(OFFICIAL_PLANTAS, normalized_planta);
+  const departamento_options = resolvePdcaOptions(OFFICIAL_DEPARTAMENTOS, normalized_departamento);
+  const area_options = resolvePdcaOptions(OFFICIAL_AREAS, normalized_area);
+  const etapa_options = resolvePdcaOptions(OFFICIAL_ETAPAS, normalized_etapa);
+
   const handle_add_custom_assigned = () => {
     const val = custom_assigned_name.trim();
     if (!val) return;
@@ -116,7 +157,7 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
 
         <div className="space-y-5 mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-1.5 lg:col-span-1">
+            <div className="space-y-1.5 lg:col-span-2">
               <Label className="text-xs font-semibold">{t("pdcaPlan.projectTitle")}</Label>
               <Input
                 value={title_value}
@@ -125,22 +166,6 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
                 placeholder={t("pdcaPlan.projectTitlePlaceholder")}
                 className="h-9 text-xs"
               />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{t("pdcaPlan.area")}</Label>
-              <Select value={area_value} onValueChange={on_area_change} disabled={!is_editable}>
-                <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder={t("pdcaPlan.selectArea")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {AREAS.map((a) => (
-                    <SelectItem key={a.value} value={a.value}>
-                      {a.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="space-y-1.5">
@@ -178,6 +203,89 @@ export const Subphase1: React.FC<PhasePlanProps> = ({
               ) : (
                 <Input value={author_name} disabled className="h-9 text-xs" />
               )}
+            </div>
+          </div>
+
+          {/* Listas desplegables oficiales: Planta, Departamento, Área, Etapa */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Planta</Label>
+              <Select
+                value={normalized_planta}
+                onValueChange={(v) => on_planta_change?.(v)}
+                disabled={!is_editable}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Seleccionar planta" />
+                </SelectTrigger>
+                <SelectContent>
+                  {planta_options.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {p}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Departamento</Label>
+              <Select
+                value={normalized_departamento}
+                onValueChange={(v) => on_departamento_change?.(v)}
+                disabled={!is_editable}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Seleccionar departamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  {departamento_options.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">{t("pdcaPlan.area")}</Label>
+              <Select
+                value={normalized_area}
+                onValueChange={on_area_change}
+                disabled={!is_editable}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder={t("pdcaPlan.selectArea")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {area_options.map((a) => (
+                    <SelectItem key={a} value={a}>
+                      {a}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Etapa</Label>
+              <Select
+                value={normalized_etapa}
+                onValueChange={(v) => on_etapa_change?.(v)}
+                disabled={!is_editable}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Seleccionar etapa" />
+                </SelectTrigger>
+                <SelectContent>
+                  {etapa_options.map((et) => (
+                    <SelectItem key={et} value={et}>
+                      {et}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
