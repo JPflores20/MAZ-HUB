@@ -87,43 +87,8 @@ export function RdaProvider({ children }: { children: ReactNode }) {
 
   const rdaList: Rda[] = (() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin" || permissions?.canViewAll) return rawRdas;
-
-    const emailLower = (currentUser.email || "").trim().toLowerCase();
-    const nameLower = (currentUser.name || "").trim().toLowerCase();
-    const userAreaNorm = normalizeStr(currentUser.area);
-
-    return rawRdas.filter((r) => {
-      const rawRdaArea = r.context?.area || r.portada?.area;
-      if (
-        permissions?.canViewArea &&
-        userAreaNorm &&
-        userAreaNorm !== "usuario" &&
-        doesAreaBelongToParentOrMatch(rawRdaArea, currentUser.area)
-      ) {
-        return true;
-      }
-
-      const assigned = getRdaResponsibles(r).map((p) => p.toLowerCase());
-      const isAuthor =
-        (Boolean(emailLower) && r.portada?.autorEmail?.trim().toLowerCase() === emailLower) ||
-        (Boolean(nameLower) && r.portada?.autorOriginal?.trim().toLowerCase() === nameLower) ||
-        (Boolean(nameLower) && r.context?.iniciadoPor?.trim().toLowerCase() === nameLower);
-
-      if (assigned.length === 0) {
-        if (!r.portada?.autorEmail && !r.portada?.autorOriginal && !r.context?.iniciadoPor) {
-          return true;
-        }
-        return isAuthor;
-      }
-
-      const isAssigned = assigned.some(
-        (person) =>
-          (Boolean(nameLower) && person === nameLower) ||
-          (Boolean(emailLower) && person === emailLower),
-      );
-      return isAssigned || isAuthor;
-    });
+    // Por el momento todos los usuarios pueden ver todos los RDAs
+    return rawRdas;
   })();
 
   return (

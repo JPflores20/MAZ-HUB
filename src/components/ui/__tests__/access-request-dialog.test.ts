@@ -104,7 +104,8 @@ describe("Access control & request targets for PDCA and RDA", () => {
         },
         userPerms,
       ),
-    ).toBe(false);
+    ).toBe(true);
+    expect(canUserAccessPdca(samplePdca, null, userPerms)).toBe(false);
   });
 
   it("canUserAccessRda permite al autor, responsables y administradores, y bloquea a usuarios sin asignación", () => {
@@ -167,7 +168,8 @@ describe("Access control & request targets for PDCA and RDA", () => {
         },
         userPerms,
       ),
-    ).toBe(false);
+    ).toBe(true);
+    expect(canUserAccessRda(rda, null, userPerms)).toBe(false);
   });
 
   it("buildPdcaAccessTarget y buildRdaAccessTarget extraen correctamente creador y responsables", () => {

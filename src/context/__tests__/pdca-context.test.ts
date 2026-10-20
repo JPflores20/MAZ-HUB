@@ -96,7 +96,7 @@ describe("PdcaProvider / usePdcas", () => {
     expect(result.current.allPdcas).toHaveLength(3);
   });
 
-  it("filtra los PDCAs para usuarios normales (sólo propios o asignados)", async () => {
+  it("permite ver todos los PDCAs para usuarios normales autenticados", async () => {
     (auth_context.useAuth as any).mockReturnValue({
       currentUser: { role: "user", email: "user@test.com", name: "User" },
     });
@@ -104,10 +104,9 @@ describe("PdcaProvider / usePdcas", () => {
     const { result } = renderHook(() => usePdcas(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
-    // Debería ver el 2 (es autor) y el 3 (está asignado)
     expect(result.current.allPdcas).toHaveLength(3);
-    expect(result.current.pdcaList).toHaveLength(2);
-    expect(result.current.pdcaList.map((p: any) => p.id)).toEqual(["2", "3"]);
+    expect(result.current.pdcaList).toHaveLength(3);
+    expect(result.current.pdcaList.map((p: any) => p.id)).toEqual(["1", "2", "3"]);
   });
 
   it("mantiene las listas pdcaList y allPdcas sincronizadas", async () => {

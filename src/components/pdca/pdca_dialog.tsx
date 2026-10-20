@@ -71,7 +71,8 @@ const PdcaDialogContent: React.FC<{
   const is_admin = auth_user?.role === "admin";
 
   const is_deadline_locked = use_pdca_deadline(is_admin, current_pdca.fechaFinalizacion);
-  const is_editable = (permissions?.canEdit ?? true) && (is_admin || !is_deadline_locked);
+  // Por el momento todos los usuarios pueden editar todos los PDCAs sin bloqueo por fecha límite
+  const is_editable = true;
 
   const state = use_pdca_dialog_state(current_pdca, auth_user);
 
@@ -116,10 +117,6 @@ const PdcaDialogContent: React.FC<{
 
   const handle_toggle_step = useCallback(
     (step_id: string) => {
-      if (!is_admin) {
-        toast.error(t("pdcaDialog.adminOnlyCompleted"));
-        return;
-      }
       state.set_completed_steps((prev) => {
         const next_steps = new Set(prev);
         if (next_steps.has(step_id)) next_steps.delete(step_id);
@@ -128,15 +125,11 @@ const PdcaDialogContent: React.FC<{
       });
       autosave.mark_as_modified();
     },
-    [is_admin, state, autosave, t],
+    [state, autosave],
   );
 
   const handle_toggle_na = useCallback(
     (step_id: string) => {
-      if (!is_admin) {
-        toast.error(t("pdcaDialog.adminOnlyNA"));
-        return;
-      }
       state.set_na_steps((prev) => {
         const next_steps = new Set(prev);
         if (next_steps.has(step_id)) next_steps.delete(step_id);
@@ -145,7 +138,7 @@ const PdcaDialogContent: React.FC<{
       });
       autosave.mark_as_modified();
     },
-    [is_admin, state, autosave, t],
+    [state, autosave],
   );
 
   const handle_proceed_next_phase = async () => {
@@ -231,7 +224,6 @@ const PdcaDialogContent: React.FC<{
           });
         }}
         onToggleComplete={(p: Phase) => {
-          if (!is_admin) return;
           state.set_completed_phases((prev) => {
             const next = new Set(prev);
             if (next.has(p)) next.delete(p);

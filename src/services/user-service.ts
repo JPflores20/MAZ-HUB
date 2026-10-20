@@ -68,7 +68,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, UserPermissions> = {
     canDelete: true,
     canManageAssignment: true,
     canViewArea: true,
-    canViewAll: false,
+    canViewAll: true,
     canManageUsers: false,
   },
   user: {
@@ -76,24 +76,24 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, UserPermissions> = {
     canEdit: true,
     canDelete: true,
     canManageAssignment: true,
-    canViewArea: false,
-    canViewAll: false,
+    canViewArea: true,
+    canViewAll: true,
     canManageUsers: false,
   },
   intern: {
     canCreate: true,
     canEdit: true,
     canDelete: false,
-    canManageAssignment: false,
-    canViewArea: false,
-    canViewAll: false,
+    canManageAssignment: true,
+    canViewArea: true,
+    canViewAll: true,
     canManageUsers: false,
   },
   viewer: {
-    canCreate: false,
-    canEdit: false,
+    canCreate: true,
+    canEdit: true,
     canDelete: false,
-    canManageAssignment: false,
+    canManageAssignment: true,
     canViewArea: true,
     canViewAll: true,
     canManageUsers: false,
@@ -172,6 +172,12 @@ export function getEffectivePermissions(
   const merged: UserPermissions = {
     ...defaults,
     ...(user.permissions || {}),
+    // Por el momento todos pueden ver y editar todos los RDA y PDCA
+    canCreate: true,
+    canEdit: true,
+    canManageAssignment: true,
+    canViewArea: true,
+    canViewAll: true,
   };
   if (role === "admin") {
     merged.canManageUsers = true;

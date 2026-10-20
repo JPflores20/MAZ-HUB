@@ -12,6 +12,7 @@ import {
   Settings,
   Layers,
   AlertOctagon,
+  MessageSquareText,
 } from "lucide-react";
 import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
@@ -227,6 +228,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
       href: "https://splan.ab-inbev.com/login",
       label: "SPLAN",
       icon: Layers,
+      external: true,
+    },
+    {
+      href: "https://interactionlog.ab-inbev.com/home",
+      label: "Interaction Log",
+      icon: MessageSquareText,
       external: true,
     },
     {

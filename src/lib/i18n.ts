@@ -739,28 +739,28 @@ const resources = {
         problemDescription: "PROBLEM DESCRIPTION",
         goalDefinition: "GOAL DEFINITION (VPO STANDARD)",
         formatInbev: "⏱ Official A3 / A8 InBev format",
-        step3Title: "STEP 32: SIPOC MAP",
+        step3Title: "STEP 3: SIPOC MAP",
         step3Subtitle: "Upload your images or PDFs",
         step3Desc:
           "Attach photos or documents of the SIPOC MAP (max 6 files). Images, PDF, Excel, and PowerPoint are accepted.",
-        step4Title: "STEP 32: PROCESS MAPPING",
+        step4Title: "STEP 4: PROCESS MAPPING",
         step4Desc:
           "Attach photos or documents (max 6 files). Images, PDF, Excel, and PowerPoint are accepted.",
-        step6Title: "STEP 32: PROJECT RISK ANALYSIS",
-        step7Title: "STEP 32: CURRENT SITUATION",
-        step8Title: "STEP 32: BASELINE",
+        step6Title: "STEP 6: PROJECT RISK ANALYSIS",
+        step7Title: "STEP 7: CURRENT SITUATION",
+        step8Title: "STEP 8: BASELINE",
         step8Subtitle: "Upload a representative baseline image",
-        step11Title: "STEP 32: CORRELATION",
+        step11Title: "STEP 11: CORRELATION",
         removeAnalysis: "Remove Analysis",
         removeCorrelationAnalysis: "Remove Correlation Analysis?",
         removeCorrelationDesc: "This action will hide the flavor correlation section.",
         yesRemove: "Yes, remove",
         addFlavorAnalysis: "Add Flavor Analysis (Correlations)",
-        step12Title: "STEP 32: PROCESS SPECIFICATIONS",
+        step12Title: "STEP 12: PROCESS SPECIFICATIONS",
         step12Subtitle: "Upload an image with specifications",
-        step13Title: "STEP 32: BENCHMARK",
+        step13Title: "STEP 13: BENCHMARK",
         step13Subtitle: "Upload a representative Benchmark image",
-        step18Title: "STEP 32: DEFINED ROOT CAUSES",
+        step18Title: "STEP 18: DEFINED ROOT CAUSES",
         paso11_flavor_chart_no_series: "No series created",
         paso11_flavor_editor_series_name: "Series name",
         paso11_flavor_editor_point: "Point",
@@ -830,14 +830,14 @@ const resources = {
 
 
 
-        paso10Title: "STEP 4: PROBLEM STRATIFICATION (PARETO)",
-        paso10SecondaryTitle: "STEP 4: INDEPENDENT PARETO",
+        paso10Title: "STEP 10: PROBLEM STRATIFICATION (PARETO)",
+        paso10SecondaryTitle: "STEP 10: INDEPENDENT PARETO",
         paso10SubPareto: "Sub-Pareto: ",
         paso10SubParetoDesc: "Breakdown (Level {{level}}) of the category {{category}}.",
       },
       pdcaTables: {
         actionPlan: {
-          title: "STEP 4: IMPACT MATRIX AND ACTION PLAN",
+          title: "STEP 18: IMPACT MATRIX AND ACTION PLAN",
           instruction1: "1. Use this like ",
           instruction1Highlight: "any other action log in your MCRS",
           instruction2: "2. If a particular action successfully eliminated a symptom or root cause, indicate if an SDCA tool is needed or needs updating to standardize the outcome.",
@@ -885,7 +885,7 @@ const resources = {
           }
         },
         executedTests: {
-          title: "STEP 4: EXECUTED TESTS",
+          title: "STEP 23: EXECUTED TESTS",
           addTest: "Add Test",
           testAction: "TEST / ACTION",
           date: "DATE",
@@ -906,7 +906,7 @@ const resources = {
           uploading: "Uploading..."
         },
         newPerformance: {
-          title: "STEP 4: NEW PROCESS PERFORMANCE (STATISTICAL)",
+          title: "STEP 24: NEW PROCESS PERFORMANCE (STATISTICAL)",
           addIndicator: "Add Indicator",
           indicator: "INDICATOR / PI / KPI",
           beforeBaseline: "BEFORE (BASELINE)",
@@ -921,7 +921,7 @@ const resources = {
           }
         },
         gemba: {
-          title: "STEP 4: GEMBA EVIDENCES",
+          title: "STEP 9: GEMBA EVIDENCES",
           subtitle: "Upload Gemba images",
           uploadInstructions: "Drag and drop up to 6 images here, or click to select",
           supportedFormats: "Supports JPG, PNG, GIF, WebP (max 5MB)",
@@ -931,7 +931,7 @@ const resources = {
           descriptionPlaceholder: "Add description..."
         },
         evidenciasSolucion: {
-          title: "STEP 4: SOLUTION EVIDENCES",
+          title: "STEP 19: SOLUTION EVIDENCES",
           subtitle: "Upload solution evidences",
           uploadInstructions: "Drag and drop up to 6 images here, or click to select",
           supportedFormats: "Supports JPG, PNG, GIF, WebP (max 5MB)",
@@ -1677,28 +1677,28 @@ const resources = {
         problemDescription: "DESCRIPCIÓN DEL PROBLEMA",
         goalDefinition: "DEFINICIÓN DE LA META (VPO STANDARD)",
         formatInbev: "⏱ Formato oficial A3 / A8 InBev",
-        step3Title: "PASO 32: SIPOC MAP",
+        step3Title: "PASO 3: SIPOC MAP",
         step3Subtitle: "Sube tus imágenes o PDFs",
         step3Desc:
           "Adjunta fotos o documentos del SIPOC MAP (máximo 6 archivos). Se aceptan imágenes, PDF, Excel y PowerPoint.",
-        step4Title: "PASO 32: MAPEO DE PROCESOS",
+        step4Title: "PASO 4: MAPEO DE PROCESOS",
         step4Desc:
           "Adjunta fotos o documentos (máximo 6 archivos). Se aceptan imágenes, PDF, Excel y PowerPoint.",
-        step6Title: "PASO 32: ANÁLISIS DE RIESGOS DEL PROYECTO",
-        step7Title: "PASO 32: SITUACIÓN ACTUAL",
-        step8Title: "PASO 32: LÍNEA BASE",
+        step6Title: "PASO 6: ANÁLISIS DE RIESGOS DEL PROYECTO",
+        step7Title: "PASO 7: SITUACIÓN ACTUAL",
+        step8Title: "PASO 8: LÍNEA BASE",
         step8Subtitle: "Sube una imagen representativa del baseline",
-        step11Title: "PASO 32: CORRELACIÓN",
+        step11Title: "PASO 11: CORRELACIÓN",
         removeAnalysis: "Quitar Análisis",
         removeCorrelationAnalysis: "¿Quitar Análisis de Correlación?",
         removeCorrelationDesc: "Esta acción ocultará la sección de correlación de flavors.",
         yesRemove: "Sí, quitar",
         addFlavorAnalysis: "Agregar Análisis de Flavors (Correlaciones)",
-        step12Title: "PASO 32: ESPECIFICACIONES DEL PROCESO",
+        step12Title: "PASO 12: ESPECIFICACIONES DEL PROCESO",
         step12Subtitle: "Sube una imagen con las especificaciones",
-        step13Title: "PASO 32: PUNTO DE REFERENCIA",
+        step13Title: "PASO 13: PUNTO DE REFERENCIA",
         step13Subtitle: "Sube una imagen representativa del Punto de Referencia",
-        step18Title: "PASO 32: CAUSAS RAÍZ DEFINIDAS",
+        step18Title: "PASO 18: CAUSAS RAÍZ DEFINIDAS",
         paso11_flavor_chart_no_series: "No hay series creadas",
         paso11_flavor_editor_series_name: "Nombre de la serie",
         paso11_flavor_editor_point: "Punto",
@@ -1767,14 +1767,14 @@ const resources = {
 
 
 
-        paso10Title: "PASO 4: ESTRATIFICACIÓN DEL PROBLEMA (PARETO)",
-        paso10SecondaryTitle: "PASO 4: PARETO INDEPENDIENTE",
+        paso10Title: "PASO 10: ESTRATIFICACIÓN DEL PROBLEMA (PARETO)",
+        paso10SecondaryTitle: "PASO 10: PARETO INDEPENDIENTE",
         paso10SubPareto: "Sub-Pareto: ",
         paso10SubParetoDesc: "Desglose (Nivel {{level}}) de la categoria {{category}}.",
       },
       pdcaTables: {
         actionPlan: {
-          title: "PASO 32: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN",
+          title: "PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN",
           instruction1: "1. Usa esto como ",
           instruction1Highlight: "cualquier otro registro de acción en su MCRS",
           instruction2: "2. Si una acción particular tuvo éxito en la eliminación de un síntoma o causa de raíz, indique si se necesita una herramienta SDCA o necesita ser actualizada para estandarizar el resultado.",
@@ -1822,7 +1822,7 @@ const resources = {
           }
         },
         executedTests: {
-          title: "PASO 32: PRUEBAS EJECUTADAS",
+          title: "PASO 23: PRUEBAS EJECUTADAS",
           addTest: "Agregar Prueba",
           testAction: "PRUEBA / ACCIÓN",
           date: "FECHA",
@@ -1843,7 +1843,7 @@ const resources = {
           uploading: "Subiendo..."
         },
         newPerformance: {
-          title: "PASO 32: NUEVO PERFORMANCE DE PROCESOS (ESTADÍSTICO)",
+          title: "PASO 24: NUEVO PERFORMANCE DE PROCESOS (ESTADÍSTICO)",
           addIndicator: "Agregar Indicador",
           indicator: "INDICATOR / PI / KPI",
           beforeBaseline: "ANTES (BASELINE)",
@@ -1858,7 +1858,7 @@ const resources = {
           }
         },
         gemba: {
-          title: "PASO 32: EVIDENCIAS EN EL GEMBA",
+          title: "PASO 9: EVIDENCIAS EN EL GEMBA",
           subtitle: "Sube imágenes de las evidencias en el Gemba",
           uploadInstructions: "Arrastra hasta 6 imágenes aquí, o haz clic para seleccionar",
           supportedFormats: "Soporta JPG, PNG, GIF, WebP (máx 5MB)",
@@ -1868,7 +1868,7 @@ const resources = {
           descriptionPlaceholder: "Agregar descripción..."
         },
         evidenciasSolucion: {
-          title: "PASO 32: EVIDENCIAS DE LA SOLUCIÓN (FOTOS / GRÁFICOS)",
+          title: "PASO 19: EVIDENCIAS DE LA SOLUCIÓN (FOTOS / GRÁFICOS)",
           subtitle: "Sube imágenes de la solución",
           uploadInstructions: "Arrastra hasta 6 imágenes aquí, o haz clic para seleccionar",
           supportedFormats: "Soporta JPG, PNG, GIF, WebP (máx 5MB)",

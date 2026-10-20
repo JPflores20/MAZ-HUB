@@ -326,7 +326,7 @@ function RdaPage() {
                 setIsDialogOpen(false);
               }
             }}
-            onSave={permissions.canEdit ? handleSave : undefined}
+            onSave={handleSave}
           />
         </Suspense>
       </div>

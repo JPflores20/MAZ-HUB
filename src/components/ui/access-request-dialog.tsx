@@ -49,85 +49,26 @@ function getRdaResponsibles(rda: Rda): string[] {
  * Determina si el usuario actual tiene permiso para abrir el detalle de un PDCA.
  */
 export function canUserAccessPdca(
-  pdca: Pdca,
+  _pdca: Pdca,
   currentUser: UserProfile | null,
-  permissions?: UserPermissions | undefined,
+  _permissions?: UserPermissions | undefined,
 ): boolean {
   if (!currentUser) return false;
-  if (currentUser.role === "admin" || permissions?.canViewAll) return true;
-
-  const emailLower = normalizeStr(currentUser.email);
-  const nameLower = normalizeStr(currentUser.name);
-  const userAreaNorm = normalizeStr(currentUser.area);
-
-  if (
-    permissions?.canViewArea &&
-    userAreaNorm &&
-    userAreaNorm !== "usuario" &&
-    doesAreaBelongToParentOrMatch(pdca.area, currentUser.area)
-  ) {
-    return true;
-  }
-
-  const isAuthor =
-    (Boolean(emailLower) && normalizeStr(pdca.autorEmail) === emailLower) ||
-    (Boolean(nameLower) && normalizeStr(pdca.autor) === nameLower);
-
-  if (isAuthor) return true;
-
-  const isAssigned = (pdca.asignados || []).some(
-    (a) =>
-      (Boolean(emailLower) && normalizeStr(a.email) === emailLower) ||
-      (Boolean(nameLower) && normalizeStr(a.name) === nameLower),
-  );
-  if (isAssigned) return true;
-
-  const isInTeam = (pdca.equipo || []).some((member) => normalizeStr(member) === nameLower);
-  if (isInTeam) return true;
-
-  return false;
+  // Por el momento todos los usuarios autenticados pueden ver y editar todos los PDCAs
+  return true;
 }
 
 /**
  * Determina si el usuario actual tiene permiso para abrir el detalle de un RDA.
  */
 export function canUserAccessRda(
-  rda: Rda,
+  _rda: Rda,
   currentUser: UserProfile | null,
-  permissions?: UserPermissions | undefined,
+  _permissions?: UserPermissions | undefined,
 ): boolean {
   if (!currentUser) return false;
-  if (currentUser.role === "admin" || permissions?.canViewAll) return true;
-
-  const emailLower = normalizeStr(currentUser.email);
-  const nameLower = normalizeStr(currentUser.name);
-  const userAreaNorm = normalizeStr(currentUser.area);
-  const rawRdaArea = rda.context?.area || rda.portada?.area;
-
-  if (
-    permissions?.canViewArea &&
-    userAreaNorm &&
-    userAreaNorm !== "usuario" &&
-    doesAreaBelongToParentOrMatch(rawRdaArea, currentUser.area)
-  ) {
-    return true;
-  }
-
-  const isAuthor =
-    (Boolean(emailLower) && normalizeStr(rda.portada?.autorEmail) === emailLower) ||
-    (Boolean(nameLower) && normalizeStr(rda.portada?.autorOriginal) === nameLower) ||
-    (Boolean(nameLower) && normalizeStr(rda.context?.iniciadoPor) === nameLower);
-
-  if (isAuthor) return true;
-
-  const assigned = getRdaResponsibles(rda).map((p) => normalizeStr(p));
-  const isAssigned = assigned.some(
-    (person) =>
-      (Boolean(nameLower) && (person === nameLower || person.includes(nameLower))) ||
-      (Boolean(emailLower) && person === emailLower),
-  );
-
-  return isAssigned;
+  // Por el momento todos los usuarios autenticados pueden ver y editar todos los RDAs
+  return true;
 }
 
 export interface AccessRequestTarget {

@@ -64,40 +64,8 @@ export function PdcaProvider({ children }: { children: ReactNode }) {
 
   const pdcaList: Pdca[] = (() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin" || permissions?.canViewAll) return rawPdcas;
-    const emailLower = (currentUser.email || "").trim().toLowerCase();
-    const nameLower = (currentUser.name || "").trim().toLowerCase();
-    const userAreaNorm = normalizeStr(currentUser.area);
-
-    return rawPdcas.filter((p) => {
-      if (
-        permissions?.canViewArea &&
-        userAreaNorm &&
-        userAreaNorm !== "usuario" &&
-        doesAreaBelongToParentOrMatch(p.area, currentUser.area)
-      ) {
-        return true;
-      }
-
-      const isAuthor =
-        (Boolean(emailLower) && p.autorEmail?.trim().toLowerCase() === emailLower) ||
-        (Boolean(nameLower) && p.autor?.trim().toLowerCase() === nameLower);
-
-      // Si el PDCA no tiene asignados, usamos la lógica original
-      if (!p.asignados || p.asignados.length === 0) {
-        if (!p.autorEmail && !p.autor) return true;
-        return isAuthor;
-      }
-
-      // Si tiene asignados, verificamos si el usuario actual está en la lista (por correo o nombre) o es el autor original
-      const isAssigned = p.asignados.some(
-        (a) =>
-          (Boolean(emailLower) && a.email?.trim().toLowerCase() === emailLower) ||
-          (Boolean(nameLower) && a.name?.trim().toLowerCase() === nameLower),
-      );
-      const isInTeam = p.equipo?.some((member) => member.trim().toLowerCase() === nameLower) ?? false;
-      return isAssigned || isInTeam || isAuthor;
-    });
+    // Por el momento todos los usuarios pueden ver todos los PDCAs
+    return rawPdcas;
   })();
 
   return (
