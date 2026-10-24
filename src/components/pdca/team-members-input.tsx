@@ -115,7 +115,7 @@ import { GopThemesSection } from "./1.PLAN/paso15/GopThemesSection";
 import { ImageUploadSection, MultiImageUploadSection } from "./image-upload-section";
 import { DatePicker } from "@/components/ui/date-picker";
 import { savePdcaToFirestore } from "@/services/pdca-service";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import {
   Accordion,
   AccordionContent,

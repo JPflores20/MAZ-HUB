@@ -211,7 +211,7 @@ export function RdaPhase3Analysis({ rda, onChange, onForceSave }: Props) {
         onToggleNa={() => toggleNa("rda-step-8")}
       />
 
-      {/* 9-12: Validación, Checklist y PDA */}
+      {/* 9-11: Validación, Checklist y PDA */}
       <RdaPhase3ValidationSteps rda={rda} onChange={onChange} />
     </div>
   );

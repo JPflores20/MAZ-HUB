@@ -25,7 +25,7 @@ import {
 
 import { deletePdcaFromFirestore, updatePdcaDeadline } from "@/services/pdca-service";
 import { type Phase, type Pdca, isBloqueFrioArea } from "@/data/pdca";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import React, { lazy, Suspense } from "react";

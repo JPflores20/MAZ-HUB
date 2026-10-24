@@ -6,11 +6,11 @@ import { renderHook, waitFor } from "@testing-library/react";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PdcaProvider, usePdcas } from "../pdca-context";
-import * as auth_context from "../auth-context";
+import * as auth_context from "@/auth/auth-context";
 import * as pdca_service from "@/services/pdca-service";
 import type { Pdca } from "@/data/pdca";
 
-vi.mock("../auth-context", () => ({
+vi.mock("@/auth/auth-context", () => ({
   useAuth: vi.fn(),
 }));
 

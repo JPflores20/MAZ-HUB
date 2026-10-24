@@ -127,7 +127,7 @@ export function RdaValidationTable({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-          ✓ Las causas con <strong>¿Es Causa Raíz? = Sí</strong> se colocan automáticamente en el Paso 12 (Causa Raíz)
+          ✓ Las causas con <strong>¿Es Causa Raíz? = Sí</strong> se colocan automáticamente en el Paso 11 (Causa Raíz)
         </span>
         <div className="flex flex-wrap items-center gap-2">
           {onImportFromIshikawa && (
@@ -150,9 +150,9 @@ export function RdaValidationTable({
               size="sm"
               onClick={onSendToPda}
               className="h-8 text-xs font-semibold text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 gap-1.5"
-              title="Enviar causas raíz validadas (Sí) al Plan de Acción / PDA (Paso 12)"
+              title="Enviar causas raíz validadas (Sí) al Plan de Acción / PDA (Paso 11)"
             >
-              Enviar Causas Raíz al PDA (Paso 12)
+              Enviar Causas Raíz al PDA (Paso 11)
               <ArrowRight className="size-3.5" />
             </Button>
           )}

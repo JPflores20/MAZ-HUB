@@ -46,7 +46,7 @@ import { canUserAccessPdca } from "@/components/ui/access-request-dialog";
 
 import { type Phase, type Pdca } from "@/data/pdca";
 import { ALL_STEP_IDS, TOTAL_STEPS } from "@/components/pdca/pdca_dialog_header";
-import { UserProfile, getEffectivePermissions } from "@/context/auth-context";
+import { UserProfile, getEffectivePermissions } from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { updatePdcaAssignedUsers } from "@/services/pdca-service";
 

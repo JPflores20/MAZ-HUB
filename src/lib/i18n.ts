@@ -346,10 +346,10 @@ const resources = {
         validationPlan: "9. Validation Plan",
         evidenceByAction: "EVIDENCE BY ACTION",
         evidenceDesc: "Attach evidence for each validation action (validated or discarded root cause).",
-        standardizationChecklist: "11. Standardization and Knowledge Management Checklist",
-        pdaRecurrencePrevention: "12. PDA (Recurrence Prevention) - Impact Matrix and Action Plan",
+        standardizationChecklist: "10. Standardization and Knowledge Management Checklist",
+        pdaRecurrencePrevention: "11. PDA (Recurrence Prevention) - Impact Matrix and Action Plan",
         pdaEvidence: "EVIDENCE OF IMPROVEMENT ACTIONS (PDA)",
-        rdaQualityEval: "14. RDA Quality Evaluation",
+        rdaQualityEval: "12. RDA Quality Evaluation",
         rating: "Rating",
         element: "Element",
         evaluation: "Evaluation",
@@ -360,7 +360,7 @@ const resources = {
         globalResult: "Global result:",
         conclusion: "Conclusion",
         writeConclusion: "Write the conclusion...",
-        rdaEffectivenessEval: "15. RDA Effectiveness Evaluation",
+        rdaEffectivenessEval: "13. RDA Effectiveness Evaluation",
         effectivenessEval: "Effectiveness evaluation",
         evaluatedPeriod: "Evaluated period:",
         start: "Start:",
@@ -391,57 +391,57 @@ const resources = {
       pdcaPhases: {
         do: {
           step20: {
-            title: "STEP 20: KPI TREE WITH FOCUS PIS",
+            title: "STEP 21: KPI TREE WITH FOCUS PIS",
             subtitle: "Upload the objective KPI Tree image",
           },
         },
         check: {
           step21: {
-            title: "STEP 21: NEW PROCESS PERFORMANCE (PI ANALYSIS)",
+            title: "STEP 22: NEW PROCESS PERFORMANCE (PI ANALYSIS)",
             subtitle: "Upload an image of the PIs analysis",
           },
           step22: {
-            title: "STEP 22: NEW PROCESS MAPPING",
+            title: "STEP 23: NEW PROCESS MAPPING",
             subtitle: "Upload an image of the new process flow",
           },
           step24: {
-            mainTitle: "STEP 24: NEW PARETO",
-            secondaryTitlePrefix: "STEP 24: NEW INDEPENDENT PARETO",
+            mainTitle: "STEP 25: NEW PARETO",
+            secondaryTitlePrefix: "STEP 25: NEW INDEPENDENT PARETO",
           },
           step25: {
-            title: "STEP 25: NEW CORRELATIONS",
+            title: "STEP 26: NEW CORRELATIONS",
           },
           step26: {
-            title: "STEP 26: KPI EVOLUTION",
+            title: "STEP 27: KPI EVOLUTION",
           },
         },
         act: {
           step27: {
-            title: "STEP 27: PROCESS STANDARDIZATION",
+            title: "STEP 28: PROCESS STANDARDIZATION",
           },
           step28: {
-            title: "STEP 28: PROCESS RISK ANALYSIS",
+            title: "STEP 29: PROCESS RISK ANALYSIS",
           },
           step29: {
-            title: "STEP 29: SOPS & DOCUMENTS",
+            title: "STEP 30: SOPS & DOCUMENTS",
             subtitle: "Upload an image or document of the SOPs",
           },
           step30: {
-            title: "STEP 30: TRAINING PLAN",
+            title: "STEP 31: TRAINING PLAN",
             subtitle: "Upload an image of the training plan",
           },
           step31: {
-            title: "STEP 31: CONTROL PLAN",
+            title: "STEP 32: CONTROL PLAN",
             subtitle: "Upload an image of the control plan",
           },
           step32: {
-            title: "STEP 32: LESSONS LEARNED",
+            title: "STEP 33: LESSONS LEARNED",
             placeholder: "Document the lessons learned during the PDCA project...",
           },
         },
         resumen: {
           step33: {
-            title: "STEP 33: CONCLUSIONS",
+            title: "STEP 34: CONCLUSIONS",
             instructionsTitle: "Instructions",
             inst1: "Fill in the finish date",
             inst2:
@@ -837,7 +837,7 @@ const resources = {
       },
       pdcaTables: {
         actionPlan: {
-          title: "STEP 18: IMPACT MATRIX AND ACTION PLAN",
+          title: "STEP 19: IMPACT MATRIX AND ACTION PLAN",
           instruction1: "1. Use this like ",
           instruction1Highlight: "any other action log in your MCRS",
           instruction2: "2. If a particular action successfully eliminated a symptom or root cause, indicate if an SDCA tool is needed or needs updating to standardize the outcome.",
@@ -885,7 +885,7 @@ const resources = {
           }
         },
         executedTests: {
-          title: "STEP 23: EXECUTED TESTS",
+          title: "STEP 24: EXECUTED TESTS",
           addTest: "Add Test",
           testAction: "TEST / ACTION",
           date: "DATE",
@@ -906,7 +906,7 @@ const resources = {
           uploading: "Uploading..."
         },
         newPerformance: {
-          title: "STEP 24: NEW PROCESS PERFORMANCE (STATISTICAL)",
+          title: "STEP 25: NEW PROCESS PERFORMANCE (STATISTICAL)",
           addIndicator: "Add Indicator",
           indicator: "INDICATOR / PI / KPI",
           beforeBaseline: "BEFORE (BASELINE)",
@@ -931,7 +931,7 @@ const resources = {
           descriptionPlaceholder: "Add description..."
         },
         evidenciasSolucion: {
-          title: "STEP 19: SOLUTION EVIDENCES",
+          title: "STEP 20: SOLUTION EVIDENCES",
           subtitle: "Upload solution evidences",
           uploadInstructions: "Drag and drop up to 6 images here, or click to select",
           supportedFormats: "Supports JPG, PNG, GIF, WebP (max 5MB)",
@@ -1283,10 +1283,10 @@ const resources = {
         validationPlan: "9. Plan de Validación",
         evidenceByAction: "EVIDENCIAS POR ACCIÓN",
         evidenceDesc: "Adjunta las evidencias de cada acción de validación (causa raíz validada o descartada).",
-        standardizationChecklist: "11. Checklist de Estandarización y Gestión del Conocimiento",
-        pdaRecurrencePrevention: "12. PDA (Prevención de Recurrencia) - Matriz de Impacto y Plan de Acción",
+        standardizationChecklist: "10. Checklist de Estandarización y Gestión del Conocimiento",
+        pdaRecurrencePrevention: "11. PDA (Prevención de Recurrencia) - Matriz de Impacto y Plan de Acción",
         pdaEvidence: "EVIDENCIAS DE ACCIONES DE MEJORIA (PDA)",
-        rdaQualityEval: "14. Evaluación de Calidad RDA",
+        rdaQualityEval: "12. Evaluación de Calidad RDA",
         rating: "Calificación",
         element: "Elemento",
         evaluation: "Evaluación",
@@ -1297,7 +1297,7 @@ const resources = {
         globalResult: "Resultado global:",
         conclusion: "Conclusión",
         writeConclusion: "Escribe la conclusión...",
-        rdaEffectivenessEval: "15. Evaluación de Efectividad RDA",
+        rdaEffectivenessEval: "13. Evaluación de Efectividad RDA",
         effectivenessEval: "Evaluación de efectividad",
         evaluatedPeriod: "Periodo evaluado:",
         start: "Inicio:",
@@ -1328,57 +1328,57 @@ const resources = {
       pdcaPhases: {
         do: {
           step20: {
-            title: "PASO 20: ÁRBOL DEL KPI CON PIS FOCO",
+            title: "PASO 21: ÁRBOL DEL KPI CON PIS FOCO",
             subtitle: "Sube la imagen del KPI Tree objetivo",
           },
         },
         check: {
           step21: {
-            title: "PASO 21: NUEVO PERFORMANCE DEL PROCESO ( ANÁLISIS DE PIs)",
+            title: "PASO 22: NUEVO PERFORMANCE DEL PROCESO ( ANÁLISIS DE PIs)",
             subtitle: "Sube una imagen del análisis de PIs",
           },
           step22: {
-            title: "PASO 22: NUEVO MAPEO DE PROCESOS",
+            title: "PASO 23: NUEVO MAPEO DE PROCESOS",
             subtitle: "Sube una imagen del nuevo flujo de proceso",
           },
           step24: {
-            mainTitle: "PASO 24: NUEVO PARETO",
-            secondaryTitlePrefix: "PASO 24: NUEVO PARETO INDEPENDIENTE",
+            mainTitle: "PASO 25: NUEVO PARETO",
+            secondaryTitlePrefix: "PASO 25: NUEVO PARETO INDEPENDIENTE",
           },
           step25: {
-            title: "PASO 25: NUEVAS CORRELACIONES",
+            title: "PASO 26: NUEVAS CORRELACIONES",
           },
           step26: {
-            title: "PASO 26: EVOLUCIÓN DE KPIs",
+            title: "PASO 27: EVOLUCIÓN DE KPIs",
           },
         },
         act: {
           step27: {
-            title: "PASO 27: ESTANDARIZACIÓN DE PROCESOS",
+            title: "PASO 28: ESTANDARIZACIÓN DE PROCESOS",
           },
           step28: {
-            title: "PASO 28: ANÁLISIS DE RIESGOS DEL PROCESO",
+            title: "PASO 29: ANÁLISIS DE RIESGOS DEL PROCESO",
           },
           step29: {
-            title: "PASO 29: SOPS & DOCUMENTOS",
+            title: "PASO 30: SOPS & DOCUMENTOS",
             subtitle: "Sube una imagen o documento de los SOPs",
           },
           step30: {
-            title: "PASO 30: PLAN DE ENTRENAMIENTO",
+            title: "PASO 31: PLAN DE ENTRENAMIENTO",
             subtitle: "Sube una imagen del plan de entrenamiento",
           },
           step31: {
-            title: "PASO 31: PLAN DE CONTROL",
+            title: "PASO 32: PLAN DE CONTROL",
             subtitle: "Sube una imagen del plan de control",
           },
           step32: {
-            title: "PASO 32: LECCIONES APRENDIDAS",
+            title: "PASO 33: LECCIONES APRENDIDAS",
             placeholder: "Documenta las lecciones aprendidas durante el proyecto PDCA...",
           },
         },
         resumen: {
           step33: {
-            title: "PASO 33: CONCLUSIONES",
+            title: "PASO 34: CONCLUSIONES",
             instructionsTitle: "Instrucciones",
             inst1: "Llene la fecha de finalización",
             inst2:
@@ -1774,7 +1774,7 @@ const resources = {
       },
       pdcaTables: {
         actionPlan: {
-          title: "PASO 18: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN",
+          title: "PASO 19: MATRIZ DE IMPACTO Y PLAN DE ACCIÓN",
           instruction1: "1. Usa esto como ",
           instruction1Highlight: "cualquier otro registro de acción en su MCRS",
           instruction2: "2. Si una acción particular tuvo éxito en la eliminación de un síntoma o causa de raíz, indique si se necesita una herramienta SDCA o necesita ser actualizada para estandarizar el resultado.",
@@ -1822,7 +1822,7 @@ const resources = {
           }
         },
         executedTests: {
-          title: "PASO 23: PRUEBAS EJECUTADAS",
+          title: "PASO 24: PRUEBAS EJECUTADAS",
           addTest: "Agregar Prueba",
           testAction: "PRUEBA / ACCIÓN",
           date: "FECHA",
@@ -1843,7 +1843,7 @@ const resources = {
           uploading: "Subiendo..."
         },
         newPerformance: {
-          title: "PASO 24: NUEVO PERFORMANCE DE PROCESOS (ESTADÍSTICO)",
+          title: "PASO 25: NUEVO PERFORMANCE DE PROCESOS (ESTADÍSTICO)",
           addIndicator: "Agregar Indicador",
           indicator: "INDICATOR / PI / KPI",
           beforeBaseline: "ANTES (BASELINE)",
@@ -1868,7 +1868,7 @@ const resources = {
           descriptionPlaceholder: "Agregar descripción..."
         },
         evidenciasSolucion: {
-          title: "PASO 19: EVIDENCIAS DE LA SOLUCIÓN (FOTOS / GRÁFICOS)",
+          title: "PASO 20: EVIDENCIAS DE LA SOLUCIÓN (FOTOS / GRÁFICOS)",
           subtitle: "Sube imágenes de la solución",
           uploadInstructions: "Arrastra hasta 6 imágenes aquí, o haz clic para seleccionar",
           supportedFormats: "Soporta JPG, PNG, GIF, WebP (máx 5MB)",

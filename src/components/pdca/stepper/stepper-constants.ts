@@ -27,8 +27,8 @@ export const PHASE_STEPS_MAP: Record<string, string[]> = {
     "step-17",
   ],
   Do: ["step-18", "step-19", "step-20"],
-  Check: ["step-21", "step-22", "step-23", "step-24"],
-  Act: ["step-25", "step-26", "step-27", "step-28", "step-29", "step-30"],
+  Check: ["step-22", "step-23", "step-24", "step-25", "step-26", "step-27"],
+  Act: ["step-28", "step-29", "step-30", "step-31", "step-32", "step-33", "step-34"],
 };
 
 export const getCustomPhases = (isAdmin: boolean, t: any = (k:string,d?:string)=>d): CustomPhase[] => {

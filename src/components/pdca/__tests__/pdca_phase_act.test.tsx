@@ -20,11 +20,11 @@ describe("PdcaPhaseAct", () => {
       />,
     );
 
-    expect(screen.getByText(/PASO 27: ESTANDARIZACIÓN DE PROCESOS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 29: SOPs & DOCUMENTOS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 30: PLAN DE ENTRENAMIENTO/i)).toBeDefined();
-    expect(screen.getByText(/PASO 31: PLAN DE CONTROL/i)).toBeDefined();
-    expect(screen.getByText(/PASO 32: LECCIONES APRENDIDAS/i)).toBeDefined();
-    expect(screen.getByText(/PASO 33: CONCLUSIONES/i)).toBeDefined();
+    expect(screen.getByText(/PASO 28: ESTANDARIZACIÓN DE PROCESOS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 30: SOPs & DOCUMENTOS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 31: PLAN DE ENTRENAMIENTO/i)).toBeDefined();
+    expect(screen.getByText(/PASO 32: PLAN DE CONTROL/i)).toBeDefined();
+    expect(screen.getByText(/PASO 33: LECCIONES APRENDIDAS/i)).toBeDefined();
+    expect(screen.getByText(/PASO 34: CONCLUSIONES/i)).toBeDefined();
   });
 });

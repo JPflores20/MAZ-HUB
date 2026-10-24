@@ -15,7 +15,9 @@ import { Route as ConfiguracionRouteImport } from './routes/configuracion'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PreIncidentesProcesoRouteImport } from './routes/pre-incidentes-proceso'
 import { Route as RdaRouteImport } from './routes/rda'
+import { Route as UsabilidadHtasRouteImport } from './routes/usabilidad-htas'
 import { Route as _tests_IndexTestRouteImport } from './routes/__tests__/index.test'
 
 const IndexRoute = IndexRouteImport.update({
@@ -48,9 +50,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreIncidentesProcesoRoute = PreIncidentesProcesoRouteImport.update({
+  id: '/pre-incidentes-proceso',
+  path: '/pre-incidentes-proceso',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RdaRoute = RdaRouteImport.update({
   id: '/rda',
   path: '/rda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsabilidadHtasRoute = UsabilidadHtasRouteImport.update({
+  id: '/usabilidad-htas',
+  path: '/usabilidad-htas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const _tests_IndexTestRoute = _tests_IndexTestRouteImport.update({
@@ -66,7 +78,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/pre-incidentes-proceso': typeof PreIncidentesProcesoRoute
   '/rda': typeof RdaRoute
+  '/usabilidad-htas': typeof UsabilidadHtasRoute
   '/index/test': typeof _tests_IndexTestRoute
 }
 export interface FileRoutesByTo {
@@ -76,7 +90,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/pre-incidentes-proceso': typeof PreIncidentesProcesoRoute
   '/rda': typeof RdaRoute
+  '/usabilidad-htas': typeof UsabilidadHtasRoute
   '/index/test': typeof _tests_IndexTestRoute
 }
 export interface FileRoutesById {
@@ -87,7 +103,9 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/pre-incidentes-proceso': typeof PreIncidentesProcesoRoute
   '/rda': typeof RdaRoute
+  '/usabilidad-htas': typeof UsabilidadHtasRoute
   '/__tests__/index/test': typeof _tests_IndexTestRoute
 }
 export interface FileRouteTypes {
@@ -99,7 +117,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/pre-incidentes-proceso'
     | '/rda'
+    | '/usabilidad-htas'
     | '/index/test'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -109,7 +129,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/pre-incidentes-proceso'
     | '/rda'
+    | '/usabilidad-htas'
     | '/index/test'
   id:
     | '__root__'
@@ -119,7 +141,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/pre-incidentes-proceso'
     | '/rda'
+    | '/usabilidad-htas'
     | '/__tests__/index/test'
   fileRoutesById: FileRoutesById
 }
@@ -130,7 +154,9 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  PreIncidentesProcesoRoute: typeof PreIncidentesProcesoRoute
   RdaRoute: typeof RdaRoute
+  UsabilidadHtasRoute: typeof UsabilidadHtasRoute
   _tests_IndexTestRoute: typeof _tests_IndexTestRoute
 }
 
@@ -178,11 +204,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pre-incidentes-proceso': {
+      id: '/pre-incidentes-proceso'
+      path: '/pre-incidentes-proceso'
+      fullPath: '/pre-incidentes-proceso'
+      preLoaderRoute: typeof PreIncidentesProcesoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rda': {
       id: '/rda'
       path: '/rda'
       fullPath: '/rda'
       preLoaderRoute: typeof RdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usabilidad-htas': {
+      id: '/usabilidad-htas'
+      path: '/usabilidad-htas'
+      fullPath: '/usabilidad-htas'
+      preLoaderRoute: typeof UsabilidadHtasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/__tests__/index/test': {
@@ -202,7 +242,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  PreIncidentesProcesoRoute: PreIncidentesProcesoRoute,
   RdaRoute: RdaRoute,
+  UsabilidadHtasRoute: UsabilidadHtasRoute,
   _tests_IndexTestRoute: _tests_IndexTestRoute,
 }
 export const routeTree = rootRouteImport

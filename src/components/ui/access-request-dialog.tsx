@@ -20,8 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { useAuth, type UserProfile } from "@/context/auth-context";
-import type { UserPermissions } from "@/services/user-service";
+import { useAuth, type UserProfile } from "@/auth/auth-context";
+import type { UserPermissions } from "@/auth/user-service";
 import { useDirectoryUsers } from "@/components/ui/responsible-profile-card";
 import type { Pdca } from "@/data/pdca";
 import { doesAreaBelongToParentOrMatch } from "@/data/pdca-defaults";

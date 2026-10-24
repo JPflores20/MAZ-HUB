@@ -6,7 +6,7 @@
  */
 import React, { useState, useMemo } from "react";
 import { Briefcase, Building2, Check, Plus, Search, UserPlus, X, ZoomIn } from "lucide-react";
-import { useAuth, type DirectoryUser } from "@/context/auth-context";
+import { useAuth, type DirectoryUser } from "@/auth/auth-context";
 import {
   Dialog,
   DialogContent,

@@ -97,7 +97,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
   const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      {/* ── PASO 21: Nuevo Performance ────────────────────────────── */}
+      {/* ── PASO 22: Nuevo Performance ────────────────────────────── */}
       <ImageUploadSection
         image={nuevo_performance_image || null}
         onChange={(img) => on_nuevo_performance_image_change?.(img || undefined)}
@@ -109,7 +109,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onToggleNa={() => on_toggle_na?.("step-22")}
       />
 
-      {/* ── PASO 22: Mapeo Proceso ────────────────────────────── */}
+      {/* ── PASO 23: Mapeo Proceso ────────────────────────────── */}
       <ImageUploadSection
         image={mapeo_proceso_image || null}
         onChange={(img) => on_mapeo_proceso_image_change?.(img || undefined)}
@@ -121,7 +121,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onToggleNa={() => on_toggle_na?.("step-23")}
       />
 
-      {/* ── PASO 23: Pruebas ejecutadas ─────────────────────────── */}
+      {/* ── PASO 24: Pruebas ejecutadas ─────────────────────────── */}
       <PruebasEjecutadasTable
         items={pruebas_ejecutadas || []}
         onChange={on_pruebas_ejecutadas_change!}
@@ -131,7 +131,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onToggleNa={() => on_toggle_na?.("step-24")}
       />
 
-      {/* ── PASO 24: Nuevo Pareto ───────────────────────────────── */}
+      {/* ── PASO 25: Nuevo Pareto ───────────────────────────────── */}
       <ParetoSection
         drillDowns={nuevo_pareto_drill_downs || []}
         setDrillDowns={on_nuevo_pareto_drill_downs_change!}
@@ -149,7 +149,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         secondaryTitlePrefix={t("pdcaPhases.check.step24.secondaryTitlePrefix")}
       />
 
-      {/* ── PASO 25: Nueva Correlaciones ────────────────────────── */}
+      {/* ── PASO 26: Nueva Correlaciones ────────────────────────── */}
       <FlavorCorrelationSection
         title={t("pdcaPhases.check.step25.title")}
         data={nueva_correlacion_data}
@@ -161,7 +161,7 @@ export const PdcaPhaseCheck: React.FC<PhaseCheckProps> = ({
         onToggleNa={() => on_toggle_na?.("step-26")}
       />
 
-      {/* ── PASO 26: Evolución de KPIs ──────────────────────────── */}
+      {/* ── PASO 27: Evolución de KPIs ──────────────────────────── */}
       <TimeSeriesYTD
         value={final_time_series_data}
         onChange={on_final_time_series_data_change}

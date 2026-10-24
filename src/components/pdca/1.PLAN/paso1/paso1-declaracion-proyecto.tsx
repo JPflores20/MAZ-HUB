@@ -24,7 +24,7 @@ import { AREAS } from "@/data/pdca";
 import { RichTextEditor as EditorTextoEnriquecido } from "@/components/ui/rich-text-editor";
 import type { PropiedadesFasePlan } from "../plan-props";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 
 export type PropiedadesPaso1Declaracion = Pick<
   PropiedadesFasePlan,

@@ -216,7 +216,7 @@ export const EvidenciasSolucionStep: React.FC<EvidenciasSolucionStepProps> = ({
 
   return (
     <StepCard
-      title={title || "PASO 19: EVIDENCIA DE SOLUCIONES"}
+      title={title || "PASO 20: EVIDENCIA DE SOLUCIONES"}
       isStepCompleted={isStepCompleted}
       onToggleStep={onToggleStep}
       isNa={isNa}

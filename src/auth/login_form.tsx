@@ -8,7 +8,7 @@ import { ArrowRight, Lock, Mail, AlertCircle, Eye, EyeOff, Send, CheckCircle2 } 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "./auth-context";
 
 interface LoginFormProps {
   on_switch_to_register: () => void;

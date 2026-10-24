@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { primaryAuth } from "@/lib/firebase";
-import { userService } from "@/services/user-service";
+import { userService } from "./user-service";
 
 interface RegisterFormProps {
   on_switch_to_login: () => void;

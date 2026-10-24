@@ -29,7 +29,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import { userService } from "@/services/user-service";
+import { userService } from "@/auth/user-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -73,7 +73,7 @@ import {
   type UserRole,
   type UserProfile,
   type UserPermissions,
-} from "@/context/auth-context";
+} from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { useRdas } from "@/context/rda-context";
 import { getRdaStatus } from "@/components/RDA/rda-status";

@@ -27,7 +27,7 @@ import {
   getEffectivePermissions,
   hasCustomPermissions,
   normalizeUserRole,
-} from "@/services/user-service";
+} from "./user-service";
 
 export type { UserRole, UserProfile, UserPermissions };
 export {

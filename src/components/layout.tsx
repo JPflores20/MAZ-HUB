@@ -17,7 +17,7 @@ import {
 import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
 
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { useRdas } from "@/context/rda-context";
 import { updatePdcaDeadline } from "@/services/pdca-service";
@@ -237,16 +237,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
       external: true,
     },
     {
-      href: "#pre-incidentes-proceso",
+      href: "/pre-incidentes-proceso",
       label: "Pre Incidentes Proceso",
       icon: BrewKettleIcon,
-      placeholder: true,
     },
     {
-      href: "#usabilidad-htas",
+      href: "/usabilidad-htas",
       label: "Usabilidad Htas",
       icon: AlertOctagon,
-      placeholder: true,
     },
   ];
 

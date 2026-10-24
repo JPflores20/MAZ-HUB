@@ -76,7 +76,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
   const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      {/* ── PASO 27: Estandarización de Procesos ── */}
+      {/* ── PASO 28: Estandarización de Procesos ── */}
       <StepCard
         title={t("pdcaPhases.act.step27.title")}
         isStepCompleted={completed_steps.has("step-28")}
@@ -90,7 +90,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         />
       </StepCard>
 
-      {/* ── PASO 28: Análisis de Riesgos ── */}
+      {/* ── PASO 29: Análisis de Riesgos ── */}
       <StepCard
         title={t("pdcaPhases.act.step28.title")}
         isStepCompleted={completed_steps.has("step-29")}
@@ -104,7 +104,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         />
       </StepCard>
 
-      {/* ── PASO 29: SOPs & Documentos ── */}
+      {/* ── PASO 30: SOPs & Documentos ── */}
       <ImageUploadSection
         image={sops_documentos_image || null}
         onChange={(img) => on_sops_documentos_image_change?.(img || undefined)}
@@ -116,7 +116,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         onToggleNa={() => on_toggle_na?.("step-30")}
       />
 
-      {/* ── PASO 30: Plan de Entrenamiento ── */}
+      {/* ── PASO 31: Plan de Entrenamiento ── */}
       <ImageUploadSection
         image={plan_entrenamiento_image || null}
         onChange={(img) => on_plan_entrenamiento_image_change?.(img || undefined)}
@@ -128,7 +128,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         onToggleNa={() => on_toggle_na?.("step-31")}
       />
 
-      {/* ── PASO 31: Plan de Control ── */}
+      {/* ── PASO 32: Plan de Control ── */}
       <ImageUploadSection
         image={plan_control_image || null}
         onChange={(img) => on_plan_control_image_change?.(img || undefined)}
@@ -140,7 +140,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         onToggleNa={() => on_toggle_na?.("step-32")}
       />
 
-      {/* ── PASO 32: Lecciones Aprendidas ── */}
+      {/* ── PASO 33: Lecciones Aprendidas ── */}
       <StepCard
         title={t("pdcaPhases.act.step32.title")}
         isStepCompleted={completed_steps.has("step-33")}
@@ -159,7 +159,7 @@ export const PdcaPhaseAct: React.FC<PhaseActProps> = ({
         </div>
       </StepCard>
 
-      {/* ── PASO 33: Conclusiones ── */}
+      {/* ── PASO 34: Conclusiones ── */}
       <ConclusionesStep
         isStepCompleted={completed_steps.has("step-34")}
         onToggleStep={() => on_toggle_step("step-34")}

@@ -37,7 +37,7 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
   const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      {/* ── PASO 18: Plan de acción ───────────────────────────────────── */}
+      {/* ── PASO 19: Plan de acción ───────────────────────────────────── */}
       <ActionPlanTable
         items={action_items || []}
         onChange={on_action_items_change}
@@ -47,7 +47,7 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
         onToggleNa={() => on_toggle_na?.("step-18")}
       />
 
-      {/* ── PASO 19: Evidencia de soluciones ────────────────────────── */}
+      {/* ── PASO 20: Evidencia de soluciones ────────────────────────── */}
       <EvidenciasSolucionStep
         actions={action_items || []}
         evidencias={evidencias_solucion || []}
@@ -58,7 +58,7 @@ export const PdcaPhaseDo: React.FC<PhaseDoProps> = ({
         onToggleNa={() => on_toggle_na?.("step-19")}
       />
 
-      {/* ── PASO 20: Árbol del KPI con PIS foco ──────────────────────── */}
+      {/* ── PASO 21: Árbol del KPI con PIS foco ──────────────────────── */}
       <ImageUploadSection
         image={kpi_tree_foco_image || null}
         onChange={(img) => on_kpi_tree_foco_image_change(img || undefined)}

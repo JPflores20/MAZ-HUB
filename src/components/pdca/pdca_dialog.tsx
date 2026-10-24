@@ -5,7 +5,7 @@
 import React, { useMemo, useCallback, useState, useEffect, startTransition } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
 import { use_pdca_dialog_state } from "./hooks/use_pdca_dialog_state";
 import { use_pdca_deadline } from "./hooks/use_pdca_deadline";

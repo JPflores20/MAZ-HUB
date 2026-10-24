@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { usePdcas } from "@/context/pdca-context";
 import { useRdas } from "@/context/rda-context";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { useDirectoryUsers } from "@/components/ui/responsible-profile-card";
 import { getRdaDisplayName } from "@/components/RDA/rda-name";
 import { getRdaStatus } from "@/components/RDA/rda-status";

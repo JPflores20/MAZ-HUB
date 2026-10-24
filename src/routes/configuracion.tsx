@@ -31,9 +31,9 @@ import {
 import { sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "sonner";
 import { primaryAuth } from "@/lib/firebase";
-import { useAuth, ROLE_LABELS, type UserProfile } from "@/context/auth-context";
+import { useAuth, ROLE_LABELS, type UserProfile } from "@/auth/auth-context";
 import { usePdcas } from "@/context/pdca-context";
-import { userService } from "@/services/user-service";
+import { userService } from "@/auth/user-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

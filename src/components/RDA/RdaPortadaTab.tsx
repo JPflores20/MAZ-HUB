@@ -24,7 +24,7 @@ import {
 import { PdcaParticipants } from "@/components/pdca/1.PLAN/paso1/pdca-participants";
 import { DEFAULT_PARTICIPANTES, AREAS } from "@/data/pdca-defaults";
 import { format, parseISO } from "date-fns";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 
 interface RdaPortadaTabProps {
   data: RdaPortada;

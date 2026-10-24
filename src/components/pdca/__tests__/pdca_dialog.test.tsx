@@ -8,7 +8,7 @@ import { describe, it, expect, vi } from "vitest";
 import { PdcaDialog } from "../pdca_dialog";
 import type { Pdca } from "@/data/pdca";
 
-vi.mock("@/context/auth-context", () => ({
+vi.mock("@/auth/auth-context", () => ({
   useAuth: () => ({
     currentUser: { name: "Ingeniero Modelo", email: "modelo@corona.com", role: "admin" },
     usersList: [{ name: "Ingeniero Modelo", email: "modelo@corona.com" }],

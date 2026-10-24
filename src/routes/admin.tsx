@@ -4,9 +4,9 @@
  * Reutiliza la suscripción global de `useAuth()` para evitar lecturas duplicadas a Firestore.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { Shield } from "lucide-react";
-import { RegistrationForm } from "@/components/admin/registration-form";
+import { RegistrationForm } from "@/auth/registration-form";
 import { UserList } from "@/components/admin/user-list";
 
 export const Route = createFileRoute("/admin")({

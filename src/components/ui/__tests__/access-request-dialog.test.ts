@@ -7,7 +7,7 @@ import {
 } from "../access-request-dialog";
 import type { Pdca } from "@/data/pdca";
 import { defaultRda, type Rda } from "@/data/rda";
-import type { UserPermissions } from "@/services/user-service";
+import type { UserPermissions } from "@/auth/user-service";
 
 const userPerms: UserPermissions = {
   canViewAll: false,

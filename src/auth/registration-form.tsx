@@ -7,7 +7,7 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { AlertCircle, UserPlus, SlidersHorizontal, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { secondaryAuth } from "@/lib/firebase";
-import { userService } from "@/services/user-service";
+import { userService } from "./user-service";
 import {
   useAuth,
   ROLE_LABELS,
@@ -16,7 +16,7 @@ import {
   PERMISSION_METADATA,
   type UserRole,
   type UserPermissions,
-} from "@/context/auth-context";
+} from "./auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

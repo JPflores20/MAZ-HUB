@@ -8,7 +8,7 @@ import { createContext, useContext, ReactNode } from "react";
 import { fetchRdas } from "@/services/rda-service";
 import type { Rda } from "@/data/rda";
 import { doesAreaBelongToParentOrMatch } from "@/data/pdca-defaults";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface RdaContextValue {

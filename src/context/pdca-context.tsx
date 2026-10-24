@@ -5,7 +5,7 @@
 import { createContext, useContext, ReactNode } from "react";
 import { fetchPdcasFromFirestore } from "@/services/pdca-service";
 import { type Pdca, doesAreaBelongToParentOrMatch } from "@/data/pdca";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/auth/auth-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface PdcaContextValue {
