@@ -8,7 +8,7 @@
  *   expect(element).toHaveTextContent("hello")
  */
 import "@testing-library/jest-dom";
-import "@/lib/i18n";
+import "@/core/i18n";
 
 // Mock global de ResizeObserver para componentes gráficos como Recharts
 if (typeof window !== "undefined" && !window.ResizeObserver) {

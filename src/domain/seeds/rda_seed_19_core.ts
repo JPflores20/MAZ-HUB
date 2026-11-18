@@ -1,0 +1,95 @@
+/**
+ * Datos de portada, contexto e Ishikawa iniciales para la semilla histórica del caso RDA #19.
+ */
+import type { Rda } from "../models/rda";
+
+/** Metadatos, problema e Ishikawa iniciales para `RDA_2026_19`. */
+export const RDA_SEED_19_BASE: Omit<Rda, "validationActions" | "checklistEstandarizacion"> = {
+  id: "RDA_2026_19",
+  title: "DQO fuera de especificación",
+  status: "Abierto",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  completedPhases: [],
+  completedSteps: [],
+  naSteps: [],
+  portada: {
+    titulo: "DQO fuera de especificación",
+    area: "Bloque Frío",
+    fechaLimite: "2026-10-10",
+    autorOriginal: "Iván Rojero",
+    autorEmail: "",
+    usuariosAsignados: ["Iván Rojero"],
+    descripcionProblema:
+      "DQO fuera de especificación, se tienen valores promedio de 15,000 mg/lt, En el mes de septiembre, en bloque frío.",
+  },
+  context: {
+    planta: "ZACATECAS",
+    fecha: "2026-09-01",
+    turno: "",
+    iniciadoPor: "Iván Rojero",
+    responsable: "Iván Rojero",
+    etapa: "Bloque Frío",
+    departamento: "",
+    area: "",
+    disparador: "",
+    equiposAfectados: "",
+    folio: "RDA_2026_19",
+    tiempoParo: "",
+    unidadesTiempoParo: "",
+    perdidas: "",
+    unidadesPerdidas: "",
+    productosNoConformes: "",
+    unidadesNoConformes: "",
+  },
+  problemDescription: {
+    que: "DQO fuera de especificación",
+    como: "se tienen valores promedio de 15,000 mg/lt",
+    cuando: "En el mes de septiembre",
+    donde: "en bloque frío",
+    quien: "",
+    cual: "",
+  },
+  immediateActions: [],
+  observacionesAdicionales: "",
+  timeline: [],
+  analizadoEnOtrosReportes: "No",
+  participantesRC: "Iván Rojero",
+  ishikawa: [
+    { id: "1", category: "Mano de Obra", text: "Exceso de despunte al arranque de filtro" },
+    {
+      id: "2",
+      category: "Mano de Obra",
+      text: "Alto volumen en el tanque de despuntes al arranque del filtro",
+    },
+    { id: "3", category: "Método", text: "Bajos ciclos de filtración" },
+    { id: "4", category: "Mano de Obra", text: "No se supervisan las extracciones de levadura" },
+    { id: "5", category: "Maquinaria", text: "Enjuague de línea de inóculo al drenaje" },
+    { id: "6", category: "Maquinaria", text: "Programación de enjuague final en CMF" },
+    {
+      id: "7",
+      category: "Medición",
+      text: "Equipo de turbidez de línea de levadura descalibrados",
+    },
+    { id: "8", category: "Mano de Obra", text: "Mal purgado de levadura en inicio de extracciones" },
+    {
+      id: "9",
+      category: "Máquina",
+      text: "Válvulas de descarga de tierra agotada de filtros fugan",
+    },
+    {
+      id: "10",
+      category: "Maquinaria",
+      text: "Sensores de nivel alto de trompo de TA no activan",
+    },
+    { id: "11", category: "Maquinaria", text: "Mala programación en trompo de TA f9 y 10" },
+    { id: "12", category: "Maquinaria", text: "Enjuague al final del ciclo de filtro de tierra" },
+    { id: "13", category: "Material", text: "Derrames de tierra en bodega de tierras" },
+    {
+      id: "14",
+      category: "Mano de Obra",
+      text: "No se realiza la descarga de filtros de tierra de manera controlada",
+    },
+    { id: "15", category: "Mano de Obra", text: "No se supervisa la colocación del carro tolva" },
+  ],
+};

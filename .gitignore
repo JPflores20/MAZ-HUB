@@ -20,6 +20,21 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Environment & local secrets
+.env
+.env.*
+!.env.example
+functions/.env
+functions/.env.*
+
+# Firebase build & emulator logs/data
+functions/lib/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+pubsub-debug.log*
+emulator-data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

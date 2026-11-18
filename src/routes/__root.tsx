@@ -14,7 +14,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { report_lovable_error } from "@/core/telemetry/lovable_error_reporting";
 
 function NotFoundComponent() {
   return (
@@ -42,7 +42,9 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error instanceof Error ? error : new Error(String(error)), { boundary: "tanstack_root_error_component" });
+    report_lovable_error(error instanceof Error ? error : new Error(String(error)), {
+      boundary: "tanstack_root_error_component",
+    });
   }, [error]);
 
   return (
@@ -135,13 +137,13 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-import { AppLayout } from "../components/layout";
-import { AuthProvider } from "@/auth/auth-context";
-import { ThemeProvider } from "@/components/theme-provider";
-import { PdcaProvider } from "@/context/pdca-context";
-import { RdaProvider } from "@/context/rda-context";
-import "@/lib/i18n";
-import { Toaster } from "@/components/ui/sonner";
+import { AppLayout } from "@/shared/components/layout";
+import { AuthProvider } from "@/features/auth/auth_context";
+import { ThemeProvider } from "@/shared/components/theme_provider";
+import { PdcaProvider } from "@/shared/context/pdca_context";
+import { RdaProvider } from "@/shared/context/rda_context";
+import "@/core/i18n";
+import { Toaster } from "@/shared/ui/sonner";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();

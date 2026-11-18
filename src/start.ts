@@ -1,33 +1,35 @@
 /**
- * start.ts
- * Configuración de arranque e inicialización de middleware para TanStack Start.
+ * Configuración de arranque e inicialización de middlewares globales para TanStack Start.
  */
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
-import { renderErrorPage } from "./lib/error-page";
+import { render_error_page } from "@/core/telemetry/error_page";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const error_middleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
-  } catch (error) {
-    if (error != null && typeof error === "object" && "statusCode" in error) {
-      throw error;
+  } catch (error_peticion) {
+    if (
+      error_peticion != null &&
+      typeof error_peticion === "object" &&
+      "statusCode" in error_peticion
+    ) {
+      throw error_peticion;
     }
-    console.error(error);
-    return new Response(renderErrorPage(), {
+    console.error(error_peticion);
+    return new Response(render_error_page(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
     });
   }
 });
 
-// Start installs this automatically when src/start.ts is absent; defining the
-// file opts out, so re-add it explicitly to keep server functions protected
-// from cross-site requests.
-const csrfMiddleware = createCsrfMiddleware({
-  filter: (ctx) => ctx.handlerType === "serverFn",
+// Reactivar explícitamente protección CSRF en server functions al personalizar src/start.ts
+const csrf_middleware = createCsrfMiddleware({
+  filter: (contexto_peticion) => contexto_peticion.handlerType === "serverFn",
 });
 
+/** Instancia raíz requerida por el runtime de TanStack Start. */
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorMiddleware, csrfMiddleware],
+  requestMiddleware: [error_middleware, csrf_middleware],
 }));

@@ -1,30 +1,29 @@
 /**
- * entry-client.tsx
- * Punto de entrada del cliente (hidratación/renderizado de React y TanStack Start en el navegador).
+ * Punto de entrada del cliente (hidratación y montaje React + TanStack Router en navegador).
  */
 import "./suppress-warnings";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { getRouter } from "./router";
 import "./styles.css";
-import "./lib/i18n";
+import "@/core/i18n";
 
-const router = getRouter();
-const rootElement = document.getElementById("root");
+const enrutador_app = getRouter();
+const elemento_raiz = document.getElementById("root");
 
-if (rootElement) {
-  if (rootElement.children.length > 0) {
-    hydrateRoot(rootElement, <RouterProvider router={router} />);
+if (elemento_raiz) {
+  if (elemento_raiz.children.length > 0) {
+    hydrateRoot(elemento_raiz, <RouterProvider router={enrutador_app} />);
   } else {
-    createRoot(rootElement).render(<RouterProvider router={router} />);
+    createRoot(elemento_raiz).render(<RouterProvider router={enrutador_app} />);
   }
 }
 
-// Unregister any stale or lingering Service Worker (e.g. Workbox) on local environment
+// Limpia Service Workers antiguos o persistentes (por ejemplo Workbox) en cliente local
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (const registration of registrations) {
-      registration.unregister().catch(() => {});
+  navigator.serviceWorker.getRegistrations().then((registros_sw) => {
+    for (const registro_actual of registros_sw) {
+      registro_actual.unregister().catch(() => {});
     }
   });
 }

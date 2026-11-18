@@ -188,3 +188,9 @@
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+.rich-text-editable[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+}

@@ -1,0 +1,58 @@
+/**
+ * @fileoverview Pie de página del editor PDCA con controles de cierre y avance entre fases.
+ */
+import React from "react";
+import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/shared/ui/button";
+import type { Phase } from "@/domain/pdca";
+
+interface PropiedadesPieDialogoPdca {
+  current_phase: Phase;
+  document_identifier: string;
+  is_user_permitted_to_edit: boolean;
+  on_proceed_next_phase: () => Promise<void>;
+  on_close_dialog: () => void;
+  isAdmin?: boolean;
+}
+
+/**
+ * Muestra los botones inferiores de salida segura y transición a la siguiente fase metodológica.
+ */
+export const PdcaDialogFooter: React.FC<PropiedadesPieDialogoPdca> = ({
+  current_phase,
+  is_user_permitted_to_edit,
+  on_proceed_next_phase,
+  on_close_dialog,
+  isAdmin,
+}) => {
+  const { t: translate } = useTranslation();
+  const es_fase_final =
+    (current_phase === "Act" && !isAdmin) || current_phase === "Evaluacion";
+
+  return (
+    <div
+      className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 mt-6"
+      data-html2canvas-ignore
+    >
+      <Button
+        variant="ghost"
+        onClick={on_close_dialog}
+        className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+      >
+        {translate("pdcaDialog.closeWindow")}
+      </Button>
+
+      <div className="flex items-center gap-3">
+        <Button
+          className="bg-primary hover:bg-primary/90 text-xs font-semibold h-9 gap-1.5"
+          disabled={!is_user_permitted_to_edit}
+          onClick={() => void on_proceed_next_phase()}
+        >
+          {es_fase_final ? translate("pdcaDialog.finishPdca") : translate("pdcaDialog.nextStep")}
+          <ArrowRight className="size-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};

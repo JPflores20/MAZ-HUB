@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Denegar todo por defecto
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function hasCorporateEmail() {
+      return isSignedIn() &&
+        request.auth.token.email is string &&
+        request.auth.token.email.lower().matches('^[^\\s@]+@(ab-inbev\\.com|gmodelo\\.com\\.mx)$');
+    }
+
+    function userDocExists() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/users/$(request.auth.uid));
+    }
+
+    function userDocData() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isApprovedCorporateUser() {
+      return isEmailVerified() &&
+        hasCorporateEmail() &&
+        userDocExists() &&
+        userDocData().approved == true;
+    }
+
+    function isAdmin() {
+      return isApprovedCorporateUser() && userDocData().role == 'admin';
+    }
+
+    function canWriteContent() {
+      return isApprovedCorporateUser() &&
+        userDocData().role in ['admin', 'area_lead', 'user'];
+    }
+
+    function isAllowedFolder(folder) {
+      return folder in [
+        'pdca_images',
+        'rda_images',
+        'rendimiento_actual_evidencias',
+        'five_whys_evidencias',
+        'gemba_evidencias',
+        'pruebas_ejecutadas_evidencias'
+      ];
+    }
+
+    function isSafeUploadPayload() {
+      return request.resource != null &&
+        request.resource.size > 0 &&
+        request.resource.size <= 10 * 1024 * 1024 &&
+        request.resource.contentType != null &&
+        request.resource.contentType.matches(
+          '^(image/(jpeg|jpg|png|webp|gif)|application/pdf|application/vnd\\.ms-excel|application/vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.sheet|application/vnd\\.ms-powerpoint|application/vnd\\.openxmlformats-officedocument\\.presentationml\\.presentation)$'
+        );
+    }
+
+    // Lectura permitida únicamente a usuarios corporativos verificados y aprobados en carpetas autorizadas
+    match /uploads/{folder}/{fileName} {
+      allow get: if isApprovedCorporateUser() && isAllowedFolder(folder);
+      allow list, create, update, delete: if false;
+    }
+
+    // Nueva ruta aislada por UID: uploads/{folder}/{uid}/{fileName}
+    match /uploads/{folder}/{userId}/{fileName} {
+      allow get: if isApprovedCorporateUser() && isAllowedFolder(folder);
+      allow list: if isAdmin();
+      allow create: if canWriteContent() &&
+        isAllowedFolder(folder) &&
+        request.auth.uid == userId &&
+        isSafeUploadPayload();
+      allow update: if false;
+      allow delete: if canWriteContent() &&
+        isAllowedFolder(folder) &&
+        (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

@@ -1,32 +1,737 @@
 rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model (Zero Trust Security Rules)
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (Firebase Auth UID)
+// Fields:
+//   - uid: string (optional on legacy docs, must match {userId} and immutable if set)
+//   - name: string (required, 1..120)
+//   - firstName: string (optional, <= 80)
+//   - paternalLastName: string (optional, <= 80)
+//   - maternalLastName: string (optional, <= 80)
+//   - email: string (required, corporate @ab-inbev.com | @gmodelo.com.mx, <= 254, immutable for non-admin)
+//   - role: string (required, enum: admin | area_lead | user | intern | viewer; immutable for non-admin)
+//   - permissions: map (optional, boolean flags; restricted on self-create, immutable for non-admin)
+//   - area: string (required, 1..80)
+//   - position: string (optional, <= 80)
+//   - plant: string (optional, <= 80)
+//   - phone: string (optional, <= 40)
+//   - bio: string (optional, <= 500)
+//   - avatarUrl: string (optional, <= 150000)
+//   - approved: bool (false on self-create; immutable for non-admin)
+//   - emailVerified: bool (must match request.auth.token.email_verified on self-create/update)
+//   - verifiedByAdmin: bool (false on self-create; immutable for non-admin)
+//   - lastVerificationSentAt: string | timestamp (optional, string <= 64)
+//   - createdAt: string | timestamp (optional, string <= 64, immutable for non-admin)
+//   - updatedAt: string | timestamp (optional, string <= 64)
+//   NOTE: Field 'password' is strictly forbidden on all writes.
+//
+// Collection: user_directory
+// Document ID: {userId} (Firebase Auth UID)
+// Fields: Public minimal projection (uid, name, email, area, position, plant, role, avatarUrl, approved)
+// Managed exclusively by Cloud Functions (syncuserprofile). Read-only for approved users.
+//
+// Collection: pdcas
+// Document ID: _config (seed marker) OR {docId} (PDCA ID)
+// Fields (_config):
+//   - isSeeded: bool (required)
+//   - updatedAt: string | timestamp (optional)
+// Fields (PDCA):
+//   - id: string (optional, must match {docId} if present)
+//   - titulo: string (required, 1..300)
+//   - area: string (required, 1..120)
+//   - fase: string (required, enum: Plan | Do | Check | Act)
+//   - progreso: number (required, 0..100)
+//   - ownerUid: string (optional, <= 128, bound to auth.uid on non-admin create, immutable)
+//   - autorEmail: string (optional, <= 254, bound to token email on non-admin create, immutable)
+//   - asignados, assignedUids, assignedEmails, fechaFinalizacion, autorNombre: governance fields locked for assigned-only contributors
+//
+// Collection: rdas
+// Document ID: {docId} (RDA ID)
+// Fields:
+//   - id: string (optional, must match {docId} if present)
+//   - title: string (optional, <= 300)
+//   - status: string (optional, enum: Abierto | Cerrado | Evaluado | En Progreso)
+//   - ownerUid: string (optional, <= 128, bound to auth.uid on non-admin create, immutable)
+//   - assignedUids: list (optional, <= 100)
+//   - assignedEmails: list (optional, <= 100)
+//   - portada: map (required; portada.titulo required 1..300; portada.autorEmail immutable for non-admin)
+//   - context: map (optional; context.area <= 120)
+//
+// Collection: notifications
+// Document ID: {docId} (auto ID)
+// Fields:
+//   - senderUid: string (required on create, == request.auth.uid)
+//   - type: string (required; client-creatable: access_request | task_assigned | mention | comment)
+//   - read: bool (required; false on create; only updatable field -> true)
+//   - message: string (required, 1..1000)
+//   - recipientUid / recipientEmail / creatorEmail / requesterUid: recipient routing fields
+//   - approved / rejected: bool (never true on client create/update; managed by Cloud Functions)
+//
+// Collections: pdca, rda (legacy unused)
+//   - Explicitly denied (read, write: if false)
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Check if user is admin
-    function isAdmin() {
-      return request.auth != null && request.auth.token.admin == true;
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
     }
-    
-    // Check if user is authenticated
+
+    // Legacy unused collections explicitly denied
+    match /pdca/{docId} {
+      allow read, write: if false;
+    }
+
+    match /rda/{docId} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Core Authentication & Authorization Helpers
+    // ===============================================================
+
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Admins have full access to everything
-    match /{document=**} {
-      allow read, write: if isAdmin();
+    function isSignedIn() {
+      return isAuthenticated() &&
+             request.auth.uid is string &&
+             request.auth.token.email is string;
     }
-    
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isCorporateEmailString(email) {
+      return email is string &&
+             email.size() >= 6 &&
+             email.size() <= 254 &&
+             email.lower().matches('^[^@\\s]+@(ab-inbev\\.com|gmodelo\\.com\\.mx)$');
+    }
+
+    function hasCorporateEmail() {
+      return isSignedIn() && isCorporateEmailString(request.auth.token.email);
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.get('email_verified', false) == true;
+    }
+
+    function isVerifiedCorporate() {
+      return hasCorporateEmail() && isEmailVerified();
+    }
+
+    function userDocPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function userExists() {
+      return isSignedIn() && exists(userDocPath());
+    }
+
+    function userProfile() {
+      return get(userDocPath()).data;
+    }
+
+    function isApprovedUser() {
+      return isVerifiedCorporate() &&
+             userExists() &&
+             userProfile().get('approved', false) == true;
+    }
+
+    function userRole() {
+      return userProfile().get('role', 'user');
+    }
+
+    function isAdminProfile(profile) {
+      return profile.get('approved', false) == true &&
+             profile.get('role', 'user') == 'admin';
+    }
+
+    function canWriteProfile(profile) {
+      return profile.get('approved', false) == true &&
+             profile.get('role', 'user') in ['admin', 'area_lead', 'user'];
+    }
+
+    function isAdmin() {
+      return isVerifiedCorporate() &&
+             userExists() &&
+             isAdminProfile(userProfile());
+    }
+
+    function canWriteContent() {
+      return isVerifiedCorporate() &&
+             userExists() &&
+             canWriteProfile(userProfile());
+    }
+
+    function isValidRole(r) {
+      return r is string && r in ['admin', 'area_lead', 'user', 'intern', 'viewer'];
+    }
+
+    // ===============================================================
+    // Validation & DoS Protection Helpers
+    // ===============================================================
+
+    function boundedString(v, minLen, maxLen) {
+      return v is string && v.size() >= minLen && v.size() <= maxLen;
+    }
+
+    function optionalBoundedString(data, key, maxLen) {
+      let val = data.get(key, '');
+      return val is string && val.size() <= maxLen;
+    }
+
+    function optionalBoundedStringOrNull(data, key, maxLen) {
+      let val = data.get(key, '');
+      return val == null || (val is string && val.size() <= maxLen);
+    }
+
+    function optionalBoundedList(data, key, maxSize) {
+      let val = data.get(key, []);
+      return val is list && val.size() <= maxSize;
+    }
+
+    function optionalBool(data, key) {
+      return data.get(key, false) is bool;
+    }
+
+    function optionalTimestampOrBoundedString(data, key, maxLen) {
+      let val = data.get(key, '');
+      return val is timestamp || (val is string && val.size() <= maxLen);
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) ||
+             request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in resource.data) ||
+             ('uid' in request.resource.data && request.resource.data.uid == resource.data.uid);
+    }
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators: Users
+    // ===============================================================
+
+    function isValidPermissionsMap(perms) {
+      return perms is map &&
+             perms.keys().hasOnly([
+               'canCreate',
+               'canEdit',
+               'canDelete',
+               'canManageAssignment',
+               'canViewArea',
+               'canViewAll',
+               'canManageUsers'
+             ]) &&
+             perms.get('canCreate', false) is bool &&
+             perms.get('canEdit', false) is bool &&
+             perms.get('canDelete', false) is bool &&
+             perms.get('canManageAssignment', false) is bool &&
+             perms.get('canViewArea', false) is bool &&
+             perms.get('canViewAll', false) is bool &&
+             perms.get('canManageUsers', false) is bool;
+    }
+
+    function isValidUserCommonFields(data) {
+      return !('password' in data) &&
+             data.keys().hasOnly([
+               'uid', 'name', 'firstName', 'paternalLastName', 'maternalLastName',
+               'email', 'role', 'permissions', 'area', 'position', 'plant',
+               'phone', 'avatarUrl', 'bio', 'approved', 'emailVerified',
+               'verifiedByAdmin', 'lastVerificationSentAt', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().size() <= 20 &&
+             hasRequiredFields(data, ['name', 'area', 'email', 'role']) &&
+             boundedString(data.name, 1, 120) &&
+             boundedString(data.area, 1, 80) &&
+             isCorporateEmailString(data.email) &&
+             isValidRole(data.role) &&
+             optionalBoundedString(data, 'uid', 128) &&
+             optionalBoundedString(data, 'firstName', 80) &&
+             optionalBoundedString(data, 'paternalLastName', 80) &&
+             optionalBoundedString(data, 'maternalLastName', 80) &&
+             optionalBoundedString(data, 'position', 80) &&
+             optionalBoundedString(data, 'plant', 80) &&
+             optionalBoundedString(data, 'phone', 40) &&
+             optionalBoundedString(data, 'bio', 500) &&
+             optionalBoundedString(data, 'avatarUrl', 150000) &&
+             optionalBool(data, 'approved') &&
+             optionalBool(data, 'emailVerified') &&
+             optionalBool(data, 'verifiedByAdmin') &&
+             optionalTimestampOrBoundedString(data, 'lastVerificationSentAt', 64) &&
+             optionalTimestampOrBoundedString(data, 'createdAt', 64) &&
+             optionalTimestampOrBoundedString(data, 'updatedAt', 64) &&
+             (!('permissions' in data) || isValidPermissionsMap(data.permissions));
+    }
+
+    function isValidSelfUserCreate(data) {
+      return uidUnchanged() &&
+             data.email.lower() == request.auth.token.email.lower() &&
+             data.role == 'user' &&
+             data.get('approved', false) == false &&
+             data.get('verifiedByAdmin', false) == false &&
+             'emailVerified' in data &&
+             data.emailVerified is bool &&
+             data.emailVerified == request.auth.token.get('email_verified', false) &&
+             (
+               !('permissions' in data) ||
+               (
+                 data.permissions.get('canDelete', false) == false &&
+                 data.permissions.get('canManageAssignment', false) == false &&
+                 data.permissions.get('canManageUsers', false) == false &&
+                 data.permissions.get('canViewArea', false) == false
+               )
+             );
+    }
+
+    function isValidSelfUserUpdate(newData, oldData) {
+      let changed = newData.diff(oldData).affectedKeys();
+      return changed.hasOnly([
+               'name',
+               'firstName',
+               'paternalLastName',
+               'maternalLastName',
+               'area',
+               'position',
+               'plant',
+               'phone',
+               'bio',
+               'avatarUrl',
+               'updatedAt',
+               'emailVerified',
+               'lastVerificationSentAt'
+             ]) &&
+             (
+               !('emailVerified' in changed) ||
+               (
+                 newData.emailVerified is bool &&
+                 newData.emailVerified == true &&
+                 newData.emailVerified == request.auth.token.get('email_verified', false)
+               )
+             );
+    }
+
+    function isValidAdminUserUpdate(newData, oldData) {
+      return !('createdAt' in oldData) ||
+             ('createdAt' in newData && newData.createdAt == oldData.createdAt);
+    }
+
+    // ===============================================================
+    // Domain Validators: PDCAs
+    // ===============================================================
+
+    function isValidPdcaConfig(data) {
+      return data.keys().hasOnly(['isSeeded', 'updatedAt']) &&
+             'isSeeded' in data &&
+             data.isSeeded is bool &&
+             optionalTimestampOrBoundedString(data, 'updatedAt', 64);
+    }
+
+    function isPdcaOwner(data) {
+      return ('ownerUid' in data && data.ownerUid == request.auth.uid) ||
+             (
+               'autorEmail' in data &&
+               data.autorEmail is string &&
+               data.autorEmail.lower() == request.auth.token.email.lower()
+             );
+    }
+
+    function isPdcaAssigned(data) {
+      return ('assignedUids' in data && data.assignedUids is list && request.auth.uid in data.assignedUids) ||
+             (
+               'assignedEmails' in data &&
+               data.assignedEmails is list &&
+               request.auth.token.email.lower() in data.assignedEmails
+             );
+    }
+
+    function isPdcaAreaLead(data, profile) {
+      let userArea = profile.get('area', '');
+      return profile.get('role', 'user') == 'area_lead' &&
+             userArea is string &&
+             userArea != '' &&
+             'area' in data &&
+             data.area is string &&
+             userArea.lower() == data.area.lower();
+    }
+
+    function isValidPdcaSchema(data, docId) {
+      return data.keys().size() <= 200 &&
+             !('password' in data) &&
+             !('isAdmin' in data) &&
+             !('role' in data) &&
+             data.get('id', docId) == docId &&
+             hasRequiredFields(data, ['titulo', 'area', 'fase', 'progreso']) &&
+             boundedString(data.titulo, 1, 300) &&
+             boundedString(data.area, 1, 120) &&
+             data.fase in ['Plan', 'Do', 'Check', 'Act'] &&
+             data.progreso is number && data.progreso >= 0 && data.progreso <= 100 &&
+             optionalBoundedString(data, 'ownerUid', 128) &&
+             optionalBoundedString(data, 'autorEmail', 254) &&
+             optionalBoundedString(data, 'autorNombre', 200) &&
+             optionalBoundedString(data, 'autor', 200) &&
+             optionalBoundedString(data, 'fechaFinalizacion', 80) &&
+             optionalBoundedString(data, 'problema', 20000) &&
+             optionalBoundedString(data, 'causaRaiz', 20000) &&
+             optionalBoundedString(data, 'verificacion', 20000) &&
+             optionalBoundedString(data, 'estandarizacion', 20000) &&
+             optionalBoundedStringOrNull(data, 'process_mapping_image', 200000) &&
+             optionalBoundedStringOrNull(data, 'gemba_final_image', 200000) &&
+             optionalBoundedList(data, 'assignedUids', 100) &&
+             optionalBoundedList(data, 'assignedEmails', 100) &&
+             optionalBoundedList(data, 'asignados', 100) &&
+             optionalBoundedList(data, 'equipo', 100) &&
+             optionalBoundedList(data, 'acciones', 500) &&
+             optionalBoundedList(data, 'evidencias', 200);
+    }
+
+    function isAllowedPdcaCreate(data) {
+      return userRole() == 'admin' ||
+             (
+               data.get('ownerUid', '') == request.auth.uid &&
+               data.get('autorEmail', '').lower() == request.auth.token.email.lower()
+             );
+    }
+
+    function isPdcaImmutableFieldsPreserved(newData, oldData, docId) {
+      return newData.get('id', docId) == docId &&
+             !newData.diff(oldData).affectedKeys().hasAny(['autorEmail']) &&
+             (
+               ('ownerUid' in oldData && 'ownerUid' in newData && newData.ownerUid == oldData.ownerUid) ||
+               (!('ownerUid' in oldData) && (!('ownerUid' in newData) || newData.ownerUid == request.auth.uid))
+             );
+    }
+
+    function isPdcaContributorSafeUpdate(newData, oldData) {
+      return !newData.diff(oldData).affectedKeys().hasAny([
+               'asignados',
+               'assignedUids',
+               'assignedEmails',
+               'fechaFinalizacion',
+               'autorNombre'
+             ]);
+    }
+
+    function isAllowedPdcaUpdate(newData, oldData, docId) {
+      let profile = userProfile();
+      return profile.get('role', 'user') == 'admin' ||
+             (
+               isPdcaImmutableFieldsPreserved(newData, oldData, docId) &&
+               (
+                 isPdcaOwner(oldData) ||
+                 isPdcaAreaLead(oldData, profile) ||
+                 (isPdcaAssigned(oldData) && isPdcaContributorSafeUpdate(newData, oldData))
+               )
+             );
+    }
+
+    // ===============================================================
+    // Domain Validators: RDAs
+    // ===============================================================
+
+    function isRdaOwner(data) {
+      return ('ownerUid' in data && data.ownerUid == request.auth.uid) ||
+             (
+               'portada' in data &&
+               data.portada is map &&
+               'autorEmail' in data.portada &&
+               data.portada.autorEmail is string &&
+               data.portada.autorEmail.lower() == request.auth.token.email.lower()
+             );
+    }
+
+    function isRdaAssigned(data) {
+      return ('assignedUids' in data && data.assignedUids is list && request.auth.uid in data.assignedUids) ||
+             (
+               'assignedEmails' in data &&
+               data.assignedEmails is list &&
+               request.auth.token.email.lower() in data.assignedEmails
+             );
+    }
+
+    function isRdaAreaLead(data, profile) {
+      let userArea = profile.get('area', '');
+      return profile.get('role', 'user') == 'area_lead' &&
+             userArea is string &&
+             userArea != '' &&
+             (
+               (
+                 'context' in data &&
+                 data.context is map &&
+                 'area' in data.context &&
+                 data.context.area is string &&
+                 data.context.area.lower() == userArea.lower()
+               ) ||
+               (
+                 'portada' in data &&
+                 data.portada is map &&
+                 'area' in data.portada &&
+                 data.portada.area is string &&
+                 data.portada.area.lower() == userArea.lower()
+               )
+             );
+    }
+
+    function isValidRdaSchema(data, docId) {
+      return data.keys().size() <= 80 &&
+             !('password' in data) &&
+             !('isAdmin' in data) &&
+             !('role' in data) &&
+             data.get('id', docId) == docId &&
+             'portada' in data &&
+             data.portada is map &&
+             'titulo' in data.portada &&
+             boundedString(data.portada.titulo, 1, 300) &&
+             optionalBoundedString(data.portada, 'area', 120) &&
+             optionalBoundedString(data.portada, 'autorOriginal', 200) &&
+             optionalBoundedString(data.portada, 'autorEmail', 254) &&
+             optionalBoundedString(data.portada, 'descripcionProblema', 20000) &&
+             optionalBoundedList(data.portada, 'usuariosAsignados', 100) &&
+             (
+               !('context' in data) ||
+               (
+                 data.context is map &&
+                 optionalBoundedString(data.context, 'area', 120) &&
+                 optionalBoundedString(data.context, 'folio', 80) &&
+                 optionalBoundedString(data.context, 'responsable', 2000)
+               )
+             ) &&
+             optionalBoundedString(data, 'title', 300) &&
+             (!('status' in data) || (data.status is string && data.status in ['Abierto', 'Cerrado', 'Evaluado', 'En Progreso'])) &&
+             optionalBoundedString(data, 'ownerUid', 128) &&
+             optionalBoundedString(data, 'observacionesAdicionales', 20000) &&
+             optionalBoundedString(data, 'rendimientoActualImage', 200000) &&
+             optionalBoundedList(data, 'assignedUids', 100) &&
+             optionalBoundedList(data, 'assignedEmails', 100) &&
+             optionalBoundedList(data, 'pda', 500);
+    }
+
+    function isAllowedRdaCreate(data) {
+      return userRole() == 'admin' ||
+             (
+               data.get('ownerUid', '') == request.auth.uid &&
+               data.portada.get('autorEmail', '').lower() == request.auth.token.email.lower()
+             );
+    }
+
+    function isRdaImmutableFieldsPreserved(newData, oldData, docId) {
+      return newData.get('id', docId) == docId &&
+             (
+               ('ownerUid' in oldData && 'ownerUid' in newData && newData.ownerUid == oldData.ownerUid) ||
+               (!('ownerUid' in oldData) && (!('ownerUid' in newData) || newData.ownerUid == request.auth.uid))
+             ) &&
+             (
+               (
+                 'portada' in oldData &&
+                 oldData.portada is map &&
+                 'autorEmail' in oldData.portada &&
+                 'autorEmail' in newData.portada &&
+                 newData.portada.autorEmail == oldData.portada.autorEmail
+               ) ||
+               (
+                 !('portada' in oldData && oldData.portada is map && 'autorEmail' in oldData.portada) &&
+                 newData.portada.get('autorEmail', '') == ''
+               )
+             );
+    }
+
+    function isRdaContributorSafeUpdate(newData, oldData) {
+      return newData.get('assignedUids', []) == oldData.get('assignedUids', []) &&
+             newData.get('assignedEmails', []) == oldData.get('assignedEmails', []) &&
+             (
+               (
+                 'portada' in oldData &&
+                 oldData.portada is map &&
+                 newData.portada.get('usuariosAsignados', []) == oldData.portada.get('usuariosAsignados', [])
+               ) ||
+               (
+                 !('portada' in oldData && oldData.portada is map) &&
+                 newData.portada.get('usuariosAsignados', []) == []
+               )
+             );
+    }
+
+    function isAllowedRdaUpdate(newData, oldData, docId) {
+      let profile = userProfile();
+      return profile.get('role', 'user') == 'admin' ||
+             (
+               isRdaImmutableFieldsPreserved(newData, oldData, docId) &&
+               (
+                 isRdaOwner(oldData) ||
+                 isRdaAreaLead(oldData, profile) ||
+                 (isRdaAssigned(oldData) && isRdaContributorSafeUpdate(newData, oldData))
+               )
+             );
+    }
+
+    // ===============================================================
+    // Domain Validators: Notifications
+    // ===============================================================
+
+    function isNotificationRecipient(data) {
+      return ('recipientUid' in data && data.recipientUid == request.auth.uid) ||
+             (
+               'recipientEmail' in data &&
+               data.recipientEmail is string &&
+               (
+                 data.recipientEmail == request.auth.token.email ||
+                 data.recipientEmail == request.auth.token.email.lower() ||
+                 data.recipientEmail.lower() == request.auth.token.email.lower()
+               )
+             ) ||
+             (
+               'creatorEmail' in data &&
+               data.creatorEmail is string &&
+               (
+                 data.creatorEmail == request.auth.token.email ||
+                 data.creatorEmail == request.auth.token.email.lower() ||
+                 data.creatorEmail.lower() == request.auth.token.email.lower()
+               )
+             ) ||
+             ('requesterUid' in data && data.requesterUid == request.auth.uid);
+    }
+
+    function isValidNotificationCreate(data) {
+      return !('password' in data) &&
+             data.keys().hasOnly([
+               'userId', 'recipientUid', 'recipientEmail', 'recipientRole',
+               'forAdmins', 'creatorName', 'creatorEmail', 'responsibleNames',
+               'responsibleEmails', 'type', 'module', 'folioOrCode',
+               'pdcaId', 'rdaId', 'pdcaTitle', 'actionId',
+               'requesterUid', 'requesterName', 'requesterEmail', 'customNote',
+               'approved', 'rejected', 'message', 'read',
+               'createdAt', 'senderUid', 'senderName', 'senderEmail'
+             ]) &&
+             data.keys().size() <= 30 &&
+             data.get('senderUid', '') is string &&
+             data.get('senderUid', '') == request.auth.uid &&
+             'read' in data &&
+             data.read is bool &&
+             data.read == false &&
+             'message' in data &&
+             boundedString(data.message, 1, 1000) &&
+             'type' in data &&
+             data.type is string &&
+             data.get('approved', false) == false &&
+             data.get('rejected', false) == false &&
+             optionalBoundedString(data, 'userId', 200) &&
+             optionalBoundedString(data, 'recipientUid', 128) &&
+             optionalBoundedString(data, 'recipientEmail', 254) &&
+             optionalBoundedString(data, 'creatorEmail', 254) &&
+             optionalBoundedString(data, 'pdcaTitle', 300) &&
+             optionalBoundedString(data, 'requesterUid', 128) &&
+             optionalBoundedString(data, 'requesterName', 200) &&
+             optionalBoundedString(data, 'requesterEmail', 254) &&
+             optionalBoundedString(data, 'customNote', 1000) &&
+             optionalBoundedList(data, 'responsibleNames', 100) &&
+             optionalBoundedList(data, 'responsibleEmails', 100) &&
+             (
+               (
+                 data.type == 'access_request' &&
+                 data.get('requesterUid', '') == request.auth.uid &&
+                 data.get('requesterEmail', '').lower() == request.auth.token.email.lower()
+               ) ||
+               (
+                 userRole() in ['admin', 'area_lead', 'user'] &&
+                 data.type in ['task_assigned', 'mention', 'comment']
+               )
+             );
+    }
+
+    function isValidNotificationUpdate(newData, oldData) {
+      return !('password' in newData) &&
+             newData.diff(oldData).affectedKeys().hasOnly(['read']) &&
+             'read' in newData &&
+             newData.read is bool &&
+             newData.read == true;
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow get: if hasCorporateEmail() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if hasCorporateEmail() &&
+                       (!('uid' in request.resource.data) || request.resource.data.uid == userId) &&
+                       isValidUserCommonFields(request.resource.data) &&
+                       (
+                         isAdmin() ||
+                         (isOwner(userId) && isValidSelfUserCreate(request.resource.data))
+                       );
+
+      allow update: if hasCorporateEmail() &&
+                       uidNotModified() &&
+                       (!('uid' in request.resource.data) || request.resource.data.uid == userId) &&
+                       isValidUserCommonFields(request.resource.data) &&
+                       (
+                         (isAdmin() && isValidAdminUserUpdate(request.resource.data, resource.data)) ||
+                         (isOwner(userId) && isValidSelfUserUpdate(request.resource.data, resource.data))
+                       );
+
+      allow delete: if isAdmin() && request.auth.uid != userId;
     }
-    
-    match /pdca/{docId} {
-      allow read, write: if isAuthenticated();
+
+    match /user_directory/{userId} {
+      allow get, list: if isApprovedUser();
+      allow create, update, delete: if false;
     }
-    
-    match /rda/{docId} {
-      allow read, write: if isAuthenticated();
+
+    match /pdcas/{docId} {
+      allow get, list: if isApprovedUser();
+
+      allow create: if (docId == '_config' && isAdmin() && isValidPdcaConfig(request.resource.data)) ||
+                       (docId != '_config' && canWriteContent() && isValidPdcaSchema(request.resource.data, docId) && isAllowedPdcaCreate(request.resource.data));
+
+      allow update: if (docId == '_config' && isAdmin() && isValidPdcaConfig(request.resource.data)) ||
+                       (docId != '_config' && canWriteContent() && isValidPdcaSchema(request.resource.data, docId) && isAllowedPdcaUpdate(request.resource.data, resource.data, docId));
+
+      allow delete: if (docId == '_config' && isAdmin()) ||
+                       (docId != '_config' && canWriteContent() && (isAdmin() || isPdcaOwner(resource.data)));
+    }
+
+    match /rdas/{docId} {
+      allow get, list: if isApprovedUser();
+
+      allow create: if canWriteContent() &&
+                       isValidRdaSchema(request.resource.data, docId) &&
+                       isAllowedRdaCreate(request.resource.data);
+
+      allow update: if canWriteContent() &&
+                       isValidRdaSchema(request.resource.data, docId) &&
+                       isAllowedRdaUpdate(request.resource.data, resource.data, docId);
+
+      allow delete: if canWriteContent() && (isAdmin() || isRdaOwner(resource.data));
+    }
+
+    match /notifications/{docId} {
+      allow get, list: if isAdmin() || (isApprovedUser() && isNotificationRecipient(resource.data));
+
+      allow create: if isApprovedUser() && isValidNotificationCreate(request.resource.data);
+
+      allow update: if isApprovedUser() &&
+                       (isAdmin() || isNotificationRecipient(resource.data)) &&
+                       isValidNotificationUpdate(request.resource.data, resource.data);
+
+      allow delete: if isAdmin();
     }
   }
 }

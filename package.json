@@ -3,13 +3,14 @@
   "private": true,
   "sideEffects": [
     "**/*.css",
-    "./src/lib/i18n.ts"
+    "./src/core/i18n/index.ts"
   ],
   "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
     "test": "vitest run",
+    "test:security": "firebase emulators:exec --only firestore,storage --project demo-maz-hub-security \"npx vitest run --config vitest.security.config.ts\"",
     "test:e2e": "playwright test",
     "postbuild": "node scripts/postbuild.js",
     "build:dev": "vite build --mode development",
@@ -64,6 +65,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.4.17",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^12.19.0",
     "html2pdf.js": "^0.14.0",
@@ -93,6 +95,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@lovable.dev/vite-tanstack-config": "^2.15.0",
     "@playwright/test": "^1.64.0",
     "@testing-library/jest-dom": "^7.0.1",
