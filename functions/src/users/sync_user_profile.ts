@@ -4,8 +4,9 @@
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { firebase_auth, firestore_db, firestore_field_value } from "../core/firebase_admin";
-import { clamp_string } from "../security/domain_and_strings";
+import { clamp_string, is_profile_expired } from "../security/domain_and_strings";
 import { build_directory_projection, normalize_role } from "../security/roles_and_permissions";
+import { build_custom_claims } from "./user_verification_sync";
 
 /**
  * Mantiene sincronizados `customClaims` y `user_directory/{uid}` ante cambios en `users/{uid}`.
@@ -36,16 +37,24 @@ export const sync_user_profile_trigger = onDocumentWritten(
     }
 
     const rol_verificado = normalize_role(datos_perfil["role"]);
-    const usuario_aprobado = datos_perfil["approved"] === true;
+    const expirado = is_profile_expired(datos_perfil);
+    const usuario_aprobado = datos_perfil["approved"] === true && !expirado;
     const area_verificada = clamp_string(datos_perfil["area"], 80) || "Usuario";
+    const es_temporal = datos_perfil["temporaryAccount"] === true;
+    const exp_ms =
+      typeof datos_perfil["expiresAtMs"] === "number" ? datos_perfil["expiresAtMs"] : undefined;
 
     await firebase_auth
-      .setCustomUserClaims(uid_usuario, {
-        role: rol_verificado,
-        area: area_verificada,
-        approved: usuario_aprobado,
-        admin: rol_verificado === "admin" && usuario_aprobado,
-      })
+      .setCustomUserClaims(
+        uid_usuario,
+        build_custom_claims({
+          role: rol_verificado,
+          area: area_verificada,
+          approved: usuario_aprobado,
+          temporaryAccount: es_temporal,
+          ...(typeof exp_ms === "number" ? { expiresAtMs: exp_ms } : {}),
+        }),
+      )
       .catch(() => {});
 
     if (usuario_aprobado) {

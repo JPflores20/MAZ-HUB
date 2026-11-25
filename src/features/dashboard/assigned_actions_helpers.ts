@@ -3,7 +3,7 @@
  */
 
 import { differenceInCalendarDays, isValid, parse, parseISO, startOfDay } from "date-fns";
-import { get_rda_display_name } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 

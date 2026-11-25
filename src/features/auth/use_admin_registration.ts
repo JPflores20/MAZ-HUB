@@ -10,6 +10,7 @@ import {
   CORPORATE_EMAIL_ERROR,
   get_auth_error_info,
   validate_corporate_email,
+  validate_general_email,
 } from "./email_validation";
 import { ROLE_DEFAULT_PERMISSIONS, ROLE_LABELS } from "./role_permissions";
 import { user_service } from "./user_service";
@@ -23,6 +24,7 @@ export function useAdminRegistration() {
   const [user_password, set_user_password] = useState("");
   const [show_password, set_show_password] = useState(false);
   const [user_role, set_user_role] = useState<UserRole>("user");
+  const [active_days, set_active_days] = useState("90");
   const [user_area, set_user_area] = useState("");
   const [user_position, set_user_position] = useState("");
   const [custom_permissions, set_custom_permissions] = useState<UserPermissions>(
@@ -58,13 +60,30 @@ export function useAdminRegistration() {
   const handle_submit = async (submit_event: React.FormEvent) => {
     submit_event.preventDefault();
     if (!user_name.trim() || !user_email.trim() || !user_area.trim()) {
-      set_error_message("Por favor, completa nombre, correo corporativo y área.");
+      set_error_message("Por favor, completa nombre, correo electrónico y área.");
       return;
     }
 
-    const email_validation = validate_corporate_email(user_email);
+    const is_intern_role = user_role === "intern";
+    const email_validation = is_intern_role
+      ? validate_general_email(user_email)
+      : validate_corporate_email(user_email);
     if (!email_validation.valid) {
-      set_error_message(email_validation.error || CORPORATE_EMAIL_ERROR);
+      set_error_message(
+        email_validation.error ||
+          (is_intern_role ? "Ingresa un correo electrónico válido." : CORPORATE_EMAIL_ERROR),
+      );
+      return;
+    }
+
+    const parsed_days = active_days.trim() ? Number(active_days.trim()) : NaN;
+    if (
+      is_intern_role &&
+      (!Number.isInteger(parsed_days) || parsed_days < 1 || parsed_days > 730)
+    ) {
+      set_error_message(
+        "Asigna un tiempo activo válido entre 1 y 730 días para el becario temporal.",
+      );
       return;
     }
 
@@ -98,6 +117,7 @@ export function useAdminRegistration() {
         ...(normalized_position ? { position: normalized_position } : {}),
         role: user_role,
         permissions: final_permissions,
+        ...(is_intern_role ? { activeDays: parsed_days } : {}),
         ...(trimmed_password ? { password: trimmed_password } : {}),
       });
 
@@ -110,10 +130,11 @@ export function useAdminRegistration() {
         console.error("No se pudo enviar correo de activación inicial:", mail_error);
       }
 
+      const duration_note = is_intern_role ? ` (vigencia: ${parsed_days} días)` : "";
       set_success_message(
         activation_sent
-          ? `Usuario ${normalized_name} registrado como ${ROLE_LABELS[user_role]}. Se envió un correo para establecer su contraseña y activar la cuenta.`
-          : `Usuario ${normalized_name} registrado como ${ROLE_LABELS[user_role]}. Envía el enlace de activación desde la lista de usuarios.`,
+          ? `Usuario ${normalized_name} registrado como ${ROLE_LABELS[user_role]}${duration_note}. Se envió un correo para verificar su cuenta y establecer contraseña.`
+          : `Usuario ${normalized_name} registrado como ${ROLE_LABELS[user_role]}${duration_note}. Envía el enlace de activación desde la lista de usuarios.`,
       );
       set_user_name("");
       set_user_email("");
@@ -121,6 +142,7 @@ export function useAdminRegistration() {
       set_user_area("");
       set_user_position("");
       set_user_role("user");
+      set_active_days("90");
       set_custom_permissions({ ...ROLE_DEFAULT_PERMISSIONS["user"] });
     } catch (caught_error: unknown) {
       const { code, message } = get_auth_error_info(caught_error);
@@ -149,6 +171,8 @@ export function useAdminRegistration() {
     set_show_password,
     user_role,
     handle_role_select,
+    active_days,
+    set_active_days,
     user_area,
     set_user_area,
     user_position,

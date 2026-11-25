@@ -6,7 +6,7 @@
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db, primary_auth } from "@/core/config/firebase";
 import type { Rda } from "@/domain/models/rda";
-import { generate_next_rda_folio } from "@/features/rda";
+import { generate_next_rda_folio } from "@/features/rda/utils/rda_name";
 import {
   DocumentTooLargeError,
   FIRESTORE_SAFE_DOC_BYTES,

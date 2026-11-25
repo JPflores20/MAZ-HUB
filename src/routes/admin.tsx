@@ -2,9 +2,8 @@
  * @fileoverview Thin TanStack Router adapter for the `/admin` user management route.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import { AdminPanel } from "@/features/admin";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin")({
-  component: AdminPanel,
+  component: lazyRouteComponent(() => import("@/features/admin/admin_panel"), "AdminPanel"),
 });

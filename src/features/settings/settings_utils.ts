@@ -2,16 +2,15 @@
  * @fileoverview Pure formatting, avatar image compression, name parsing, and password strength utilities.
  */
 
+import {
+  can_select_elaboracion_area,
+  SUGGESTED_AREAS,
+  SUGGESTED_PLANTS,
+  SUGGESTED_POSITIONS,
+} from "@/domain/constants/plant_catalog";
 import type { UserProfile } from "@/features/auth/auth_context";
 
-export const SUGGESTED_AREAS = ["COCIMIENTOS", "BLOQUE FRIO", "ELABORACION"] as const;
-export const SUGGESTED_POSITIONS = ["PLANEADOR", "SUPERVISOR", "TECNICO", "GERENTE"] as const;
-export const SUGGESTED_PLANTS = [
-  "Cervecería Zacatecas",
-  "Cervecería Centro",
-  "Cervecería Modelo",
-  "Corporativo MAZ",
-] as const;
+export { SUGGESTED_AREAS, SUGGESTED_PLANTS, SUGGESTED_POSITIONS };
 
 export const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
@@ -87,11 +86,7 @@ export function get_user_name_parts(user_profile: UserProfile | null | undefined
   materno: string;
 } {
   if (!user_profile) return { nombre: "", paterno: "", materno: "" };
-  if (
-    user_profile.firstName ||
-    user_profile.paternalLastName ||
-    user_profile.maternalLastName
-  ) {
+  if (user_profile.firstName || user_profile.paternalLastName || user_profile.maternalLastName) {
     return {
       nombre: (user_profile.firstName || "").toUpperCase(),
       paterno: (user_profile.paternalLastName || "").toUpperCase(),
@@ -137,15 +132,5 @@ export function is_axel_guillen_identity(
   full_name: string,
   target_user: UserProfile | null | undefined,
 ): boolean {
-  const strip_accents = (text: string) =>
-    text
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toUpperCase();
-  const candidate_name = strip_accents(`${full_name} ${target_user?.name || ""}`);
-  const candidate_email = strip_accents(target_user?.email || "");
-  return (
-    (candidate_name.includes("AXEL") && candidate_name.includes("GUILLEN")) ||
-    (candidate_email.includes("AXEL") && candidate_email.includes("GUILLEN"))
-  );
+  return can_select_elaboracion_area(`${full_name} ${target_user?.name || ""}`, target_user?.email);
 }

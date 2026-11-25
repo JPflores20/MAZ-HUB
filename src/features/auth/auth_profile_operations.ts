@@ -10,8 +10,8 @@ import {
   updateProfile as update_firebase_auth_profile,
 } from "firebase/auth";
 import { primary_auth } from "@/core/config/firebase";
-import type { UserProfile } from "./auth_types";
-import { is_corporate_email } from "./email_validation";
+import type { AdminVerificationTarget, UserProfile } from "./auth_types";
+import { is_corporate_email, validate_general_email } from "./email_validation";
 import { user_service } from "./user_service";
 
 /** Updates allowed profile fields in Firestore and mirrors display name changes to Firebase Auth. */
@@ -46,12 +46,37 @@ export async function reauthenticate_and_change_password(
   await updatePassword(active_firebase_user, next_password);
 }
 
-/** Dispatches a Firebase password reset email for an explicit corporate address. */
-export async function dispatch_corporate_password_reset(raw_email?: string | null): Promise<void> {
+/** Dispatches a Firebase password reset email for a corporate account or admin-authorized temporary intern. */
+export async function dispatch_corporate_password_reset(
+  raw_email?: string | null,
+  allow_temporary_external = false,
+): Promise<void> {
   const normalized_email = (raw_email || "").trim().toLowerCase();
-  if (!normalized_email || !is_corporate_email(normalized_email)) {
-    throw new Error("No se encontró un correo corporativo válido asociado a tu cuenta.");
+  const is_allowed = allow_temporary_external
+    ? validate_general_email(normalized_email).valid
+    : Boolean(normalized_email && is_corporate_email(normalized_email));
+  if (!is_allowed) {
+    throw new Error("No se encontró un correo electrónico válido asociado a tu cuenta.");
   }
   primary_auth.languageCode = "es";
   await sendPasswordResetEmail(primary_auth, normalized_email);
+}
+
+/** Validates admin authority and sends an activation/password-setup link to corporate or temporary intern users. */
+export async function dispatch_admin_activation_link(
+  caller_role: string | undefined,
+  target: AdminVerificationTarget,
+): Promise<"activation_reset_email"> {
+  if (caller_role !== "admin") {
+    throw new Error("Solo los administradores pueden enviar enlaces de activación.");
+  }
+  const email_lower = target.email.trim().toLowerCase();
+  const is_valid_temp = Boolean(
+    target.temporaryAccount && validate_general_email(email_lower).valid,
+  );
+  if (!email_lower || (!is_corporate_email(email_lower) && !is_valid_temp)) {
+    throw new Error("El usuario no tiene un correo electrónico autorizado válido.");
+  }
+  await dispatch_corporate_password_reset(email_lower, is_valid_temp);
+  return "activation_reset_email";
 }

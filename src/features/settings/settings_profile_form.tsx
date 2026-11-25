@@ -3,10 +3,9 @@
  */
 
 import type React from "react";
-import { Mail, Save, User } from "lucide-react";
+import { Save, User } from "lucide-react";
+import { PersonalIdentityFields } from "@/shared/components/personal_identity_fields";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
 import { SettingsPlantFields } from "./settings_plant_fields";
 
 interface SettingsProfileFormProps {
@@ -61,12 +60,6 @@ export function SettingsProfileForm({
   set_bio,
   on_submit,
 }: SettingsProfileFormProps) {
-  const handle_uppercase =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (change_event: React.ChangeEvent<HTMLInputElement>) => {
-      setter(change_event.target.value.toUpperCase());
-    };
-
   return (
     <form
       onSubmit={on_submit}
@@ -91,61 +84,17 @@ export function SettingsProfileForm({
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="profile-nombre" className="text-xs font-bold uppercase tracking-wider">
-            NOMBRE(S) *
-          </Label>
-          <Input
-            id="profile-nombre"
-            value={nombre}
-            onChange={handle_uppercase(set_nombre)}
-            placeholder="Ej. ANA MARIA"
-            className="uppercase"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="profile-paterno" className="text-xs font-bold uppercase tracking-wider">
-            APELLIDO PATERNO *
-          </Label>
-          <Input
-            id="profile-paterno"
-            value={paterno}
-            onChange={handle_uppercase(set_paterno)}
-            placeholder="LOPEZ"
-            className="uppercase"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="profile-materno" className="text-xs font-bold uppercase tracking-wider">
-            APELLIDO MATERNO
-          </Label>
-          <Input
-            id="profile-materno"
-            value={materno}
-            onChange={handle_uppercase(set_materno)}
-            placeholder="HERNANDEZ"
-            className="uppercase"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="profile-email" className="text-xs font-bold uppercase tracking-wider">
-            Correo Corporativo
-          </Label>
-          <div className="relative">
-            <Mail className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-            <Input
-              id="profile-email"
-              value={target_user_email}
-              disabled
-              className="pl-9 bg-muted/50 text-muted-foreground cursor-not-allowed"
-            />
-          </div>
-        </div>
+        <PersonalIdentityFields
+          id_prefix="profile"
+          nombre={nombre}
+          set_nombre={set_nombre}
+          paterno={paterno}
+          set_paterno={set_paterno}
+          materno={materno}
+          set_materno={set_materno}
+          email={target_user_email}
+          email_read_only
+        />
 
         <SettingsPlantFields
           area={area}

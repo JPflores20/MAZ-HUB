@@ -11,19 +11,37 @@ export interface AreaOption {
 /** Plantas cerveceras habilitadas oficialmente en formularios PDCA/RDA. */
 export const OFFICIAL_PLANTAS = ["Zacatecas"] as const;
 
-/** Departamentos operativos reconocidos en la planta. */
-export const OFFICIAL_DEPARTAMENTOS = [
-  "Elaboración",
-  "S&E",
-  "Tratamiento de Agua",
+/** Opciones sugeridas en formularios de registro y perfil de usuario. */
+export const SUGGESTED_AREAS = ["COCIMIENTOS", "BLOQUE FRIO", "ELABORACION"] as const;
+export const SUGGESTED_POSITIONS = ["PLANEADOR", "SUPERVISOR", "TECNICO", "GERENTE"] as const;
+export const SUGGESTED_PLANTS = [
+  "Cervecería Zacatecas",
+  "Cervecería Centro",
+  "Cervecería Modelo",
+  "Corporativo MAZ",
 ] as const;
+export const DEFAULT_PLANT = "Cervecería Zacatecas";
+
+/** Verifica excepción de identidad que habilita seleccionar el área restringida ELABORACION. */
+export function can_select_elaboracion_area(full_name: string, email?: string | null): boolean {
+  const strip_accents = (text: string) =>
+    text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+  const candidate_name = strip_accents(full_name);
+  const candidate_email = strip_accents(email || "");
+  return (
+    (candidate_name.includes("AXEL") && candidate_name.includes("GUILLEN")) ||
+    (candidate_email.includes("AXEL") && candidate_email.includes("GUILLEN"))
+  );
+}
+
+/** Departamentos operativos reconocidos en la planta. */
+export const OFFICIAL_DEPARTAMENTOS = ["Elaboración", "S&E", "Tratamiento de Agua"] as const;
 
 /** Áreas principales de operación para filtrado y aislamiento RBAC. */
-export const OFFICIAL_AREAS = [
-  "Cocimientos",
-  "Cuartos Frios",
-  "Mantenimiento",
-] as const;
+export const OFFICIAL_AREAS = ["Cocimientos", "Cuartos Frios", "Mantenimiento"] as const;
 
 /** Etapas de proceso productivas y auxiliares del catálogo oficial. */
 export const OFFICIAL_ETAPAS = [

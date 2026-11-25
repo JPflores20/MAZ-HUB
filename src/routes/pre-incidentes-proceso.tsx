@@ -2,8 +2,7 @@
  * @fileoverview Route adapter for `/pre-incidentes-proceso` delegating UI rendering to PreIncidentesProcesoView.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import { PreIncidentesProcesoView } from "@/features/pre_incidentes";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pre-incidentes-proceso")({
   head: () => ({
@@ -16,5 +15,8 @@ export const Route = createFileRoute("/pre-incidentes-proceso")({
       },
     ],
   }),
-  component: PreIncidentesProcesoView,
+  component: lazyRouteComponent(
+    () => import("@/features/pre_incidentes/pre_incidentes_view"),
+    "PreIncidentesProcesoView",
+  ),
 });

@@ -2,8 +2,13 @@
  * @fileoverview Table row displaying a single user's verification status, workload, role/permissions, and admin actions.
  */
 
-import { CheckCircle2, Clock, ZoomIn } from "lucide-react";
+import { CalendarClock, CheckCircle2, Clock, ShieldAlert, ZoomIn } from "lucide-react";
 import type { UserPermissions, UserProfile, UserRole } from "@/features/auth/auth_context";
+import {
+  is_account_expired,
+  is_corporate_email,
+  is_temporary_intern_account,
+} from "@/features/auth/email_validation";
 import { TableCell, TableRow } from "@/shared/ui/table";
 import { AdminUserPermissionsPopover } from "./admin_user_permissions_popover";
 import { AdminUserRowActions } from "./admin_user_row_actions";
@@ -14,6 +19,7 @@ interface AdminUserRowProps {
   user_profile: UserProfile;
   workload: UserWorkloadSummary;
   is_sending_link: boolean;
+  is_approving: boolean;
   on_open_photo: (user_profile: UserProfile) => void;
   on_role_change: (uid: string, next_role: UserRole) => Promise<void>;
   on_permission_toggle: (
@@ -24,8 +30,28 @@ interface AdminUserRowProps {
   on_reset_permissions: (user_profile: UserProfile) => Promise<void>;
   on_send_verification_link: (user_profile: UserProfile) => Promise<void>;
   on_approve_user: (user_profile: UserProfile) => Promise<void>;
+  on_extend_intern_days: (user_profile: UserProfile, active_days: number) => Promise<void>;
   on_edit_user: (uid: string) => void;
   on_delete_user: (uid: string, name: string) => Promise<void>;
+}
+
+function format_temp_expiry_label(user_profile: UserProfile): string | null {
+  const exp_ms =
+    typeof user_profile.expiresAtMs === "number"
+      ? user_profile.expiresAtMs
+      : user_profile.expiresAt
+        ? Date.parse(user_profile.expiresAt)
+        : NaN;
+  if (!Number.isFinite(exp_ms)) return null;
+  const formatted_date = new Date(exp_ms).toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const remaining_days = Math.max(0, Math.ceil((exp_ms - Date.now()) / 86_400_000));
+  return is_account_expired(user_profile)
+    ? `Temporal expirado (${formatted_date})`
+    : `Temporal · ${remaining_days}d restantes (vence ${formatted_date})`;
 }
 
 /** Renders one row in the administrative user directory table. */
@@ -33,17 +59,25 @@ export function AdminUserRow({
   user_profile,
   workload,
   is_sending_link,
+  is_approving,
   on_open_photo,
   on_role_change,
   on_permission_toggle,
   on_reset_permissions,
   on_send_verification_link,
   on_approve_user,
+  on_extend_intern_days,
   on_edit_user,
   on_delete_user,
 }: AdminUserRowProps) {
+  const is_corporate_account = is_corporate_email(user_profile.email);
+  const is_temp_intern = is_temporary_intern_account(user_profile);
+  const is_expired = is_account_expired(user_profile);
+  const temp_expiry_label = is_temp_intern ? format_temp_expiry_label(user_profile) : null;
   const is_email_pending = user_profile.emailVerified !== true;
   const is_approval_pending = user_profile.approved !== true;
+  const needs_admin_verification =
+    is_corporate_account && (is_approval_pending || is_email_pending);
 
   return (
     <TableRow className="transition-colors hover:bg-secondary/30">
@@ -94,6 +128,22 @@ export function AdminUserRow({
                   <CheckCircle2 className="size-2.5" /> Aprobado
                 </span>
               )}
+              {!is_corporate_account && !is_temp_intern && (
+                <span className="inline-flex items-center gap-1 rounded border border-destructive/40 bg-destructive/10 px-1.5 py-0.5 text-[10px] font-semibold text-destructive">
+                  <ShieldAlert className="size-2.5" /> Dominio externo bloqueado
+                </span>
+              )}
+              {is_temp_intern && temp_expiry_label && (
+                <span
+                  className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold ${
+                    is_expired
+                      ? "border-destructive/40 bg-destructive/10 text-destructive"
+                      : "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                  }`}
+                >
+                  <CalendarClock className="size-2.5" /> {temp_expiry_label}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -117,6 +167,7 @@ export function AdminUserRow({
       <TableCell>
         <AdminUserPermissionsPopover
           user_profile={user_profile}
+          role_locked={!is_corporate_account && is_temp_intern}
           on_role_change={on_role_change}
           on_permission_toggle={on_permission_toggle}
           on_reset_permissions={on_reset_permissions}
@@ -127,9 +178,13 @@ export function AdminUserRow({
         <AdminUserRowActions
           user_profile={user_profile}
           is_sending_link={is_sending_link}
-          is_approval_pending={is_approval_pending}
+          is_approving={is_approving}
+          can_receive_link={is_corporate_account || is_temp_intern}
+          needs_admin_verification={needs_admin_verification}
+          can_extend_intern={user_profile.role === "intern"}
           on_send_verification_link={on_send_verification_link}
           on_approve_user={on_approve_user}
+          on_extend_intern_days={on_extend_intern_days}
           on_edit_user={on_edit_user}
           on_delete_user={on_delete_user}
         />

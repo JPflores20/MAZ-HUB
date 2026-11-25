@@ -2,18 +2,13 @@
  * @fileoverview Admin user creation form delegating isolated provisioning to `adminCreateUser`.
  */
 
-import { AlertCircle, Eye, EyeOff, UserPlus } from "lucide-react";
+import { AlertCircle, UserPlus } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { AdminInternDurationField } from "./admin_intern_duration_field";
 import { AdminPermissionsMatrix } from "./admin_permissions_matrix";
+import { AdminRegistrationFields } from "./admin_registration_fields";
 import type { UserRole } from "./auth_types";
 import { ROLE_LABELS } from "./role_permissions";
 import { useAdminRegistration } from "./use_admin_registration";
@@ -33,6 +28,8 @@ export function RegistrationForm() {
     set_show_password,
     user_role,
     handle_role_select,
+    active_days,
+    set_active_days,
     user_area,
     set_user_area,
     user_position,
@@ -60,7 +57,11 @@ export function RegistrationForm() {
         </div>
       </div>
 
-      <form onSubmit={(submit_event) => void handle_submit(submit_event)} className="space-y-4" noValidate>
+      <form
+        onSubmit={(submit_event) => void handle_submit(submit_event)}
+        className="space-y-4"
+        noValidate
+      >
         {error_message && (
           <div className="flex items-center gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
             <AlertCircle className="size-4 shrink-0" />
@@ -73,100 +74,43 @@ export function RegistrationForm() {
           </div>
         )}
 
-        <div className="space-y-1.5">
-          <Label htmlFor="name" className="text-xs font-semibold">
-            NOMBRE COMPLETO *
-          </Label>
-          <Input
-            id="name"
-            required
-            value={user_name}
-            onChange={(change_event) => set_user_name(change_event.target.value)}
-            placeholder="Ej. Roberto Torres"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-xs font-semibold">
-            CORREO ELECTRÓNICO (OBLIGATORIO) *
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            required
-            value={user_email}
-            onChange={(change_event) => set_user_email(change_event.target.value)}
-            placeholder="correo@gmodelo.com.mx o correo@ab-inbev.com"
-          />
-          <p className="text-[10px] text-muted-foreground">
-            Debe terminar en <strong>@gmodelo.com.mx</strong> o <strong>@ab-inbev.com</strong>.
-          </p>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-xs font-semibold">
-            CONTRASEÑA TEMPORAL (OPCIONAL)
-          </Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={show_password ? "text" : "password"}
-              value={user_password}
-              onChange={(change_event) => set_user_password(change_event.target.value)}
-              placeholder="Opcional: se enviará enlace para definir contraseña"
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => set_show_password((visible) => !visible)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {show_password ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="area" className="text-xs font-semibold">
-              ÁREA / DEPARTAMENTO *
-            </Label>
-            <Input
-              id="area"
-              required
-              value={user_area}
-              onChange={(change_event) => set_user_area(change_event.target.value)}
-              placeholder="Ej. COCIMIENTOS"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="position" className="text-xs font-semibold">
-              PUESTO / CARGO
-            </Label>
-            <Input
-              id="position"
-              value={user_position}
-              onChange={(change_event) => set_user_position(change_event.target.value)}
-              placeholder="Ej. BECARIO / ESPECIALISTA"
-            />
-          </div>
-        </div>
+        <AdminRegistrationFields
+          user_name={user_name}
+          set_user_name={set_user_name}
+          user_email={user_email}
+          set_user_email={set_user_email}
+          user_password={user_password}
+          set_user_password={set_user_password}
+          show_password={show_password}
+          on_toggle_password={() => set_show_password((visible) => !visible)}
+          user_role={user_role}
+          user_area={user_area}
+          set_user_area={set_user_area}
+          user_position={user_position}
+          set_user_position={set_user_position}
+        />
 
         <div className="space-y-2">
           <Label className="text-xs font-semibold">ROL DEL SISTEMA</Label>
-          <Select value={user_role} onValueChange={(selected) => handle_role_select(selected as UserRole)}>
+          <Select
+            value={user_role}
+            onValueChange={(selected) => handle_role_select(selected as UserRole)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="admin">{ROLE_LABELS.admin}</SelectItem>
-              <SelectItem value="area_lead">{ROLE_LABELS.area_lead}</SelectItem>
-              <SelectItem value="user">{ROLE_LABELS.user}</SelectItem>
-              <SelectItem value="intern">{ROLE_LABELS.intern}</SelectItem>
-              <SelectItem value="viewer">{ROLE_LABELS.viewer}</SelectItem>
+              {(["admin", "area_lead", "user", "intern", "viewer"] as const).map((role_option) => (
+                <SelectItem key={role_option} value={role_option}>
+                  {ROLE_LABELS[role_option]}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+
+          {user_role === "intern" && (
+            <AdminInternDurationField active_days={active_days} set_active_days={set_active_days} />
+          )}
 
           <AdminPermissionsMatrix
             user_role={user_role}

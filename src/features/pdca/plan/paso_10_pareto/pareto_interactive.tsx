@@ -136,11 +136,13 @@ export function ParetoInteractive({
           total_gap={gap_total}
         />
         {!pantalla_completa && (
-          <ParetoChart
-            {...propiedades_grafica}
-            on_bar_click={on_bar_click}
-            on_expand={() => set_pantalla_completa(true)}
-          />
+          <div className="min-w-0">
+            <ParetoChart
+              {...propiedades_grafica}
+              on_bar_click={on_bar_click}
+              on_expand={() => set_pantalla_completa(true)}
+            />
+          </div>
         )}
       </div>
 

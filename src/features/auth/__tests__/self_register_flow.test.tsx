@@ -1,8 +1,8 @@
 /**
- * @fileoverview Component tests verifying collaborator self-registration Zero Trust validations.
+ * @fileoverview Component tests verifying collaborator self-registration personal/plant fields and Zero Trust validations.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CORPORATE_EMAIL_ERROR } from "../email_validation";
 import { RegisterForm } from "../register_form";
@@ -45,6 +45,14 @@ vi.mock("../user_service", async () => {
 });
 
 describe("RegisterForm", () => {
+  beforeAll(() => {
+    if (typeof HTMLElement !== "undefined") {
+      HTMLElement.prototype.scrollIntoView ??= vi.fn();
+      HTMLElement.prototype.hasPointerCapture ??= vi.fn().mockReturnValue(false);
+      HTMLElement.prototype.releasePointerCapture ??= vi.fn();
+    }
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mock_update_profile.mockResolvedValue(undefined);
@@ -53,7 +61,17 @@ describe("RegisterForm", () => {
     mock_send_email_verification.mockResolvedValue(undefined);
   });
 
-  function fill_register_form(email_value: string, include_maternal = true) {
+  async function select_dropdown_option(trigger_pattern: RegExp, option_label: string) {
+    fireEvent.click(screen.getByLabelText(trigger_pattern));
+    const option = await screen.findByRole("option", { name: option_label });
+    fireEvent.click(option);
+  }
+
+  async function fill_register_form(
+    email_value: string,
+    options: { include_maternal?: boolean; include_area?: boolean } = {},
+  ) {
+    const { include_maternal = true, include_area = true } = options;
     fireEvent.change(screen.getByLabelText(/NOMBRE\(S\)/i), { target: { value: "Ana Maria" } });
     fireEvent.change(screen.getByLabelText(/APELLIDO PATERNO/i), { target: { value: "Lopez" } });
     if (include_maternal) {
@@ -61,8 +79,18 @@ describe("RegisterForm", () => {
         target: { value: "Hernandez" },
       });
     }
-    fireEvent.change(screen.getByLabelText(/CORREO ELECTRÓNICO CORPORATIVO/i), {
+    fireEvent.change(screen.getByLabelText(/CORREO CORPORATIVO/i), {
       target: { value: email_value },
+    });
+    await select_dropdown_option(/PUESTO \/ CARGO/i, "TECNICO");
+    if (include_area) {
+      await select_dropdown_option(/ÁREA \/ DEPARTAMENTO/i, "BLOQUE FRIO");
+    }
+    fireEvent.change(screen.getByLabelText(/PLANTA \/ SEDE/i), {
+      target: { value: "Cervecería Zacatecas" },
+    });
+    fireEvent.change(screen.getByLabelText(/TELÉFONO O EXTENSIÓN/i), {
+      target: { value: "4781057626" },
     });
     fireEvent.change(screen.getByLabelText(/^CONTRASEÑA \*/i), {
       target: { value: "Modelo2026!" },
@@ -70,11 +98,21 @@ describe("RegisterForm", () => {
     fireEvent.change(screen.getByLabelText(/CONFIRMAR \*/i), { target: { value: "Modelo2026!" } });
   }
 
-  it("bloquea el registro cuando el correo no termina en @ab-inbev.com o @gmodelo.com.mx", async () => {
+  it("exige seleccionar Área / Departamento y bloquea correos fuera de @ab-inbev.com o @gmodelo.com.mx", async () => {
     const on_success = vi.fn();
     render(<RegisterForm on_switch_to_login={vi.fn()} on_success={on_success} />);
 
-    fill_register_form("ana.lopez@gmail.com");
+    await fill_register_form("ana.lopez@gmodelo.com.mx", { include_area: false });
+    fireEvent.click(screen.getByRole("button", { name: /Crear Mi Cuenta/i }));
+    expect(
+      await screen.findByText(/Por favor, completa todos los campos obligatorios/i),
+    ).toBeTruthy();
+    expect(mock_create_user_with_email_and_password).not.toHaveBeenCalled();
+
+    await select_dropdown_option(/ÁREA \/ DEPARTAMENTO/i, "BLOQUE FRIO");
+    fireEvent.change(screen.getByLabelText(/CORREO CORPORATIVO/i), {
+      target: { value: "ana.lopez@gmail.com" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /Crear Mi Cuenta/i }));
 
     expect(await screen.findByText(CORPORATE_EMAIL_ERROR)).toBeTruthy();
@@ -82,14 +120,14 @@ describe("RegisterForm", () => {
     expect(on_success).not.toHaveBeenCalled();
   });
 
-  it("registra con @ab-inbev.com (incluso sin apellido materno), envía verificación y cierra sesión", async () => {
+  it("registra todos los datos personales y de planta con @ab-inbev.com, envía verificación y cierra sesión", async () => {
     const fake_firebase_user = { uid: "uid-abinbev-1" };
     mock_create_user_with_email_and_password.mockResolvedValueOnce({ user: fake_firebase_user });
     const on_success = vi.fn();
 
     render(<RegisterForm on_switch_to_login={vi.fn()} on_success={on_success} />);
 
-    fill_register_form("Carlos.Ruiz@AB-INBEV.COM", false);
+    await fill_register_form("Carlos.Ruiz@AB-INBEV.COM", { include_maternal: false });
     fireEvent.click(screen.getByRole("button", { name: /Crear Mi Cuenta/i }));
 
     await waitFor(() => {
@@ -108,7 +146,13 @@ describe("RegisterForm", () => {
       "uid-abinbev-1",
       expect.objectContaining({
         name: "ANA MARIA LOPEZ",
+        firstName: "ANA MARIA",
+        paternalLastName: "LOPEZ",
         email: "carlos.ruiz@ab-inbev.com",
+        area: "BLOQUE FRIO",
+        position: "TECNICO",
+        plant: "Cervecería Zacatecas",
+        phone: "4781057626",
         emailVerified: false,
       }),
     );
@@ -127,7 +171,7 @@ describe("RegisterForm", () => {
 
     render(<RegisterForm on_switch_to_login={vi.fn()} on_success={on_success} />);
 
-    fill_register_form("ana.lopez@gmodelo.com.mx");
+    await fill_register_form("ana.lopez@gmodelo.com.mx");
     fireEvent.click(screen.getByRole("button", { name: /Crear Mi Cuenta/i }));
 
     await waitFor(() => {

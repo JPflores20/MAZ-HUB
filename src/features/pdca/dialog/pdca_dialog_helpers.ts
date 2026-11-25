@@ -2,7 +2,7 @@
  * @fileoverview Helpers puros para resolver permisos de edición, progreso metodológico y borrador inicial en PdcaDialog.
  */
 import type { Pdca } from "@/domain/pdca";
-import { ROLE_DEFAULT_PERMISSIONS } from "@/features/auth/user_service";
+import { ROLE_DEFAULT_PERMISSIONS } from "@/features/auth/role_permissions";
 import type { UserPermissions, UserProfile } from "@/features/auth/auth_context";
 import { can_user_edit_pdca } from "@/shared/components/access_request";
 import { create_empty_pdca_draft } from "../utils/pdca_draft";

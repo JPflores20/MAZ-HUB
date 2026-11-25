@@ -1,111 +1,61 @@
 /**
- * @fileoverview Root structural shell component orchestrating desktop sidebar, header bar, mobile drawer, and page viewport.
+ * @fileoverview Lightweight root auth gate and lazy shell loader.
+ * Public auth routes render directly without downloading sidebar, header, or PDCA/RDA contexts.
  */
 
-import type { ReactNode } from "react";
-import { LayoutHeader } from "./layout_header";
-import { LayoutMobileMenu } from "./layout_mobile_menu";
-import { build_layout_nav_items, compute_user_initials } from "./layout_nav_config";
-import { LayoutSidebar } from "./layout_sidebar";
-import type { UserContextData } from "./layout_types";
-import { useLayoutState } from "./use_layout_state";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useAuth } from "@/features/auth/auth_context";
+import { PUBLIC_AUTH_ROUTES } from "./layout_nav_config";
+
+const LazyAuthenticatedLayoutShell = lazy(() =>
+  import("./authenticated_layout_shell").then((shell_module) => ({
+    default: shell_module.AuthenticatedLayoutShell,
+  })),
+);
+
+function ShellLoadingScreen(): ReactNode {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">
+      Cargando plataforma...
+    </div>
+  );
+}
 
 /**
- * Wraps authenticated application routes inside the persistent navigation shell,
- * while rendering public auth routes full-bleed without chrome.
+ * Guards protected routes and defers loading the authenticated layout bundle until a verified session exists.
  *
  * @param {{ children: ReactNode }} props - Active router outlet children.
- * @returns {ReactNode} Structured layout container or full-page auth view.
+ * @returns {ReactNode} Public view directly or lazy-loaded authenticated workspace shell.
  */
 export function AppLayout({ children }: { children: ReactNode }): ReactNode {
-  const {
-    current_user,
-    loading,
-    current_path,
-    is_public_route,
-    main_element_ref,
-    mobile_menu_open,
-    set_mobile_menu_open,
-    desktop_sidebar_open,
-    set_desktop_sidebar_open,
-    sidebar_pinned,
-    toggle_sidebar_pinned,
-    deadline_picker_open_id,
-    set_deadline_picker_open_id,
-    pending_deadline_pdcas,
-    pending_deadline_rdas,
-    user_stats,
-    handle_pdca_deadline_change,
-    handle_rda_deadline_change,
-    handle_logout,
-  } = useLayoutState();
+  const router_state = useRouterState();
+  const navigate = useNavigate();
+  const { currentUser, loading } = useAuth();
+  const current_path = router_state.location.pathname;
+  const is_public_route = PUBLIC_AUTH_ROUTES.includes(current_path);
+
+  useEffect(() => {
+    if (!loading && !currentUser && !is_public_route) {
+      void navigate({ to: "/login" });
+    }
+  }, [loading, currentUser, is_public_route, navigate]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">
-        Cargando plataforma...
-      </div>
-    );
+    return <ShellLoadingScreen />;
   }
 
   if (is_public_route) {
     return <>{children}</>;
   }
 
-  if (!current_user) {
+  if (!currentUser) {
     return null;
   }
 
-  const nav_items = build_layout_nav_items(current_user.role);
-  const user_initials = compute_user_initials(current_user.name);
-  const user_context_data: UserContextData = current_user as unknown as UserContextData;
-
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground">
-      <LayoutSidebar
-        desktopSidebarOpen={desktop_sidebar_open}
-        navItems={nav_items}
-        currentPath={current_path}
-        currentUser={user_context_data}
-        userInitials={user_initials}
-        handleLogout={() => void handle_logout()}
-      />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <LayoutHeader
-          setMobileMenuOpen={set_mobile_menu_open}
-          desktopSidebarOpen={desktop_sidebar_open}
-          setDesktopSidebarOpen={set_desktop_sidebar_open}
-          sidebarPinned={sidebar_pinned}
-          onToggleSidebarPinned={toggle_sidebar_pinned}
-          currentUser={user_context_data}
-          userInitials={user_initials}
-          userStats={user_stats}
-          handleLogout={() => void handle_logout()}
-          pendingDeadlinePdcas={pending_deadline_pdcas}
-          pendingDeadlineRdas={pending_deadline_rdas}
-          deadlinePickerOpenId={deadline_picker_open_id}
-          setDeadlinePickerOpenId={set_deadline_picker_open_id}
-          handleDeadlineChange={(pdca_id, selected_date, is_no_limit) =>
-            void handle_pdca_deadline_change(pdca_id, selected_date, is_no_limit)
-          }
-          handleRdaDeadlineChange={(rda_id, selected_date, is_no_limit) =>
-            void handle_rda_deadline_change(rda_id, selected_date, is_no_limit)
-          }
-        />
-
-        <LayoutMobileMenu
-          mobileMenuOpen={mobile_menu_open}
-          setMobileMenuOpen={set_mobile_menu_open}
-          navItems={nav_items}
-          currentPath={current_path}
-          handleLogout={() => void handle_logout()}
-        />
-
-        <main ref={main_element_ref} className="flex-1 overflow-auto">
-          {children}
-        </main>
-      </div>
-    </div>
+    <Suspense fallback={<ShellLoadingScreen />}>
+      <LazyAuthenticatedLayoutShell>{children}</LazyAuthenticatedLayoutShell>
+    </Suspense>
   );
 }

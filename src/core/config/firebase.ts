@@ -1,9 +1,9 @@
 /**
  * Inicialización y configuración centralizada de los servicios de Firebase (App, Auth, Firestore, Storage y Functions).
- * Aplica App Check con reCAPTCHA v3 cuando existe clave pública y conecta emuladores solo bajo bandera explícita.
+ * Aplica App Check con Fraud Defense (reCAPTCHA Enterprise) cuando existe clave pública y conecta emuladores solo bajo bandera explícita.
  */
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
   connectFirestoreEmulator,
@@ -84,17 +84,28 @@ export const storage = getStorage(aplicacion_principal);
 /** Instancia de Cloud Functions invocables desde el frontend. */
 export const functions = getFunctions(aplicacion_principal);
 
-if (typeof window !== "undefined") {
+/**
+ * Inicializa Firebase App Check con Fraud Defense (reCAPTCHA Enterprise) una sola vez en navegador.
+ * Debe invocarse tras completar la hidratación del DOM para evitar que React elimine el nodo oculto de reCAPTCHA.
+ */
+export function ensure_app_check_initialized(): void {
+  if (typeof window === "undefined" || typeof document === "undefined" || !document.body) {
+    return;
+  }
   const clave_sitio_recaptcha = import.meta.env["VITE_FIREBASE_RECAPTCHA_SITE_KEY"]?.trim();
   const banderas_globales = globalThis as typeof globalThis & BanderaGlobalFirebase;
 
   if (clave_sitio_recaptcha && !banderas_globales.__APP_CHECK_INITIALIZED__) {
     banderas_globales.__APP_CHECK_INITIALIZED__ = true;
     initializeAppCheck(aplicacion_principal, {
-      provider: new ReCaptchaV3Provider(clave_sitio_recaptcha),
+      provider: new ReCaptchaEnterpriseProvider(clave_sitio_recaptcha),
       isTokenAutoRefreshEnabled: true,
     });
   }
+}
+
+if (typeof window !== "undefined") {
+  const banderas_globales = globalThis as typeof globalThis & BanderaGlobalFirebase;
 
   if (
     import.meta.env["VITE_USE_FIREBASE_EMULATORS"] === "true" &&

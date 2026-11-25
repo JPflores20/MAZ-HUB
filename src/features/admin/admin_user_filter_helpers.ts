@@ -3,6 +3,19 @@
  */
 
 import type { UserPermissions, UserProfile, UserRole } from "@/features/auth/auth_context";
+import { is_corporate_email } from "@/features/auth/email_validation";
+
+/** Checks whether a corporate user still requires admin approval or email verification. */
+export function is_user_pending_admin_approval(user_entry: UserProfile): boolean {
+  if (!user_entry.uid || user_entry.uid.includes("@")) return false;
+  if (!is_corporate_email(user_entry.email)) return false;
+  return user_entry.approved !== true || user_entry.emailVerified !== true;
+}
+
+/** Returns corporate users eligible for direct admin approval without sending verification email. */
+export function get_pending_corporate_users(merged_users: UserProfile[]): UserProfile[] {
+  return merged_users.filter(is_user_pending_admin_approval);
+}
 
 /** Merges optimistic role, permission, and approval overrides onto raw user directory entries. */
 export function merge_admin_user_overrides(
@@ -20,7 +33,11 @@ export function merge_admin_user_overrides(
       role: overridden_role ?? user_entry.role ?? "user",
       permissions: overridden_perms ?? user_entry.permissions,
       ...(typeof overridden_approved === "boolean"
-        ? { approved: overridden_approved, verifiedByAdmin: overridden_approved }
+        ? {
+            approved: overridden_approved,
+            verifiedByAdmin: overridden_approved,
+            ...(overridden_approved ? { emailVerified: true } : {}),
+          }
         : {}),
     };
   });
@@ -55,15 +72,16 @@ export function extract_available_areas(merged_users: UserProfile[]): string[] {
   );
 }
 
-/** Filters users by search query, department, and role tab selection. */
+/** Filters users by search query, department, role tab, and optional pending-only toggle, placing pending corporate accounts first. */
 export function filter_admin_users(
   merged_users: UserProfile[],
   search_query: string,
   area_filter: string,
   role_filter: "all" | UserRole,
+  pending_only = false,
 ): UserProfile[] {
   const normalized_query = search_query.trim().toLowerCase();
-  return merged_users.filter((user_entry) => {
+  const filtered_entries = merged_users.filter((user_entry) => {
     const matches_query =
       !normalized_query ||
       user_entry.name.toLowerCase().includes(normalized_query) ||
@@ -74,6 +92,13 @@ export function filter_admin_users(
       area_filter === "all" ||
       (user_entry.area || "").trim().toLowerCase() === area_filter.toLowerCase();
     const matches_role = role_filter === "all" || user_entry.role === role_filter;
-    return matches_query && matches_area && matches_role;
+    const matches_pending = !pending_only || is_user_pending_admin_approval(user_entry);
+    return matches_query && matches_area && matches_role && matches_pending;
+  });
+
+  return filtered_entries.sort((left_user, right_user) => {
+    const left_pending = is_user_pending_admin_approval(left_user) ? 0 : 1;
+    const right_pending = is_user_pending_admin_approval(right_user) ? 0 : 1;
+    return left_pending - right_pending;
   });
 }

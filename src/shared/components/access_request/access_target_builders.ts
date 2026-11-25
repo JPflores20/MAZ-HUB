@@ -4,7 +4,7 @@
 
 import type { Pdca } from "@/domain/pdca";
 import type { Rda } from "@/domain/models/rda";
-import { get_rda_display_name } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
 import { extract_rda_responsible_names } from "./access_identity_helpers";
 
 /** Descriptor passed to AccessRequestDialog representing a restricted PDCA or RDA record. */

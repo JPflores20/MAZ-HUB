@@ -24,8 +24,11 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
     filtered_users,
     counts_by_role,
     available_areas,
+    pending_corporate_count,
     workload_by_uid,
     sending_uid,
+    approving_uid,
+    is_bulk_approving,
     selected_photo_user,
     set_selected_photo_user,
     search_query,
@@ -34,6 +37,8 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
     set_area_filter,
     role_filter,
     set_role_filter,
+    pending_only,
+    set_pending_only,
     handle_edit_user,
     handle_role_change,
     handle_permission_toggle,
@@ -41,6 +46,8 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
     handle_delete_user,
     handle_send_verification_link,
     handle_approve_user,
+    handle_bulk_approve,
+    handle_extend_intern_days,
   } = useAdminUserList(users_list, set_users_list);
 
   return (
@@ -48,6 +55,9 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
       <AdminUserFiltersBar
         filtered_count={filtered_users.length}
         total_count={merged_users.length}
+        pending_corporate_count={pending_corporate_count}
+        is_bulk_approving={is_bulk_approving}
+        on_bulk_approve={handle_bulk_approve}
         counts_by_role={counts_by_role}
         available_areas={available_areas}
         search_query={search_query}
@@ -56,6 +66,8 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
         set_area_filter={set_area_filter}
         role_filter={role_filter}
         set_role_filter={set_role_filter}
+        pending_only={pending_only}
+        set_pending_only={set_pending_only}
       />
 
       <Table>
@@ -84,12 +96,14 @@ export function UserList({ users_list, set_users_list }: UserListProps) {
                 user_profile={user_entry}
                 workload={workload_by_uid[user_entry.uid] || EMPTY_WORKLOAD}
                 is_sending_link={sending_uid === user_entry.uid}
+                is_approving={is_bulk_approving || approving_uid === user_entry.uid}
                 on_open_photo={set_selected_photo_user}
                 on_role_change={handle_role_change}
                 on_permission_toggle={handle_permission_toggle}
                 on_reset_permissions={handle_reset_permissions}
                 on_send_verification_link={handle_send_verification_link}
                 on_approve_user={handle_approve_user}
+                on_extend_intern_days={handle_extend_intern_days}
                 on_edit_user={handle_edit_user}
                 on_delete_user={handle_delete_user}
               />

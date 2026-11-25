@@ -2,37 +2,19 @@
  * @fileoverview Custom hook managing self-registration validation, isolated sign-up, and verification dispatch.
  */
 
+import type React from "react";
 import { useState } from "react";
 import { createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { primary_auth } from "@/core/config/firebase";
+import { can_select_elaboracion_area, DEFAULT_PLANT } from "@/domain/constants/plant_catalog";
 import type { RegisterSuccessOptions } from "./auth_types";
+import { get_auth_error_info, send_verification_email_safely } from "./email_validation";
 import {
-  CORPORATE_EMAIL_ERROR,
-  get_auth_error_info,
-  send_verification_email_safely,
-  validate_corporate_email,
-} from "./email_validation";
+  build_register_profile_payload,
+  map_registration_error,
+  validate_register_input,
+} from "./register_form_helpers";
 import { user_service } from "./user_service";
-
-const PASSWORD_STRENGTH_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
-/** Maps Firebase Auth registration errors to anti-enumeration Spanish error messages. */
-function map_registration_error(caught_error: unknown): string {
-  const { code } = get_auth_error_info(caught_error);
-  if (code === "auth/invalid-email") {
-    return "El correo electrónico no es válido.";
-  }
-  if (code === "auth/weak-password") {
-    return "La contraseña es demasiado débil. Usa al menos 8 caracteres.";
-  }
-  if (code === "auth/too-many-requests") {
-    return "Demasiados intentos. Espera unos minutos antes de volver a intentar.";
-  }
-  if (code === "auth/email-already-in-use") {
-    return "No se pudo completar el registro con este correo. Si ya cuentas con acceso, inicia sesión o recupera tu contraseña.";
-  }
-  return "No se pudo completar el registro. Verifica tus datos e intenta de nuevo.";
-}
 
 /** Encapsulates collaborator self-registration state and Zero Trust sign-up workflow. */
 export function useRegisterForm(
@@ -42,6 +24,10 @@ export function useRegisterForm(
   const [paterno, set_paterno] = useState("");
   const [materno, set_materno] = useState("");
   const [reg_email, set_reg_email] = useState("");
+  const [position, set_position] = useState("");
+  const [area, set_area] = useState("");
+  const [plant, set_plant] = useState(DEFAULT_PLANT);
+  const [phone, set_phone] = useState("");
   const [reg_password, set_reg_password] = useState("");
   const [confirm_password, set_confirm_password] = useState("");
   const [reg_loading, set_reg_loading] = useState(false);
@@ -49,36 +35,26 @@ export function useRegisterForm(
   const [show_reg_password, set_show_reg_password] = useState(false);
   const [show_confirm_password, set_show_confirm_password] = useState(false);
 
+  const full_name_preview = [nombre.trim(), paterno.trim(), materno.trim()]
+    .filter(Boolean)
+    .join(" ")
+    .toUpperCase();
+  const can_select_elaboracion = can_select_elaboracion_area(full_name_preview, reg_email);
+
   const handle_register = async (submit_event: React.FormEvent) => {
     submit_event.preventDefault();
     set_reg_error(null);
 
-    if (
-      !nombre.trim() ||
-      !paterno.trim() ||
-      !reg_email.trim() ||
-      !reg_password ||
-      !confirm_password
-    ) {
-      set_reg_error("Por favor, completa todos los campos obligatorios.");
-      return;
-    }
-
-    const email_validation = validate_corporate_email(reg_email);
-    if (!email_validation.valid) {
-      set_reg_error(email_validation.error || CORPORATE_EMAIL_ERROR);
-      return;
-    }
-
-    if (reg_password !== confirm_password) {
-      set_reg_error("Las contraseñas no coinciden.");
-      return;
-    }
-
-    if (!PASSWORD_STRENGTH_REGEX.test(reg_password)) {
-      set_reg_error(
-        "La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial.",
-      );
+    const validation = validate_register_input({
+      nombre,
+      paterno,
+      area,
+      reg_email,
+      reg_password,
+      confirm_password,
+    });
+    if (!validation.valid) {
+      set_reg_error(validation.error);
       return;
     }
 
@@ -86,11 +62,7 @@ export function useRegisterForm(
     let created_auth_user = false;
 
     try {
-      const full_name = [nombre.trim(), paterno.trim(), materno.trim()]
-        .filter(Boolean)
-        .join(" ")
-        .toUpperCase();
-      const email_lower = email_validation.normalized;
+      const email_lower = validation.normalized_email;
       const now_iso = new Date().toISOString();
 
       primary_auth.languageCode = "es";
@@ -102,7 +74,7 @@ export function useRegisterForm(
       created_auth_user = true;
       const firebase_user = credential.user;
 
-      await updateProfile(firebase_user, { displayName: full_name }).catch(() => {});
+      await updateProfile(firebase_user, { displayName: full_name_preview }).catch(() => {});
 
       let verification_sent = false;
       let verification_error: string | undefined;
@@ -118,23 +90,33 @@ export function useRegisterForm(
             : "Tu cuenta se creó, pero ocurrió un error al enviar el correo de verificación. Podrás reintentar desde Iniciar Sesión.";
       }
 
+      const profile_payload = build_register_profile_payload({
+        full_name: full_name_preview,
+        nombre,
+        paterno,
+        materno,
+        email_lower,
+        area,
+        position,
+        plant,
+        phone,
+        verification_sent,
+        now_iso,
+      });
+
       try {
-        await user_service.create_user(firebase_user.uid, {
-          name: full_name,
-          firstName: nombre.trim().toUpperCase(),
-          paternalLastName: paterno.trim().toUpperCase(),
-          maternalLastName: materno.trim().toUpperCase(),
-          email: email_lower,
-          role: "user",
-          area: "Usuario",
-          approved: false,
-          verifiedByAdmin: false,
-          emailVerified: false,
-          ...(verification_sent ? { lastVerificationSentAt: now_iso } : {}),
-          createdAt: now_iso,
-        });
-      } catch (profile_error) {
-        console.error("Error al guardar perfil en Firestore durante el registro:", profile_error);
+        await user_service.create_user(firebase_user.uid, profile_payload);
+      } catch (first_profile_error) {
+        console.warn(
+          "Reintentando guardar perfil en Firestore durante el registro:",
+          first_profile_error,
+        );
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+          await user_service.create_user(firebase_user.uid, profile_payload);
+        } catch (profile_error) {
+          console.error("Error al guardar perfil en Firestore durante el registro:", profile_error);
+        }
       }
 
       await signOut(primary_auth).catch(() => {});
@@ -163,6 +145,15 @@ export function useRegisterForm(
     set_materno,
     reg_email,
     set_reg_email,
+    position,
+    set_position,
+    area,
+    set_area,
+    plant,
+    set_plant,
+    phone,
+    set_phone,
+    can_select_elaboracion,
     reg_password,
     set_reg_password,
     confirm_password,

@@ -45,7 +45,9 @@ export function subscribe_to_own_user_profile(
         on_profile(null);
         return;
       }
-      on_profile(map_user_snapshot(doc_snapshot.id, doc_snapshot.data() as Record<string, unknown>));
+      on_profile(
+        map_user_snapshot(doc_snapshot.id, doc_snapshot.data() as Record<string, unknown>),
+      );
     },
     (snapshot_error) => on_error(snapshot_error),
   );
@@ -58,25 +60,34 @@ export async function create_user_profile(
 ): Promise<void> {
   const clean_payload: Record<string, unknown> = {
     uid: user_uid,
-    name: profile_input.name,
+    name: profile_input.name.trim().slice(0, 120),
     email: profile_input.email.trim().toLowerCase(),
     role: "user",
-    area: profile_input.area || "Usuario",
+    area: (profile_input.area || "").trim().slice(0, 80) || "Usuario",
     approved: false,
     verifiedByAdmin: false,
     emailVerified: Boolean(profile_input.emailVerified),
     createdAt: profile_input.createdAt || new Date().toISOString(),
     updatedAt: profile_input.updatedAt || new Date().toISOString(),
   };
-  if (profile_input.firstName) clean_payload["firstName"] = profile_input.firstName;
+  if (profile_input.firstName) {
+    clean_payload["firstName"] = profile_input.firstName.trim().slice(0, 80);
+  }
   if (profile_input.paternalLastName) {
-    clean_payload["paternalLastName"] = profile_input.paternalLastName;
+    clean_payload["paternalLastName"] = profile_input.paternalLastName.trim().slice(0, 80);
   }
   if (profile_input.maternalLastName) {
-    clean_payload["maternalLastName"] = profile_input.maternalLastName;
+    clean_payload["maternalLastName"] = profile_input.maternalLastName.trim().slice(0, 80);
   }
-  if (profile_input.position) clean_payload["position"] = profile_input.position;
-  if (profile_input.plant) clean_payload["plant"] = profile_input.plant;
+  if (profile_input.position) {
+    clean_payload["position"] = profile_input.position.trim().slice(0, 80);
+  }
+  if (profile_input.plant) {
+    clean_payload["plant"] = profile_input.plant.trim().slice(0, 80);
+  }
+  if (profile_input.phone) {
+    clean_payload["phone"] = profile_input.phone.trim().slice(0, 40);
+  }
   if (profile_input.lastVerificationSentAt) {
     clean_payload["lastVerificationSentAt"] = profile_input.lastVerificationSentAt;
   }

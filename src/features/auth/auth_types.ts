@@ -35,6 +35,10 @@ export interface UserProfile {
   approved?: boolean | undefined;
   emailVerified?: boolean | undefined;
   verifiedByAdmin?: boolean | undefined;
+  temporaryAccount?: boolean | undefined;
+  activeDays?: number | undefined;
+  expiresAt?: string | undefined;
+  expiresAtMs?: number | undefined;
   lastVerificationSentAt?: string | undefined;
   createdAt?: string | undefined;
   updatedAt?: string | undefined;
@@ -67,8 +71,19 @@ export interface DirectoryUser {
   approved?: boolean | undefined;
   emailVerified?: boolean | undefined;
   verifiedByAdmin?: boolean | undefined;
+  temporaryAccount?: boolean | undefined;
+  activeDays?: number | undefined;
+  expiresAt?: string | undefined;
+  expiresAtMs?: number | undefined;
   lastVerificationSentAt?: string | undefined;
   createdAt?: string | undefined;
+}
+
+/** Target descriptor for admin-triggered verification or activation emails. */
+export interface AdminVerificationTarget {
+  uid?: string | undefined;
+  email: string;
+  temporaryAccount?: boolean | undefined;
 }
 
 /** Public API exposed by the `useAuth()` React context hook. */
@@ -79,10 +94,9 @@ export interface AuthContextType {
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
   resendVerificationEmail: (email: string, pass: string) => Promise<void>;
-  sendAdminVerificationLink: (target: {
-    uid?: string | undefined;
-    email: string;
-  }) => Promise<"verification_email" | "activation_reset_email">;
+  sendAdminVerificationLink: (
+    target: AdminVerificationTarget,
+  ) => Promise<"verification_email" | "activation_reset_email">;
   approveUserVerification: (uid: string) => Promise<void>;
   updateUserProfile: (
     updates: Partial<Omit<UserProfile, "uid" | "email" | "role">>,

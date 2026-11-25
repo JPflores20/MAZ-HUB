@@ -3,13 +3,19 @@
  */
 
 import type React from "react";
+import { lazy, Suspense, useState } from "react";
 import { CalendarClock, CheckCircle2 } from "lucide-react";
-import { get_rda_display_name } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import { LayoutDeadlinePickerRow } from "./layout_deadline_picker_row";
+
+const LazyLayoutDeadlinePickerRow = lazy(() =>
+  import("./layout_deadline_picker_row").then((picker_module) => ({
+    default: picker_module.LayoutDeadlinePickerRow,
+  })),
+);
 
 interface LayoutDeadlinesPopoverProps {
   isAdmin: boolean;
@@ -38,10 +44,11 @@ export const LayoutDeadlinesPopover: React.FC<LayoutDeadlinesPopoverProps> = ({
   handleDeadlineChange,
   handleRdaDeadlineChange,
 }) => {
+  const [popover_open, set_popover_open] = useState(false);
   const total_missing_deadlines = pendingDeadlinePdcas.length + pendingDeadlineRdas.length;
 
   return (
-    <Popover>
+    <Popover open={popover_open} onOpenChange={set_popover_open}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -101,12 +108,12 @@ export const LayoutDeadlinesPopover: React.FC<LayoutDeadlinesPopoverProps> = ({
                 Todos los PDCAs y RDAs tienen fecha límite asignada.
               </p>
             </div>
-          ) : (
-            <>
+          ) : !popover_open ? null : (
+            <Suspense fallback={<div className="p-4 text-xs text-muted-foreground">Cargando calendario...</div>}>
               {pendingDeadlinePdcas.map((pdca_entry) => {
                 const picker_key = `pdca-${pdca_entry.id}`;
                 return (
-                  <LayoutDeadlinePickerRow
+                  <LazyLayoutDeadlinePickerRow
                     key={picker_key}
                     moduleLabel="PDCA"
                     title={pdca_entry.titulo || "Sin título"}
@@ -127,7 +134,7 @@ export const LayoutDeadlinesPopover: React.FC<LayoutDeadlinesPopoverProps> = ({
               {pendingDeadlineRdas.map((rda_entry) => {
                 const picker_key = `rda-${rda_entry.id}`;
                 return (
-                  <LayoutDeadlinePickerRow
+                  <LazyLayoutDeadlinePickerRow
                     key={picker_key}
                     moduleLabel="RDA"
                     title={get_rda_display_name(rda_entry, "Sin título")}
@@ -148,7 +155,7 @@ export const LayoutDeadlinesPopover: React.FC<LayoutDeadlinesPopoverProps> = ({
                   />
                 );
               })}
-            </>
+            </Suspense>
           )}
         </div>
       </PopoverContent>

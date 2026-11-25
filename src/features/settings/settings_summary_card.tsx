@@ -4,7 +4,8 @@
 
 import type React from "react";
 import { Camera, FileText, Lock, Mail, MapPin, Phone, Shield, Trash2 } from "lucide-react";
-import { ROLE_LABELS, type UserProfile } from "@/features/auth/auth_context";
+import type { UserProfile } from "@/features/auth/auth_context";
+import { ROLE_LABELS } from "@/features/auth/role_normalization";
 import { Button } from "@/shared/ui/button";
 
 interface SettingsSummaryCardProps {

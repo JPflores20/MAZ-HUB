@@ -2,7 +2,8 @@
  * @fileoverview Pure search index builders converting PDCAs, RDAs, actions, and directory users into command palette items.
  */
 
-import { get_rda_display_name, get_rda_status } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
+import { get_rda_status } from "@/features/rda/utils/rda_status";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 import type { UserProfile } from "@/features/auth/auth_context";

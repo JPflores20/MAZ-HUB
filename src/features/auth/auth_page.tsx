@@ -2,12 +2,22 @@
  * @fileoverview Main unauthenticated login and self-registration page coordinator.
  */
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { AuthHeroPanel } from "./auth_hero_panel";
-import { AuthRegistrationSuccess } from "./auth_registration_success";
 import type { RegisterSuccessOptions } from "./auth_types";
 import { LoginForm } from "./login_form";
-import { RegisterForm } from "./register_form";
+
+const LazyRegisterForm = lazy(() =>
+  import("./register_form").then((register_module) => ({
+    default: register_module.RegisterForm,
+  })),
+);
+
+const LazyAuthRegistrationSuccess = lazy(() =>
+  import("./auth_registration_success").then((success_module) => ({
+    default: success_module.AuthRegistrationSuccess,
+  })),
+);
 
 /**
  * Renders either the split login/register experience or the post-registration verification notice.
@@ -33,15 +43,17 @@ export function AuthPage() {
 
   if (registration_success) {
     return (
-      <AuthRegistrationSuccess
-        registered_email={registered_email}
-        verification_sent_ok={verification_sent_ok}
-        verification_notice={verification_notice}
-        on_back_to_login={() => {
-          set_registration_success(false);
-          set_is_registering(false);
-        }}
-      />
+      <Suspense fallback={null}>
+        <LazyAuthRegistrationSuccess
+          registered_email={registered_email}
+          verification_sent_ok={verification_sent_ok}
+          verification_notice={verification_notice}
+          on_back_to_login={() => {
+            set_registration_success(false);
+            set_is_registering(false);
+          }}
+        />
+      </Suspense>
     );
   }
 
@@ -57,10 +69,14 @@ export function AuthPage() {
         <div
           className={`flex w-full lg:w-1/2 items-center justify-center transition-all duration-700 ease-in-out absolute top-0 bottom-0 right-0 ${is_registering ? "opacity-100 z-10 scale-100 pointer-events-auto" : "opacity-0 z-0 scale-95 pointer-events-none"}`}
         >
-          <RegisterForm
-            on_switch_to_login={() => set_is_registering(false)}
-            on_success={handle_registration_success}
-          />
+          {is_registering && (
+            <Suspense fallback={null}>
+              <LazyRegisterForm
+                on_switch_to_login={() => set_is_registering(false)}
+                on_success={handle_registration_success}
+              />
+            </Suspense>
+          )}
         </div>
       </div>
 

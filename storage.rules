@@ -30,11 +30,26 @@ service firebase.storage {
       return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
     }
 
+    function isTemporaryInternUser() {
+      return isEmailVerified() &&
+        userDocExists() &&
+        userDocData().role == 'intern' &&
+        userDocData().temporaryAccount == true &&
+        userDocData().verifiedByAdmin == true &&
+        userDocData().approved == true &&
+        userDocData().expiresAtMs is int &&
+        request.time.toMillis() < userDocData().expiresAtMs;
+    }
+
     function isApprovedCorporateUser() {
       return isEmailVerified() &&
         hasCorporateEmail() &&
         userDocExists() &&
         userDocData().approved == true;
+    }
+
+    function canReadUploads() {
+      return isApprovedCorporateUser() || isTemporaryInternUser();
     }
 
     function isAdmin() {
@@ -67,15 +82,15 @@ service firebase.storage {
         );
     }
 
-    // Lectura permitida únicamente a usuarios corporativos verificados y aprobados en carpetas autorizadas
+    // Lectura permitida únicamente a usuarios corporativos aprobados o becarios temporales vigentes
     match /uploads/{folder}/{fileName} {
-      allow get: if isApprovedCorporateUser() && isAllowedFolder(folder);
+      allow get: if canReadUploads() && isAllowedFolder(folder);
       allow list, create, update, delete: if false;
     }
 
     // Nueva ruta aislada por UID: uploads/{folder}/{uid}/{fileName}
     match /uploads/{folder}/{userId}/{fileName} {
-      allow get: if isApprovedCorporateUser() && isAllowedFolder(folder);
+      allow get: if canReadUploads() && isAllowedFolder(folder);
       allow list: if isAdmin();
       allow create: if canWriteContent() &&
         isAllowedFolder(folder) &&

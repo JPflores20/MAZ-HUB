@@ -3,7 +3,7 @@
  * Delegates record indexing to pure builder functions with zero extra Firestore reads.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/features/auth/auth_context";
 import { useDirectoryUsers } from "@/shared/components/responsible_profile";
@@ -18,34 +18,19 @@ import {
 } from "./global_search_builders";
 
 /**
- * Manages global Ctrl/Cmd+K dialog open state, query text, category filter, and top 20 matches.
+ * Manages global Ctrl/Cmd+K query text, category filter, and top 20 matches when modal is open.
  */
-export function useGlobalSearch() {
+export function useGlobalSearch(set_is_open: (open: boolean) => void) {
   const navigate = useNavigate();
   const { currentUser, permissions } = useAuth();
   const { allPdcas } = usePdcas();
   const { allRdas } = useRdas();
   const { directory } = useDirectoryUsers();
 
-  const [is_open, set_is_open] = useState(false);
   const [search_query, set_search_query] = useState("");
   const [selected_category, set_selected_category] = useState<SearchCategory>("ALL");
 
   const is_admin = currentUser?.role === "admin";
-
-  useEffect(() => {
-    const handle_keydown = (keyboard_event: KeyboardEvent) => {
-      if (
-        (keyboard_event.ctrlKey || keyboard_event.metaKey) &&
-        keyboard_event.key.toLowerCase() === "k"
-      ) {
-        keyboard_event.preventDefault();
-        set_is_open((previous_open) => !previous_open);
-      }
-    };
-    window.addEventListener("keydown", handle_keydown);
-    return () => window.removeEventListener("keydown", handle_keydown);
-  }, []);
 
   const indexed_items = useMemo<SearchResultItem[]>(() => {
     const collected_items: SearchResultItem[] = [];
@@ -107,8 +92,6 @@ export function useGlobalSearch() {
   }, [indexed_items, search_query, selected_category]);
 
   return {
-    is_open,
-    set_is_open,
     search_query,
     set_search_query,
     selected_category,

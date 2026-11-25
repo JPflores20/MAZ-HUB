@@ -2,7 +2,7 @@
  * @fileoverview Component tests verifying isolated admin user provisioning via `adminCreateUser`.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RegistrationForm } from "../admin_registration_form";
 import { CORPORATE_EMAIL_ERROR } from "../email_validation";
@@ -41,6 +41,14 @@ vi.mock("../user_service", async () => {
 });
 
 describe("RegistrationForm (Panel Admin)", () => {
+  beforeAll(() => {
+    if (typeof HTMLElement !== "undefined") {
+      HTMLElement.prototype.scrollIntoView ??= vi.fn();
+      HTMLElement.prototype.hasPointerCapture ??= vi.fn().mockReturnValue(false);
+      HTMLElement.prototype.releasePointerCapture ??= vi.fn();
+    }
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mock_send_password_reset_email.mockResolvedValue(undefined);
@@ -95,7 +103,57 @@ describe("RegistrationForm (Panel Admin)", () => {
       "roberto.torres@gmodelo.com.mx",
     );
     expect(
-      await screen.findByText(/Se envió un correo para establecer su contraseña y activar la cuenta/i),
+      await screen.findByText(
+        /Se envió un correo para verificar su cuenta y establecer contraseña/i,
+      ),
     ).toBeTruthy();
+  });
+
+  it("permite crear becarios temporales con Gmail asignando días activos y requiriendo verificación", async () => {
+    mock_admin_create_user.mockResolvedValueOnce({
+      uid: "uid-becario-1",
+      email: "becario.nuevo@gmail.com",
+      role: "intern",
+      approved: true,
+      temporaryAccount: true,
+      activeDays: 45,
+    });
+
+    render(<RegistrationForm />);
+
+    fireEvent.click(screen.getByRole("combobox"));
+    fireEvent.click(await screen.findByRole("option", { name: /Becario \/ Practicante/i }));
+
+    fireEvent.change(screen.getByLabelText(/NOMBRE COMPLETO/i), {
+      target: { value: "Sofia Mendoza" },
+    });
+    fireEvent.change(screen.getByLabelText(/CORREO ELECTRÓNICO/i), {
+      target: { value: "Sofia.Mendoza@gmail.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/ÁREA \/ DEPARTAMENTO/i), {
+      target: { value: "ENVASE" },
+    });
+    fireEvent.change(screen.getByLabelText(/VIGENCIA TEMPORAL \(DÍAS ACTIVOS\)/i), {
+      target: { value: "45" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Crear Cuenta/i }));
+
+    await waitFor(() => {
+      expect(mock_admin_create_user).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "sofia.mendoza@gmail.com",
+          name: "SOFIA MENDOZA",
+          area: "ENVASE",
+          role: "intern",
+          activeDays: 45,
+        }),
+      );
+    });
+    expect(mock_send_password_reset_email).toHaveBeenCalledWith(
+      expect.anything(),
+      "sofia.mendoza@gmail.com",
+    );
+    expect(await screen.findByText(/vigencia: 45 días/i)).toBeTruthy();
   });
 });

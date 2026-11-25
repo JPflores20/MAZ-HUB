@@ -7,9 +7,11 @@ import {
   beforeUserSignedIn,
   HttpsError as IdentityHttpsError,
 } from "firebase-functions/v2/identity";
-import { firestore_db } from "../core/firebase_admin";
-import { clamp_string, is_corporate_email } from "../security/domain_and_strings";
-import { normalize_role } from "../security/roles_and_permissions";
+import { is_corporate_email, is_valid_email_format } from "../security/domain_and_strings";
+import {
+  build_custom_claims,
+  ensure_verified_corporate_profile,
+} from "../users/user_verification_sync";
 
 /**
  * Trigger ejecutado antes de registrar un usuario nuevo en Identity Platform.
@@ -35,22 +37,40 @@ export const before_user_created_trigger = beforeUserCreated((evento_identidad) 
 
 /**
  * Trigger ejecutado antes de emitir token de sesión en Identity Platform.
- * Verifica dominio corporativo, cuenta activa y sincroniza Custom Claims reales desde Firestore.
+ * Verifica dominio corporativo, aprueba automáticamente cuentas con correo verificado y sincroniza Custom Claims.
  */
 export const before_user_signed_in_trigger = beforeUserSignedIn(async (evento_identidad) => {
   const registro_usuario = evento_identidad.data;
-  if (!registro_usuario || !is_corporate_email(registro_usuario.email)) {
-    throw new IdentityHttpsError(
-      "permission-denied",
-      "Acceso restringido a correos corporativos autorizados.",
-    );
+  if (!registro_usuario || !is_valid_email_format(registro_usuario.email)) {
+    throw new IdentityHttpsError("permission-denied", "Acceso restringido a correos autorizados.");
   }
   if (registro_usuario.disabled) {
     throw new IdentityHttpsError("permission-denied", "Cuenta deshabilitada.");
   }
 
-  const perfil_snapshot = await firestore_db.collection("users").doc(registro_usuario.uid).get();
-  if (!perfil_snapshot.exists) {
+  const perfil_resultado = await ensure_verified_corporate_profile({
+    uid: registro_usuario.uid,
+    email: registro_usuario.email,
+    displayName: registro_usuario.displayName,
+    emailVerified: registro_usuario.emailVerified === true,
+    createIfMissingUnverified: false,
+  });
+
+  if (perfil_resultado.expired) {
+    throw new IdentityHttpsError(
+      "permission-denied",
+      "Tu acceso temporal como becario ha expirado. Contacta al administrador.",
+    );
+  }
+
+  if (!is_corporate_email(registro_usuario.email) && !perfil_resultado.exists) {
+    throw new IdentityHttpsError(
+      "permission-denied",
+      "Acceso restringido a correos corporativos autorizados.",
+    );
+  }
+
+  if (!perfil_resultado.exists) {
     return {
       customClaims: {
         role: "user",
@@ -60,17 +80,15 @@ export const before_user_signed_in_trigger = beforeUserSignedIn(async (evento_id
     };
   }
 
-  const datos_perfil = perfil_snapshot.data() ?? {};
-  const rol_verificado = normalize_role(datos_perfil["role"]);
-  const usuario_aprobado = datos_perfil["approved"] === true;
-  const area_verificada = clamp_string(datos_perfil["area"], 80) || "Usuario";
-
   return {
-    customClaims: {
-      role: rol_verificado,
-      area: area_verificada,
-      approved: usuario_aprobado,
-      admin: rol_verificado === "admin" && usuario_aprobado,
-    },
+    customClaims: build_custom_claims({
+      role: perfil_resultado.role,
+      area: perfil_resultado.area,
+      approved: perfil_resultado.approved,
+      temporaryAccount: perfil_resultado.temporaryAccount,
+      ...(typeof perfil_resultado.expiresAtMs === "number"
+        ? { expiresAtMs: perfil_resultado.expiresAtMs }
+        : {}),
+    }),
   };
 });

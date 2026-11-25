@@ -2,17 +2,24 @@
  * @fileoverview Role-gated administration dashboard orchestrating user onboarding and directory permissions.
  */
 
+import { useEffect, useRef } from "react";
 import { Shield } from "lucide-react";
-import {
-  RegistrationForm,
-  useAuth,
-  type UserProfile,
-} from "@/features/auth";
+import { RegistrationForm, useAuth, type UserProfile } from "@/features/auth";
+import { user_service } from "@/features/auth/user_service";
 import { UserList } from "./user_list";
 
 /** Renders the `/admin` feature view for creating users and managing roles/permissions. */
 export function AdminPanel() {
   const { currentUser, permissions, usersList } = useAuth();
+  const synced_auth_ref = useRef(false);
+
+  useEffect(() => {
+    if (currentUser?.role !== "admin" || synced_auth_ref.current) {
+      return;
+    }
+    synced_auth_ref.current = true;
+    void user_service.admin_sync_auth_users().catch(() => {});
+  }, [currentUser?.role]);
 
   const normalized_users: UserProfile[] = usersList.map((directory_entry) => ({
     uid: directory_entry.uid || directory_entry.email,
@@ -31,6 +38,16 @@ export function AdminPanel() {
       : {}),
     ...(typeof directory_entry.verifiedByAdmin === "boolean"
       ? { verifiedByAdmin: directory_entry.verifiedByAdmin }
+      : {}),
+    ...(typeof directory_entry.temporaryAccount === "boolean"
+      ? { temporaryAccount: directory_entry.temporaryAccount }
+      : {}),
+    ...(typeof directory_entry.activeDays === "number"
+      ? { activeDays: directory_entry.activeDays }
+      : {}),
+    ...(directory_entry.expiresAt ? { expiresAt: directory_entry.expiresAt } : {}),
+    ...(typeof directory_entry.expiresAtMs === "number"
+      ? { expiresAtMs: directory_entry.expiresAtMs }
       : {}),
     ...(directory_entry.lastVerificationSentAt
       ? { lastVerificationSentAt: directory_entry.lastVerificationSentAt }

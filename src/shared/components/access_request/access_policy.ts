@@ -6,7 +6,8 @@
 import type { Pdca } from "@/domain/pdca";
 import { does_area_belong_to_parent_or_match } from "@/domain/pdca";
 import type { Rda } from "@/domain/models/rda";
-import { get_effective_permissions, type UserProfile } from "@/features/auth/auth_context";
+import type { UserProfile } from "@/features/auth/auth_context";
+import { get_effective_permissions } from "@/features/auth/role_permissions";
 import type { UserPermissions } from "@/features/auth/user_service";
 import {
   is_pdca_assigned,

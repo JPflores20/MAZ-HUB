@@ -3,14 +3,9 @@
  */
 
 import type { UserPermissions, UserRole } from "./auth_types";
+import { EMPTY_PERMISSIONS, normalize_user_role, ROLE_LABELS } from "./role_normalization";
 
-export const ROLE_LABELS: Record<UserRole, string> = {
-  admin: "Administrador",
-  area_lead: "Líder de Área",
-  user: "Usuario General",
-  intern: "Becario / Practicante",
-  viewer: "Auditor / Visor",
-};
+export { normalize_user_role, ROLE_LABELS };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   admin: "Control total de la plataforma, gestión de usuarios y acceso global a todos los proyectos.",
@@ -109,25 +104,6 @@ export const PERMISSION_METADATA: {
 ];
 
 /**
- * Validates and normalizes an untrusted role string to a known `UserRole`, defaulting to `"user"`.
- *
- * @param {string | null | undefined} raw_role - Stored or input role identifier.
- * @returns {UserRole} Validated role union value.
- */
-export function normalize_user_role(raw_role?: string | null): UserRole {
-  if (
-    raw_role === "admin" ||
-    raw_role === "area_lead" ||
-    raw_role === "user" ||
-    raw_role === "intern" ||
-    raw_role === "viewer"
-  ) {
-    return raw_role;
-  }
-  return "user";
-}
-
-/**
  * Resolves effective permissions for a user, hard-blocking writes for `viewer` and `intern` roles.
  *
  * @param user_record - Partial user record containing role and optional overrides.
@@ -140,15 +116,7 @@ export function get_effective_permissions(
   } | null,
 ): UserPermissions {
   if (!user_record) {
-    return {
-      canCreate: false,
-      canEdit: false,
-      canDelete: false,
-      canManageAssignment: false,
-      canViewArea: false,
-      canViewAll: false,
-      canManageUsers: false,
-    };
+    return EMPTY_PERMISSIONS;
   }
   const normalized_role = normalize_user_role(user_record.role);
   const role_defaults = ROLE_DEFAULT_PERMISSIONS[normalized_role];

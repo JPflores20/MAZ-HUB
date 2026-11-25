@@ -3,14 +3,19 @@
  */
 
 import { Search } from "lucide-react";
-import { ROLE_LABELS, type UserRole } from "@/features/auth/auth_context";
+import type { UserRole } from "@/features/auth/auth_context";
+import { ROLE_LABELS } from "@/features/auth/role_permissions";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+import { AdminBulkApproveButton } from "./admin_bulk_approve_button";
 import { ROLE_FILTER_TABS } from "./user_workload_helpers";
 
 interface AdminUserFiltersBarProps {
   filtered_count: number;
   total_count: number;
+  pending_corporate_count: number;
+  is_bulk_approving: boolean;
+  on_bulk_approve: () => Promise<void>;
   counts_by_role: Record<"all" | UserRole, number>;
   available_areas: string[];
   search_query: string;
@@ -19,6 +24,8 @@ interface AdminUserFiltersBarProps {
   set_area_filter: (next_area: string) => void;
   role_filter: "all" | UserRole;
   set_role_filter: (next_role: "all" | UserRole) => void;
+  pending_only: boolean;
+  set_pending_only: (next_pending: boolean) => void;
 }
 
 /**
@@ -27,6 +34,9 @@ interface AdminUserFiltersBarProps {
 export function AdminUserFiltersBar({
   filtered_count,
   total_count,
+  pending_corporate_count,
+  is_bulk_approving,
+  on_bulk_approve,
   counts_by_role,
   available_areas,
   search_query,
@@ -35,8 +45,12 @@ export function AdminUserFiltersBar({
   set_area_filter,
   role_filter,
   set_role_filter,
+  pending_only,
+  set_pending_only,
 }: AdminUserFiltersBarProps) {
-  const has_active_filters = Boolean(search_query || area_filter !== "all" || role_filter !== "all");
+  const has_active_filters = Boolean(
+    search_query || area_filter !== "all" || role_filter !== "all" || pending_only,
+  );
 
   return (
     <div className="flex flex-col gap-3.5 border-b border-border px-6 py-4">
@@ -46,25 +60,33 @@ export function AdminUserFiltersBar({
             Usuarios Registrados ({filtered_count} de {total_count})
           </h2>
           <p className="text-xs text-muted-foreground">
-            Filtra por categoría de usuario, aprueba cuentas, personaliza permisos o envía enlaces
-            de recuperación por correo
+            Los usuarios que verifican su correo acceden automáticamente; aquí puedes aprobar
+            pendientes antes de tiempo o ajustar permisos
           </p>
         </div>
-        {has_active_filters && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              set_search_query("");
-              set_area_filter("all");
-              set_role_filter("all");
-            }}
-            className="h-7 text-xs text-muted-foreground hover:text-foreground"
-          >
-            Limpiar filtros
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <AdminBulkApproveButton
+            pending_corporate_count={pending_corporate_count}
+            is_bulk_approving={is_bulk_approving}
+            on_bulk_approve={on_bulk_approve}
+          />
+          {has_active_filters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                set_search_query("");
+                set_area_filter("all");
+                set_role_filter("all");
+                set_pending_only(false);
+              }}
+              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Limpiar filtros
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5">
@@ -89,6 +111,20 @@ export function AdminUserFiltersBar({
             </button>
           );
         })}
+        <button
+          type="button"
+          onClick={() => set_pending_only(!pending_only)}
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
+            pending_only
+              ? "border-amber-500/50 bg-amber-500/15 text-amber-800 dark:text-amber-300 ring-2 ring-amber-500/30 shadow-xs"
+              : "border-border bg-background text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+          }`}
+        >
+          <span>Pendientes</span>
+          <span className="rounded-full bg-background/80 px-1.5 py-0 text-[10px] font-bold">
+            {pending_corporate_count}
+          </span>
+        </button>
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-3">
@@ -117,7 +153,9 @@ export function AdminUserFiltersBar({
 
         <select
           value={role_filter}
-          onChange={(change_event) => set_role_filter(change_event.target.value as "all" | UserRole)}
+          onChange={(change_event) =>
+            set_role_filter(change_event.target.value as "all" | UserRole)
+          }
           className="h-8 rounded-md border border-input bg-background px-2.5 text-xs ring-offset-background"
         >
           <option value="all">Todos los Roles</option>

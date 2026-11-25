@@ -3,18 +3,25 @@
  */
 
 import type React from "react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { FileSpreadsheet, Filter, LayoutGrid, Search, Table as TableIcon } from "lucide-react";
 import type { Pdca, Phase } from "@/domain/pdca";
-import { get_effective_permissions, type UserProfile } from "@/features/auth/auth_context";
+import type { UserProfile } from "@/features/auth/auth_context";
+import { get_effective_permissions } from "@/features/auth/role_permissions";
 import { useDirectoryUsers } from "@/shared/components/responsible_profile";
 import { usePdcas } from "@/shared/context/pdca_context";
 import { useShortcuts } from "@/shared/hooks/use_shortcuts";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { PdcaKanbanBoard } from "./pdca_kanban_board";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { export_pdcas_to_excel, toggle_pdca_assigned_user } from "./pdca_table_actions";
 import { PdcaVirtualTable } from "./pdca_virtual_table";
+
+const LazyPdcaKanbanBoard = lazy(() =>
+  import("./pdca_kanban_board").then((kanban_module) => ({
+    default: kanban_module.PdcaKanbanBoard,
+  })),
+);
 
 const PDCA_VIEW_MODE_KEY = "maz_hub_pdca_view_mode";
 
@@ -121,7 +128,7 @@ export function ProjectTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => export_pdcas_to_excel(rows)}
+            onClick={() => void export_pdcas_to_excel(rows)}
             className="text-green-600 border-green-600 hover:bg-green-50 dark:text-green-500 dark:border-green-500 dark:hover:bg-green-950/30"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4" /> Exportar Excel
@@ -138,15 +145,17 @@ export function ProjectTable({
       </div>
 
       {view_mode === "kanban" ? (
-        <PdcaKanbanBoard
-          rows={rows}
-          current_user={current_user}
-          user_permissions={user_permissions}
-          available_users={available_users}
-          resolve_user={resolve_user}
-          on_select_pdca={set_selected_id}
-          on_toggle_pdca_user={handle_toggle_pdca_user}
-        />
+        <Suspense fallback={<Skeleton className="h-[420px] w-full rounded-xl" />}>
+          <LazyPdcaKanbanBoard
+            rows={rows}
+            current_user={current_user}
+            user_permissions={user_permissions}
+            available_users={available_users}
+            resolve_user={resolve_user}
+            on_select_pdca={set_selected_id}
+            on_toggle_pdca_user={handle_toggle_pdca_user}
+          />
+        </Suspense>
       ) : (
         <PdcaVirtualTable
           rows={rows}

@@ -12,5 +12,7 @@ export { sync_user_profile_trigger as syncuserprofile } from "./users/sync_user_
 export { admin_create_user_callable as adminCreateUser } from "./users/admin_create_user";
 export { admin_update_user_access_callable as adminUpdateUserAccess } from "./users/admin_update_user_access";
 export { admin_delete_user_callable as adminDeleteUser } from "./users/admin_delete_user";
+export { admin_sync_auth_users_callable as adminSyncAuthUsers } from "./users/admin_sync_auth_users";
+export { sync_verified_profile_callable as syncVerifiedProfile } from "./users/sync_verified_profile";
 export { approve_access_request_callable as approveAccessRequest } from "./access_requests/approve_access_request";
 export { reject_access_request_callable as rejectAccessRequest } from "./access_requests/reject_access_request";

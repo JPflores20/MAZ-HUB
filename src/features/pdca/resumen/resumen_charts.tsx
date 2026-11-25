@@ -60,12 +60,12 @@ export const ResumenCharts: React.FC<PropiedadesGraficasResumen> = ({
           </CardHeader>
           <CardContent className="px-3 pt-3 pb-2">
             {time_series.length > 0 && montado ? (
-              <div className="h-[200px] w-full">
+              <div className="h-[230px] w-full">
                 <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-                  <LineChart data={time_series} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
+                  <LineChart data={time_series} margin={{ top: 8, right: 12, left: -10, bottom: 4 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="mes" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
+                    <YAxis width={42} tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
                     <Tooltip />
                     <Legend wrapperStyle={{ fontSize: 10 }} />
                     <Line
@@ -90,7 +90,7 @@ export const ResumenCharts: React.FC<PropiedadesGraficasResumen> = ({
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
+              <div className="h-[230px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
                 <p className="text-xs text-muted-foreground text-center">
                   {translate("pdcaResumen.noTimeSeriesDataStep26")}
                 </p>

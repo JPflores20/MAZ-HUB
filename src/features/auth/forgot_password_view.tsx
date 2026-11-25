@@ -11,7 +11,7 @@ import { primary_auth } from "@/core/config/firebase";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { CORPORATE_EMAIL_ERROR, validate_corporate_email } from "./email_validation";
+import { validate_general_email } from "./email_validation";
 
 const RESET_COOLDOWN_SECONDS = 60;
 
@@ -41,9 +41,9 @@ export function ForgotPasswordView() {
     set_error_message(null);
     set_sent_notice(null);
 
-    const validation = validate_corporate_email(target_email);
+    const validation = validate_general_email(target_email);
     if (!validation.valid) {
-      set_error_message(validation.error || CORPORATE_EMAIL_ERROR);
+      set_error_message(validation.error || "Ingresa un correo electrónico válido.");
       return;
     }
 
@@ -77,7 +77,11 @@ export function ForgotPasswordView() {
           Ingresa tu correo corporativo y te enviaremos instrucciones para restablecer tu acceso.
         </p>
 
-        <form onSubmit={(submit_event) => void handle_submit(submit_event)} className="space-y-4" noValidate>
+        <form
+          onSubmit={(submit_event) => void handle_submit(submit_event)}
+          className="space-y-4"
+          noValidate
+        >
           {error_message && (
             <div className="flex items-start gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
               <AlertCircle className="size-4 shrink-0 mt-0.5" />

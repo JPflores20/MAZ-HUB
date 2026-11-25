@@ -2,7 +2,8 @@
  * @fileoverview Pure executive dashboard KPI, recent movements, and upcoming tasks aggregator.
  */
 
-import { get_rda_display_name, get_rda_status } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
+import { get_rda_status } from "@/features/rda/utils/rda_status";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 import { get_computed_pdca_progress } from "./pdca_progress_helpers";

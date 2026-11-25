@@ -14,6 +14,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { ensure_app_check_initialized } from "@/core/config/firebase";
 import { report_lovable_error } from "@/core/telemetry/lovable_error_reporting";
 
 function NotFoundComponent() {
@@ -123,6 +124,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+/** Activa App Check en cliente una vez que React finalizó la hidratación de `document.body`. */
+function AppCheckBoot() {
+  useEffect(() => {
+    ensure_app_check_initialized();
+  }, []);
+  return null;
+}
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -130,6 +139,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <AppCheckBoot />
         {children}
         <Scripts />
       </body>
@@ -137,11 +147,9 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-import { AppLayout } from "@/shared/components/layout";
+import { AppLayout } from "@/shared/components/layout/app_layout";
 import { AuthProvider } from "@/features/auth/auth_context";
 import { ThemeProvider } from "@/shared/components/theme_provider";
-import { PdcaProvider } from "@/shared/context/pdca_context";
-import { RdaProvider } from "@/shared/context/rda_context";
 import "@/core/i18n";
 import { Toaster } from "@/shared/ui/sonner";
 
@@ -152,14 +160,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <AuthProvider>
-          {/* Single Firestore cache — feeds layout, dashboard, index, rda, etc. */}
-          <PdcaProvider>
-            <RdaProvider>
-              <AppLayout>
-                <Outlet />
-              </AppLayout>
-            </RdaProvider>
-          </PdcaProvider>
+          <AppLayout>
+            <Outlet />
+          </AppLayout>
           <Toaster richColors position="top-right" />
         </AuthProvider>
       </ThemeProvider>

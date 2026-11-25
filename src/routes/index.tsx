@@ -2,8 +2,7 @@
  * @fileoverview Route adapter for `/` delegating UI rendering to PdcaBankView.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import { PdcaBankView } from "@/features/dashboard";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,5 +23,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: "https://maz-pdca-hub.web.app/logos/MAZ.webp" },
     ],
   }),
-  component: PdcaBankView,
+  component: lazyRouteComponent(
+    () => import("@/features/dashboard/pdca_bank_view"),
+    "PdcaBankView",
+  ),
 });

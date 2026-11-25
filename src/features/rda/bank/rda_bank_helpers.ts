@@ -2,7 +2,6 @@
  * @fileoverview Pure helpers for RDA bank filters, Excel export, record creation, and assignee toggling.
  */
 
-import * as xlsx from "xlsx";
 import { sanitize_rows_for_spreadsheet } from "@/core/security";
 import { DEFAULT_RDA, type Rda } from "@/domain/models/rda";
 import { AREAS, does_area_belong_to_parent_or_match, is_bloque_frio_area } from "@/domain/pdca";
@@ -140,8 +139,9 @@ export function filter_rda_records(
   });
 }
 
-/** Exports filtered RDAs into a formula-injection-sanitized Excel spreadsheet. */
-export function export_rdas_to_excel(filtered_rdas: Rda[]): void {
+/** Exports filtered RDAs into a formula-injection-sanitized Excel spreadsheet on demand. */
+export async function export_rdas_to_excel(filtered_rdas: Rda[]): Promise<void> {
+  const xlsx = await import("xlsx");
   const sanitized_rows = sanitize_rows_for_spreadsheet(
     filtered_rdas.map((rda_record) => ({
       Folio: rda_record.context?.folio || "-",

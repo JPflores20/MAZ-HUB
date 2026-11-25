@@ -13,6 +13,21 @@ export default defineConfig({
     spa: { enabled: true },
   },
   vite: {
+    environments: {
+      client: {
+        build: {
+          rollupOptions: {
+            output: {
+              chunkFileNames(chunk_info) {
+                return chunk_info.name === "role_permissions"
+                  ? "assets/chunk-[hash].js"
+                  : "assets/[name]-[hash].js";
+              },
+            },
+          },
+        },
+      },
+    },
     plugins: [
       VitePWA({
         registerType: "autoUpdate",

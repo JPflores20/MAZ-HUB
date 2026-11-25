@@ -1,14 +1,18 @@
 /**
- * @fileoverview Header notification bell button, access-request pill alert, and scrollable dropdown feed.
+ * @fileoverview Header notification bell button and access-request pill alert with lazy-loaded popover content.
  */
 
+import { lazy, Suspense } from "react";
 import { Bell, Lock } from "lucide-react";
-import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import { ScrollArea } from "@/shared/ui/scroll_area";
-import { NotificationItemCard } from "./notification_item_card";
 import { useNotificationsFeed } from "./use_notifications_feed";
+
+const LazyNotificationPopoverBody = lazy(() =>
+  import("./notification_popover_body").then((module) => ({
+    default: module.NotificationPopoverBody,
+  })),
+);
 
 /** Displays the top-bar notification bell and approval dropdown for PDCA/RDA permissions. */
 export function NotificationBell() {
@@ -62,59 +66,31 @@ export function NotificationBell() {
         </PopoverTrigger>
       </div>
 
-      <PopoverContent
-        className="w-80 sm:w-[400px] p-0 rounded-2xl overflow-hidden shadow-2xl"
-        align="end"
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/40">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-sm">Notificaciones</h4>
-            {pending_access_requests.length > 0 && (
-              <Badge
-                variant="outline"
-                className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[10px] font-bold"
-              >
-                {pending_access_requests.length} permiso(s)
-              </Badge>
-            )}
-          </div>
-          {unread_count > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void mark_all_as_read()}
-              className="text-xs h-auto py-1 px-2"
-            >
-              Marcar todas leídas
-            </Button>
-          )}
-        </div>
-
-        <ScrollArea className="h-[360px]">
-          {notifications.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              No tienes notificaciones ni solicitudes pendientes
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              {notifications.map((notification) => (
-                <NotificationItemCard
-                  key={notification.id}
-                  notification={notification}
-                  approving_id={approving_id}
-                  on_click={handle_notification_click}
-                  on_approve={(click_event, target_notification) =>
-                    void handle_approve_access(click_event, target_notification)
-                  }
-                  on_reject={(click_event, target_notification) =>
-                    void handle_reject_access(click_event, target_notification)
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-      </PopoverContent>
+      {is_open && (
+        <PopoverContent
+          className="w-80 sm:w-[400px] p-0 rounded-2xl overflow-hidden shadow-2xl"
+          align="end"
+        >
+          <Suspense
+            fallback={
+              <div className="p-6 text-center text-xs text-muted-foreground">
+                Cargando notificaciones...
+              </div>
+            }
+          >
+            <LazyNotificationPopoverBody
+              notifications={notifications}
+              unread_count={unread_count}
+              pending_access_requests={pending_access_requests}
+              approving_id={approving_id}
+              mark_all_as_read={mark_all_as_read}
+              handle_approve_access={handle_approve_access}
+              handle_reject_access={handle_reject_access}
+              handle_notification_click={handle_notification_click}
+            />
+          </Suspense>
+        </PopoverContent>
+      )}
     </Popover>
   );
 }

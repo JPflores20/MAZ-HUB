@@ -6,7 +6,6 @@ import { collection, onSnapshot, type Unsubscribe } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "@/core/config/firebase";
 import type { UserPermissions, UserProfile, UserRole } from "./auth_types";
-import { ROLE_DEFAULT_PERMISSIONS } from "./role_permissions";
 import { map_user_snapshot } from "./user_directory_service";
 
 const USERS_COLLECTION = "users";
@@ -20,16 +19,35 @@ export async function admin_create_user(create_input: {
   role: UserRole;
   permissions?: Partial<UserPermissions>;
   password?: string;
-}): Promise<{ uid: string; email: string; role: UserRole; approved: boolean }> {
+  activeDays?: number;
+}): Promise<{
+  uid: string;
+  email: string;
+  role: UserRole;
+  approved: boolean;
+  temporaryAccount?: boolean;
+  activeDays?: number;
+  expiresAt?: string;
+  expiresAtMs?: number;
+}> {
   const create_callable = httpsCallable<
     typeof create_input,
-    { uid: string; email: string; role: UserRole; approved: boolean }
+    {
+      uid: string;
+      email: string;
+      role: UserRole;
+      approved: boolean;
+      temporaryAccount?: boolean;
+      activeDays?: number;
+      expiresAt?: string;
+      expiresAtMs?: number;
+    }
   >(functions, "adminCreateUser");
   const callable_response = await create_callable(create_input);
   return callable_response.data;
 }
 
-/** Updates role, granular permissions, approval status, or area through `adminUpdateUserAccess`. */
+/** Updates role, granular permissions, approval status, area, or temporary duration through `adminUpdateUserAccess`. */
 export async function admin_update_user_access(update_input: {
   uid: string;
   role?: UserRole;
@@ -37,6 +55,7 @@ export async function admin_update_user_access(update_input: {
   approved?: boolean;
   verifiedByAdmin?: boolean;
   area?: string;
+  activeDays?: number;
 }): Promise<{ uid: string; role: UserRole; approved: boolean }> {
   const update_callable = httpsCallable<
     typeof update_input,
@@ -52,10 +71,15 @@ export async function update_user_role_via_admin(
   next_role: UserRole,
   explicit_permissions?: Partial<UserPermissions>,
 ): Promise<void> {
+  let permissions_payload = explicit_permissions;
+  if (!permissions_payload) {
+    const { ROLE_DEFAULT_PERMISSIONS } = await import("./role_permissions");
+    permissions_payload = ROLE_DEFAULT_PERMISSIONS[next_role];
+  }
   await admin_update_user_access({
     uid: target_uid,
     role: next_role,
-    permissions: explicit_permissions ?? ROLE_DEFAULT_PERMISSIONS[next_role],
+    permissions: permissions_payload,
   });
 }
 
@@ -66,6 +90,35 @@ export async function admin_delete_user(target_uid: string): Promise<void> {
     "adminDeleteUser",
   );
   await delete_callable({ uid: target_uid });
+}
+
+/** Reconciles an already email-verified corporate user into an approved Firestore profile on the server. */
+export async function sync_verified_profile(): Promise<{
+  uid: string;
+  role: UserRole;
+  approved: boolean;
+  emailVerified: boolean;
+}> {
+  const sync_callable = httpsCallable<
+    Record<string, never>,
+    { uid: string; role: UserRole; approved: boolean; emailVerified: boolean }
+  >(functions, "syncVerifiedProfile");
+  const callable_response = await sync_callable({});
+  return callable_response.data;
+}
+
+/** Syncs missing corporate Firebase Auth accounts into Firestore `/users` for admin visibility. */
+export async function admin_sync_auth_users(): Promise<{
+  scannedCount: number;
+  createdCount: number;
+  approvedCount: number;
+}> {
+  const sync_callable = httpsCallable<
+    Record<string, never>,
+    { scannedCount: number; createdCount: number; approvedCount: number }
+  >(functions, "adminSyncAuthUsers");
+  const callable_response = await sync_callable({});
+  return callable_response.data;
 }
 
 /** Grants read access to a PDCA/RDA and resolves associated notifications via `approveAccessRequest`. */

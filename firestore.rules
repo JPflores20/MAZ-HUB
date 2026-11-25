@@ -12,7 +12,7 @@ rules_version = '2';
 //   - firstName: string (optional, <= 80)
 //   - paternalLastName: string (optional, <= 80)
 //   - maternalLastName: string (optional, <= 80)
-//   - email: string (required, corporate @ab-inbev.com | @gmodelo.com.mx, <= 254, immutable for non-admin)
+//   - email: string (required, corporate @ab-inbev.com | @gmodelo.com.mx or admin-provisioned external email for temporary intern, <= 254, immutable for non-admin)
 //   - role: string (required, enum: admin | area_lead | user | intern | viewer; immutable for non-admin)
 //   - permissions: map (optional, boolean flags; restricted on self-create, immutable for non-admin)
 //   - area: string (required, 1..80)
@@ -24,6 +24,10 @@ rules_version = '2';
 //   - approved: bool (false on self-create; immutable for non-admin)
 //   - emailVerified: bool (must match request.auth.token.email_verified on self-create/update)
 //   - verifiedByAdmin: bool (false on self-create; immutable for non-admin)
+//   - temporaryAccount: bool (optional, admin/Admin SDK only; false/absent on self-create, immutable for non-admin)
+//   - activeDays: int (optional, 1..730, admin/Admin SDK only; forbidden on self-create, immutable for non-admin)
+//   - expiresAt: string | timestamp (optional, string <= 64, admin/Admin SDK only; forbidden on self-create, immutable for non-admin)
+//   - expiresAtMs: int (optional, > 0; required for non-corporate temporary intern; admin/Admin SDK only)
 //   - lastVerificationSentAt: string | timestamp (optional, string <= 64)
 //   - createdAt: string | timestamp (optional, string <= 64, immutable for non-admin)
 //   - updatedAt: string | timestamp (optional, string <= 64)
@@ -127,7 +131,9 @@ service cloud.firestore {
     }
 
     function isVerifiedCorporate() {
-      return hasCorporateEmail() && isEmailVerified();
+      return isSignedIn() &&
+             request.auth.token.get('email_verified', false) == true &&
+             isCorporateEmailString(request.auth.token.email);
     }
 
     function userDocPath() {
@@ -142,10 +148,23 @@ service cloud.firestore {
       return get(userDocPath()).data;
     }
 
+    function isValidActiveTemporaryIntern(profile) {
+      return profile.get('role', 'user') == 'intern' &&
+             profile.get('temporaryAccount', false) == true &&
+             profile.get('verifiedByAdmin', false) == true &&
+             profile.get('approved', false) == true &&
+             'expiresAtMs' in profile &&
+             profile.expiresAtMs is int &&
+             request.time.toMillis() < profile.expiresAtMs;
+    }
+
     function isApprovedUser() {
-      return isVerifiedCorporate() &&
-             userExists() &&
-             userProfile().get('approved', false) == true;
+      return isEmailVerified() &&
+             exists(userDocPath()) &&
+             (
+               (isCorporateEmailString(request.auth.token.email) && userProfile().get('approved', false) == true) ||
+               isValidActiveTemporaryIntern(userProfile())
+             );
     }
 
     function userRole() {
@@ -164,13 +183,13 @@ service cloud.firestore {
 
     function isAdmin() {
       return isVerifiedCorporate() &&
-             userExists() &&
+             exists(userDocPath()) &&
              isAdminProfile(userProfile());
     }
 
     function canWriteContent() {
       return isVerifiedCorporate() &&
-             userExists() &&
+             exists(userDocPath()) &&
              canWriteProfile(userProfile());
     }
 
@@ -187,8 +206,7 @@ service cloud.firestore {
     }
 
     function optionalBoundedString(data, key, maxLen) {
-      let val = data.get(key, '');
-      return val is string && val.size() <= maxLen;
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
     }
 
     function optionalBoundedStringOrNull(data, key, maxLen) {
@@ -197,17 +215,17 @@ service cloud.firestore {
     }
 
     function optionalBoundedList(data, key, maxSize) {
-      let val = data.get(key, []);
-      return val is list && val.size() <= maxSize;
+      return !(key in data) || (data[key] is list && data[key].size() <= maxSize);
     }
 
     function optionalBool(data, key) {
-      return data.get(key, false) is bool;
+      return !(key in data) || data[key] is bool;
     }
 
     function optionalTimestampOrBoundedString(data, key, maxLen) {
-      let val = data.get(key, '');
-      return val is timestamp || (val is string && val.size() <= maxLen);
+      return !(key in data) ||
+             data[key] is timestamp ||
+             (data[key] is string && data[key].size() <= maxLen);
     }
 
     function uidUnchanged() {
@@ -248,44 +266,72 @@ service cloud.firestore {
              perms.get('canManageUsers', false) is bool;
     }
 
+    function isValidUserEmailPolicy(data) {
+      return data.email is string &&
+             data.email.size() >= 6 &&
+             data.email.size() <= 254 &&
+             (
+               data.email.lower().matches('^[^@\\s]+@(ab-inbev\\.com|gmodelo\\.com\\.mx)$') ||
+               (
+                 data.role == 'intern' &&
+                 data.get('temporaryAccount', false) == true &&
+                 'expiresAtMs' in data &&
+                 data.expiresAtMs is int &&
+                 data.expiresAtMs > 0 &&
+                 data.email.lower().matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+               )
+             );
+    }
+
     function isValidUserCommonFields(data) {
       return !('password' in data) &&
              data.keys().hasOnly([
                'uid', 'name', 'firstName', 'paternalLastName', 'maternalLastName',
                'email', 'role', 'permissions', 'area', 'position', 'plant',
                'phone', 'avatarUrl', 'bio', 'approved', 'emailVerified',
-               'verifiedByAdmin', 'lastVerificationSentAt', 'createdAt', 'updatedAt'
+               'verifiedByAdmin', 'temporaryAccount', 'activeDays',
+               'expiresAt', 'expiresAtMs', 'lastVerificationSentAt',
+               'createdAt', 'updatedAt'
              ]) &&
-             data.keys().size() <= 20 &&
-             hasRequiredFields(data, ['name', 'area', 'email', 'role']) &&
-             boundedString(data.name, 1, 120) &&
-             boundedString(data.area, 1, 80) &&
-             isCorporateEmailString(data.email) &&
-             isValidRole(data.role) &&
-             optionalBoundedString(data, 'uid', 128) &&
-             optionalBoundedString(data, 'firstName', 80) &&
-             optionalBoundedString(data, 'paternalLastName', 80) &&
-             optionalBoundedString(data, 'maternalLastName', 80) &&
-             optionalBoundedString(data, 'position', 80) &&
-             optionalBoundedString(data, 'plant', 80) &&
-             optionalBoundedString(data, 'phone', 40) &&
-             optionalBoundedString(data, 'bio', 500) &&
-             optionalBoundedString(data, 'avatarUrl', 150000) &&
-             optionalBool(data, 'approved') &&
-             optionalBool(data, 'emailVerified') &&
-             optionalBool(data, 'verifiedByAdmin') &&
-             optionalTimestampOrBoundedString(data, 'lastVerificationSentAt', 64) &&
-             optionalTimestampOrBoundedString(data, 'createdAt', 64) &&
-             optionalTimestampOrBoundedString(data, 'updatedAt', 64) &&
+             data.keys().size() <= 24 &&
+             data.keys().hasAll(['name', 'area', 'email', 'role']) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+             data.area is string && data.area.size() >= 1 && data.area.size() <= 80 &&
+             isValidUserEmailPolicy(data) &&
+             data.role is string && data.role in ['admin', 'area_lead', 'user', 'intern', 'viewer'] &&
+             (!('uid' in data) || (data.uid is string && data.uid.size() <= 128)) &&
+             (!('firstName' in data) || (data.firstName is string && data.firstName.size() <= 80)) &&
+             (!('paternalLastName' in data) || (data.paternalLastName is string && data.paternalLastName.size() <= 80)) &&
+             (!('maternalLastName' in data) || (data.maternalLastName is string && data.maternalLastName.size() <= 80)) &&
+             (!('position' in data) || (data.position is string && data.position.size() <= 80)) &&
+             (!('plant' in data) || (data.plant is string && data.plant.size() <= 80)) &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 40)) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 500)) &&
+             (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 150000)) &&
+             (!('approved' in data) || data.approved is bool) &&
+             (!('emailVerified' in data) || data.emailVerified is bool) &&
+             (!('verifiedByAdmin' in data) || data.verifiedByAdmin is bool) &&
+             (!('temporaryAccount' in data) || data.temporaryAccount is bool) &&
+             (!('activeDays' in data) || (data.activeDays is int && data.activeDays >= 1 && data.activeDays <= 730)) &&
+             (!('expiresAt' in data) || data.expiresAt is timestamp || (data.expiresAt is string && data.expiresAt.size() <= 64)) &&
+             (!('expiresAtMs' in data) || (data.expiresAtMs is int && data.expiresAtMs > 0)) &&
+             (!('lastVerificationSentAt' in data) || data.lastVerificationSentAt is timestamp || (data.lastVerificationSentAt is string && data.lastVerificationSentAt.size() <= 64)) &&
+             (!('createdAt' in data) || data.createdAt is timestamp || (data.createdAt is string && data.createdAt.size() <= 64)) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp || (data.updatedAt is string && data.updatedAt.size() <= 64)) &&
              (!('permissions' in data) || isValidPermissionsMap(data.permissions));
     }
 
     function isValidSelfUserCreate(data) {
-      return uidUnchanged() &&
+      return hasCorporateEmail() &&
+             uidUnchanged() &&
              data.email.lower() == request.auth.token.email.lower() &&
              data.role == 'user' &&
              data.get('approved', false) == false &&
              data.get('verifiedByAdmin', false) == false &&
+             data.get('temporaryAccount', false) == false &&
+             !('activeDays' in data) &&
+             !('expiresAt' in data) &&
+             !('expiresAtMs' in data) &&
              'emailVerified' in data &&
              data.emailVerified is bool &&
              data.emailVerified == request.auth.token.get('email_verified', false) &&
@@ -667,10 +713,22 @@ service cloud.firestore {
     // ===============================================================
 
     match /users/{userId} {
-      allow get: if hasCorporateEmail() && (isOwner(userId) || isAdmin());
+      allow get: if isAdmin() ||
+                    (
+                      isSignedIn() &&
+                      isOwner(userId) &&
+                      (
+                        hasCorporateEmail() ||
+                        (
+                          resource != null &&
+                          resource.data.get('role', '') == 'intern' &&
+                          resource.data.get('temporaryAccount', false) == true
+                        )
+                      )
+                    );
       allow list: if isAdmin();
 
-      allow create: if hasCorporateEmail() &&
+      allow create: if isSignedIn() &&
                        (!('uid' in request.resource.data) || request.resource.data.uid == userId) &&
                        isValidUserCommonFields(request.resource.data) &&
                        (
@@ -678,14 +736,19 @@ service cloud.firestore {
                          (isOwner(userId) && isValidSelfUserCreate(request.resource.data))
                        );
 
-      allow update: if hasCorporateEmail() &&
+      allow update: if isAdmin() &&
                        uidNotModified() &&
                        (!('uid' in request.resource.data) || request.resource.data.uid == userId) &&
                        isValidUserCommonFields(request.resource.data) &&
-                       (
-                         (isAdmin() && isValidAdminUserUpdate(request.resource.data, resource.data)) ||
-                         (isOwner(userId) && isValidSelfUserUpdate(request.resource.data, resource.data))
-                       );
+                       isValidAdminUserUpdate(request.resource.data, resource.data);
+
+      allow update: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       uidNotModified() &&
+                       (!('uid' in request.resource.data) || request.resource.data.uid == userId) &&
+                       (isCorporateEmailString(request.auth.token.email) || isValidActiveTemporaryIntern(resource.data)) &&
+                       isValidSelfUserUpdate(request.resource.data, resource.data) &&
+                       isValidUserCommonFields(request.resource.data);
 
       allow delete: if isAdmin() && request.auth.uid != userId;
     }

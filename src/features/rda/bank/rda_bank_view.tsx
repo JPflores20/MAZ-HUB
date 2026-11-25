@@ -3,19 +3,28 @@
  */
 
 import { lazy, Suspense } from "react";
-import { Plus, RefreshCw } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { AccessRequestDialog, can_user_edit_rda } from "@/shared/components/access_request";
+import { can_user_edit_rda } from "@/shared/components/access_request";
 import { useDirectoryUsers } from "@/shared/components/responsible_profile";
-import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { RdaBankHeader } from "./rda_bank_header";
 import { export_rdas_to_excel } from "./rda_bank_helpers";
 import { RdaDeleteDialog } from "./rda_delete_dialog";
 import { RdaFiltersBar } from "./rda_filters_bar";
-import { RdaKanbanBoard } from "./rda_kanban_board";
 import { RdaStatusCards } from "./rda_status_cards";
 import { RdaTableView } from "./rda_table_view";
 import { useRdaBank } from "./use_rda_bank";
+
+const LazyRdaKanbanBoard = lazy(() =>
+  import("./rda_kanban_board").then((kanban_module) => ({
+    default: kanban_module.RdaKanbanBoard,
+  })),
+);
+
+const LazyAccessRequestDialog = lazy(() =>
+  import("@/shared/components/access_request/access_request_dialog").then((dialog_module) => ({
+    default: dialog_module.AccessRequestDialog,
+  })),
+);
 
 const LazyRdaDialog = lazy(() =>
   import("../dialog/rda_dialog").then((dialog_module) => ({ default: dialog_module.RdaDialog })),
@@ -23,7 +32,6 @@ const LazyRdaDialog = lazy(() =>
 
 /** Renders the `/rda` global bank or opens the interactive RDA dialog editor when active. */
 export function RdaBankView() {
-  const { t } = useTranslation();
   const { directory: available_users, resolve_user } = useDirectoryUsers();
   const {
     current_user,
@@ -85,47 +93,16 @@ export function RdaBankView() {
 
   return (
     <div className="mx-auto w-full max-w-[1700px] px-6 py-6 sm:px-10 lg:px-12">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            {t("rdaModule")}
-          </p>
-          <h1 className="mt-1 text-3xl font-bold uppercase">{t("myRdas")}</h1>
-          <div className="mt-1">
-            {loading ? (
-              <Skeleton className="h-4 w-64" />
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {all_rdas.length} {t("reportsRegistered")}{" "}
-                {permissions.canViewAll
-                  ? t("globalView")
-                  : `• Banco global de RDAs (${user_rdas.length} con acceso directo)`}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => void handle_refresh()}
-            disabled={is_refreshing || loading}
-            className="hidden sm:flex bg-card mr-2"
-            title="Sincronizar con la nube"
-          >
-            <RefreshCw className={`size-4 ${is_refreshing ? "animate-spin" : ""}`} />
-          </Button>
-          {permissions.canCreate && (
-            <Button
-              variant="default"
-              onClick={handle_create_new}
-              className="bg-primary shadow-sm hover:bg-brand-dark text-primary-foreground"
-            >
-              <Plus className="mr-1.5 size-4" /> {t("createNewRda")}
-            </Button>
-          )}
-        </div>
-      </header>
+      <RdaBankHeader
+        loading={loading}
+        total_count={all_rdas.length}
+        direct_count={user_rdas.length}
+        can_view_all={permissions.canViewAll}
+        can_create={permissions.canCreate}
+        is_refreshing={is_refreshing}
+        on_refresh={() => void handle_refresh()}
+        on_create_new={handle_create_new}
+      />
 
       <RdaStatusCards
         all_rdas={all_rdas}
@@ -146,19 +123,21 @@ export function RdaBankView() {
         on_clear_status={() => set_status_filter("all")}
         view_mode={view_mode}
         on_change_view_mode={handle_change_view_mode}
-        on_export_excel={() => export_rdas_to_excel(filtered_rdas)}
+        on_export_excel={() => void export_rdas_to_excel(filtered_rdas)}
       />
 
       {view_mode === "kanban" ? (
-        <RdaKanbanBoard
-          filtered_rdas={filtered_rdas}
-          current_user={current_user}
-          permissions={permissions}
-          available_users={available_users}
-          resolve_user={resolve_user}
-          on_edit_rda={handle_edit_rda}
-          on_toggle_responsible={handle_toggle_rda_responsible}
-        />
+        <Suspense fallback={<Skeleton className="h-[420px] w-full rounded-xl" />}>
+          <LazyRdaKanbanBoard
+            filtered_rdas={filtered_rdas}
+            current_user={current_user}
+            permissions={permissions}
+            available_users={available_users}
+            resolve_user={resolve_user}
+            on_edit_rda={handle_edit_rda}
+            on_toggle_responsible={handle_toggle_rda_responsible}
+          />
+        </Suspense>
       ) : (
         <RdaTableView
           filtered_rdas={filtered_rdas}
@@ -180,13 +159,17 @@ export function RdaBankView() {
         on_confirm_delete={confirm_delete_rda}
       />
 
-      <AccessRequestDialog
-        open={Boolean(access_request_target)}
-        onOpenChange={(is_open) => {
-          if (!is_open) set_access_request_target(null);
-        }}
-        target={access_request_target}
-      />
+      {access_request_target && (
+        <Suspense fallback={null}>
+          <LazyAccessRequestDialog
+            open={true}
+            onOpenChange={(is_open) => {
+              if (!is_open) set_access_request_target(null);
+            }}
+            target={access_request_target}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

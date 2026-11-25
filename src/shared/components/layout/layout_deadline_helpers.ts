@@ -2,11 +2,13 @@
  * @fileoverview Pure helpers for formatting PDCA/RDA deadlines and computing header workload statistics.
  */
 
-import { format, isValid } from "date-fns";
-import { es } from "date-fns/locale";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 import type { UserWorkloadStats } from "./layout_types";
+
+function is_valid_date(candidate: Date | undefined): candidate is Date {
+  return candidate instanceof Date && !Number.isNaN(candidate.getTime());
+}
 
 /**
  * Formats a selected PDCA target date into `dd/MM/yyyy` or `"Sin límite"`.
@@ -22,8 +24,10 @@ export function format_pdca_deadline_value(
   if (is_no_limit) {
     return "Sin límite";
   }
-  if (selected_date && isValid(selected_date)) {
-    return format(selected_date, "dd/MM/yyyy", { locale: es });
+  if (is_valid_date(selected_date)) {
+    const day = String(selected_date.getDate()).padStart(2, "0");
+    const month = String(selected_date.getMonth() + 1).padStart(2, "0");
+    return `${day}/${month}/${selected_date.getFullYear()}`;
   }
   return "";
 }
@@ -42,7 +46,7 @@ export function format_rda_deadline_value(
   if (is_no_limit) {
     return "Sin límite";
   }
-  if (selected_date && isValid(selected_date)) {
+  if (is_valid_date(selected_date)) {
     return selected_date.toISOString();
   }
   return "";

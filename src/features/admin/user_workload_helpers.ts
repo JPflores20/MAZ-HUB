@@ -2,7 +2,7 @@
  * @fileoverview Pure workload calculation helpers and role filter tab definitions for user administration.
  */
 
-import { get_rda_status } from "@/features/rda";
+import { get_rda_status } from "@/features/rda/utils/rda_status";
 import type { Rda } from "@/domain/models/rda";
 import type { Pdca } from "@/domain/pdca";
 import type { UserProfile, UserRole } from "@/features/auth/auth_context";

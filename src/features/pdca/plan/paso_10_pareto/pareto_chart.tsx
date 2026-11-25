@@ -34,12 +34,17 @@ export function ParetoChart({
   on_expand,
 }: ParetoChartProps) {
   const dominio_y: [number, number | "auto"] = [y_axis_min, y_axis_max];
-  const altura_grafica = is_fullscreen ? "100%" : 250;
-  // Margen inferior amplio para evitar recorte en etiquetas largas rotadas a -45°
-  const margen_inferior_x = chart_data.length > 6 ? 120 : 80;
+  const longitud_max_etiqueta = chart_data.reduce(
+    (max_actual, fila) => Math.max(max_actual, String(fila.area || "").trim().length),
+    0,
+  );
+  // XAxis height reserva el área inferior para etiquetas rotadas -45° sin inflar margin.bottom
+  const altura_eje_x = Math.min(150, Math.max(70, Math.round(longitud_max_etiqueta * 4.6 + 24)));
+  const altura_inline = 260 + altura_eje_x + 25;
+  const margen_izquierdo = longitud_max_etiqueta > 16 ? 20 : 4;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={is_fullscreen ? "flex flex-col gap-2 h-full min-h-0" : "flex flex-col gap-2"}>
       <Input
         value={chart_title}
         onChange={(evento) => on_chart_title_change(evento.target.value)}
@@ -83,41 +88,55 @@ export function ParetoChart({
         )}
       </div>
 
-      <div className="border rounded-md p-2 bg-card">
+      <div
+        className={
+          is_fullscreen
+            ? "border rounded-md p-2 bg-card flex-1 min-h-0 flex flex-col"
+            : "border rounded-md p-2 bg-card"
+        }
+      >
         {chart_title && (
-          <h3 className="text-center text-sm font-semibold mb-2 text-foreground">{chart_title}</h3>
+          <h3 className="text-center text-sm font-semibold mb-2 text-foreground shrink-0">
+            {chart_title}
+          </h3>
         )}
-        <ResponsiveContainer width="100%" height={altura_grafica} minWidth={1} minHeight={1}>
-          <ComposedChart
-            data={chart_data}
-            margin={{ top: 25, right: 15, bottom: margen_inferior_x, left: -10 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-            <XAxis
-              dataKey="area"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={100}
-              tick={{ fontSize: 10 }}
-              stroke="var(--color-muted-foreground)"
-            />
-            <YAxis
-              yAxisId="left"
-              domain={dominio_y}
-              allowDataOverflow={true}
-              tick={{ fontSize: 11 }}
-              stroke="var(--color-muted-foreground)"
-              tickFormatter={(valor_eje) => format_value(valor_eje)}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              tick={{ fontSize: 11 }}
-              stroke="var(--color-muted-foreground)"
-              domain={[0, 100]}
-              tickFormatter={(valor_pct) => `${Math.round(valor_pct)}%`}
-            />
+        <div
+          className={is_fullscreen ? "flex-1 min-h-0 w-full" : "w-full"}
+          style={is_fullscreen ? undefined : { height: altura_inline }}
+        >
+          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+            <ComposedChart
+              data={chart_data}
+              margin={{ top: 20, right: 12, bottom: 10, left: margen_izquierdo }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+              <XAxis
+                dataKey="area"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={altura_eje_x}
+                tick={{ fontSize: 10 }}
+                stroke="var(--color-muted-foreground)"
+              />
+              <YAxis
+                yAxisId="left"
+                width={62}
+                domain={dominio_y}
+                allowDataOverflow={true}
+                tick={{ fontSize: 11 }}
+                stroke="var(--color-muted-foreground)"
+                tickFormatter={(valor_eje) => format_value(valor_eje)}
+              />
+              <YAxis
+                yAxisId="right"
+                width={44}
+                orientation="right"
+                tick={{ fontSize: 11 }}
+                stroke="var(--color-muted-foreground)"
+                domain={[0, 100]}
+                tickFormatter={(valor_pct) => `${Math.round(valor_pct)}%`}
+              />
             <RTooltip
               contentStyle={{
                 borderRadius: 8,
@@ -161,8 +180,9 @@ export function ParetoChart({
                 strokeWidth: 2,
               }}
             />
-          </ComposedChart>
-        </ResponsiveContainer>
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

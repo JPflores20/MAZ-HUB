@@ -2,8 +2,7 @@
  * @fileoverview Route adapter for `/usabilidad-htas` delegating UI rendering to UsabilidadHerramientasView.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import { UsabilidadHerramientasView } from "@/features/usabilidad";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/usabilidad-htas")({
   head: () => ({
@@ -16,5 +15,8 @@ export const Route = createFileRoute("/usabilidad-htas")({
       },
     ],
   }),
-  component: UsabilidadHerramientasView,
+  component: lazyRouteComponent(
+    () => import("@/features/usabilidad/usabilidad_view"),
+    "UsabilidadHerramientasView",
+  ),
 });

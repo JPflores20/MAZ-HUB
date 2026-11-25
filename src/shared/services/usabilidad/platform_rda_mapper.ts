@@ -3,7 +3,8 @@
  * Transforma documentos RDA de la plataforma MAZ HUB al modelo unificado
  * `RegistroAnalisis5WRda` para alimentar los tableros de Usabilidad y Severidad.
  */
-import { get_rda_display_name, get_rda_status } from "@/features/rda";
+import { get_rda_display_name } from "@/features/rda/utils/rda_name";
+import { get_rda_status } from "@/features/rda/utils/rda_status";
 import type { Rda } from "@/domain/models/rda";
 import { calcular_puntaje_severidad } from "@/domain/calculators/usabilidad_calculators";
 import type {

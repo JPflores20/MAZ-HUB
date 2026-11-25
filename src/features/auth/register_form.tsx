@@ -1,12 +1,11 @@
 /**
- * @fileoverview Self-service collaborator registration form requiring corporate email and strong password.
+ * @fileoverview Self-service collaborator registration form collecting personal, operational plant, and credential fields.
  */
 
-import type React from "react";
 import { AlertCircle } from "lucide-react";
+import { OperationalProfileFields } from "@/shared/components/operational_profile_fields";
+import { PersonalIdentityFields } from "@/shared/components/personal_identity_fields";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
 import type { RegisterSuccessOptions } from "./auth_types";
 import { PasswordVisibilityField } from "./password_visibility_field";
 import { useRegisterForm } from "./use_register_form";
@@ -19,7 +18,7 @@ interface RegisterFormProps {
 }
 
 /**
- * Renders the self-registration form for new corporate users awaiting email + admin verification.
+ * Renders the self-registration form for new corporate users with personal, plant, and password details.
  */
 export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormProps) {
   const {
@@ -31,6 +30,15 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
     set_materno,
     reg_email,
     set_reg_email,
+    position,
+    set_position,
+    area,
+    set_area,
+    plant,
+    set_plant,
+    phone,
+    set_phone,
+    can_select_elaboracion,
     reg_password,
     set_reg_password,
     confirm_password,
@@ -44,12 +52,6 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
     handle_register,
   } = useRegisterForm(on_success);
 
-  const handle_uppercase =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (change_event: React.ChangeEvent<HTMLInputElement>) => {
-      setter(change_event.target.value.toUpperCase());
-    };
-
   const password_match_border =
     reg_password && confirm_password
       ? reg_password === confirm_password
@@ -58,9 +60,9 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
       : "";
 
   return (
-    <div className="mx-auto w-full max-w-md px-8 py-12 overflow-y-auto max-h-screen">
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-primary text-white shadow-md">
+    <div className="mx-auto w-full max-w-lg px-6 sm:px-8 py-8 overflow-y-auto max-h-screen">
+      <div className="mb-6 text-center">
+        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary text-white shadow-md">
           <img
             src="/logos/MAZ.webp"
             alt="Logo"
@@ -70,12 +72,16 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
         <h1 className="font-display text-2xl font-bold uppercase tracking-tight text-foreground">
           Registro de Colaborador
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Ingresa tus datos oficiales para solicitar acceso a MAZ HUB.
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Completa tu información personal, de planta y credenciales para acceder a MAZ HUB.
         </p>
       </div>
 
-      <form onSubmit={(submit_event) => void handle_register(submit_event)} className="space-y-5" noValidate>
+      <form
+        onSubmit={(submit_event) => void handle_register(submit_event)}
+        className="space-y-4"
+        noValidate
+      >
         {reg_error && (
           <div className="flex items-center gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
             <AlertCircle className="size-4 shrink-0" />
@@ -83,70 +89,47 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b pb-1">
-            Datos Personales
+            Información Personal y de Planta
           </h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1 sm:col-span-2">
-              <Label htmlFor="nombre" className="text-xs">
-                NOMBRE(S) *
-              </Label>
-              <Input
-                id="nombre"
-                required
-                value={nombre}
-                onChange={handle_uppercase(set_nombre)}
-                placeholder="Ej. ANA MARIA"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="paterno" className="text-xs">
-                APELLIDO PATERNO *
-              </Label>
-              <Input
-                id="paterno"
-                required
-                value={paterno}
-                onChange={handle_uppercase(set_paterno)}
-                placeholder="LOPEZ"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="materno" className="text-xs">
-                APELLIDO MATERNO
-              </Label>
-              <Input
-                id="materno"
-                value={materno}
-                onChange={handle_uppercase(set_materno)}
-                placeholder="HERNANDEZ"
-              />
-            </div>
+            <PersonalIdentityFields
+              id_prefix="reg"
+              nombre={nombre}
+              set_nombre={set_nombre}
+              paterno={paterno}
+              set_paterno={set_paterno}
+              materno={materno}
+              set_materno={set_materno}
+              email={reg_email}
+              set_email={set_reg_email}
+              email_hint={
+                <p className="text-[10px] text-muted-foreground">
+                  Usa <strong>@gmodelo.com.mx</strong> o <strong>@ab-inbev.com</strong>.
+                </p>
+              }
+            />
+
+            <OperationalProfileFields
+              id_prefix="reg"
+              area={area}
+              set_area={set_area}
+              position={position}
+              set_position={set_position}
+              plant={plant}
+              set_plant={set_plant}
+              phone={phone}
+              set_phone={set_phone}
+              can_select_elaboracion={can_select_elaboracion}
+            />
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b pb-1">
-            Credenciales
+            Seguridad de Cuenta
           </h3>
-          <div className="space-y-1">
-            <Label htmlFor="regEmail" className="text-xs">
-              CORREO ELECTRÓNICO CORPORATIVO *
-            </Label>
-            <Input
-              id="regEmail"
-              type="email"
-              required
-              value={reg_email}
-              onChange={(change_event) => set_reg_email(change_event.target.value)}
-              placeholder="correo@gmodelo.com.mx o correo@ab-inbev.com"
-            />
-            <p className="text-[10px] text-muted-foreground">
-              Debe terminar en <strong>@gmodelo.com.mx</strong> o <strong>@ab-inbev.com</strong>.
-            </p>
-          </div>
-
           <div className="grid gap-3 sm:grid-cols-2">
             <PasswordVisibilityField
               id="regPassword"
@@ -174,7 +157,7 @@ export function RegisterForm({ on_switch_to_login, on_success }: RegisterFormPro
           </p>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-1">
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-[#0a1428] via-[#0f1c38] to-[#0a1428] hover:opacity-90 text-white shadow-md"

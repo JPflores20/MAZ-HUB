@@ -2,16 +2,33 @@
  * @fileoverview Main view orchestrator for `/usabilidad-htas` combining charts, debtor table, and 5W audit.
  */
 
+import { lazy, Suspense } from "react";
 import { BarChart3, ClipboardCheck, Users } from "lucide-react";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { ModalEvaluarRubrica5W } from "./modal_evaluar_rubrica_5w";
-import { TabAuditoria5WTable } from "./tab_auditoria_5w_table";
-import { TabDeudoresTable } from "./tab_deudores_table";
 import { TabGraficosUsabilidad } from "./tab_graficos_usabilidad";
 import { UsabilidadFiltrosBar } from "./usabilidad_filtros_bar";
 import { UsabilidadHeaderBanner } from "./usabilidad_header_banner";
 import { UsabilidadKpiCards } from "./usabilidad_kpi_cards";
 import { useUsabilidadView } from "./use_usabilidad_view";
+
+const LazyTabDeudoresTable = lazy(() =>
+  import("./tab_deudores_table").then((table_module) => ({
+    default: table_module.TabDeudoresTable,
+  })),
+);
+
+const LazyTabAuditoria5WTable = lazy(() =>
+  import("./tab_auditoria_5w_table").then((audit_module) => ({
+    default: audit_module.TabAuditoria5WTable,
+  })),
+);
+
+const LazyModalEvaluarRubrica5W = lazy(() =>
+  import("./modal_evaluar_rubrica_5w").then((modal_module) => ({
+    default: modal_module.ModalEvaluarRubrica5W,
+  })),
+);
 
 /** Renders the Tool Usability module with multi-criteria filters, 3 analytical tabs, and rubric modal. */
 export function UsabilidadHerramientasView() {
@@ -105,23 +122,31 @@ export function UsabilidadHerramientasView() {
           />
         </TabsContent>
         <TabsContent value="deudores">
-          <TabDeudoresTable lista_deudores={lista_deudores} />
+          <Suspense fallback={<Skeleton className="h-[360px] w-full rounded-xl" />}>
+            <LazyTabDeudoresTable lista_deudores={lista_deudores} />
+          </Suspense>
         </TabsContent>
         <TabsContent value="calidad5w">
-          <TabAuditoria5WTable
-            registros_filtrados={registros_filtrados}
-            on_abrir_modal_rubrica={abrir_modal_rubrica}
-          />
+          <Suspense fallback={<Skeleton className="h-[360px] w-full rounded-xl" />}>
+            <LazyTabAuditoria5WTable
+              registros_filtrados={registros_filtrados}
+              on_abrir_modal_rubrica={abrir_modal_rubrica}
+            />
+          </Suspense>
         </TabsContent>
       </Tabs>
 
-      <ModalEvaluarRubrica5W
-        registro_en_evaluacion={registro_en_evaluacion}
-        borrador_rubrica={borrador_rubrica}
-        on_cambiar_borrador={set_borrador_rubrica}
-        on_cerrar_modal={() => set_registro_en_evaluacion(null)}
-        on_guardar_rubrica={guardar_evaluacion_rubrica}
-      />
+      {registro_en_evaluacion && (
+        <Suspense fallback={null}>
+          <LazyModalEvaluarRubrica5W
+            registro_en_evaluacion={registro_en_evaluacion}
+            borrador_rubrica={borrador_rubrica}
+            on_cambiar_borrador={set_borrador_rubrica}
+            on_cerrar_modal={() => set_registro_en_evaluacion(null)}
+            on_guardar_rubrica={guardar_evaluacion_rubrica}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

@@ -3,7 +3,11 @@
  * Pruebas adversariales Zero Trust sobre autenticación, verificación y roles RBAC en Cloud Storage Rules.
  */
 import { describe, it, beforeAll, afterAll, beforeEach } from "vitest";
-import { assertFails, assertSucceeds, type RulesTestEnvironment } from "@firebase/rules-unit-testing";
+import {
+  assertFails,
+  assertSucceeds,
+  type RulesTestEnvironment,
+} from "@firebase/rules-unit-testing";
 import {
   initialize_security_test_environment,
   put_storage_bytes,
@@ -113,5 +117,67 @@ describe("Storage Rules — Autenticación corporativa y control por roles", () 
       ),
     );
     await assertFails(storage_viewer.ref(RUTA_EVIDENCIA_EXISTENTE).delete());
+  });
+
+  it("permite lectura únicamente a becarios temporales vigentes con Gmail y bloquea los expirados", async () => {
+    await entorno_pruebas.withSecurityRulesDisabled(async (contexto_sin_reglas) => {
+      const db_raw = contexto_sin_reglas.firestore();
+      await db_raw
+        .collection("users")
+        .doc("intern-temp-ok")
+        .set({
+          uid: "intern-temp-ok",
+          name: "BECARIO VIGENTE",
+          email: "becario.vigente@gmail.com",
+          role: "intern",
+          area: "ENVASE",
+          approved: true,
+          verifiedByAdmin: true,
+          emailVerified: true,
+          temporaryAccount: true,
+          activeDays: 30,
+          expiresAtMs: Date.now() + 86_400_000,
+        });
+      await db_raw
+        .collection("users")
+        .doc("intern-temp-exp")
+        .set({
+          uid: "intern-temp-exp",
+          name: "BECARIO EXPIRADO",
+          email: "becario.expirado@gmail.com",
+          role: "intern",
+          area: "ENVASE",
+          approved: true,
+          verifiedByAdmin: true,
+          emailVerified: true,
+          temporaryAccount: true,
+          activeDays: 1,
+          expiresAtMs: Date.now() - 60_000,
+        });
+    });
+
+    const storage_temp_ok = entorno_pruebas
+      .authenticatedContext("intern-temp-ok", {
+        email: "becario.vigente@gmail.com",
+        email_verified: true,
+      })
+      .storage();
+    const storage_temp_exp = entorno_pruebas
+      .authenticatedContext("intern-temp-exp", {
+        email: "becario.expirado@gmail.com",
+        email_verified: true,
+      })
+      .storage();
+
+    await assertSucceeds(storage_temp_ok.ref(RUTA_EVIDENCIA_EXISTENTE).getDownloadURL());
+    await assertFails(
+      put_storage_bytes(
+        storage_temp_ok,
+        "uploads/pdca_images/intern-temp-ok/x.png",
+        BYTES_PNG_MINIMO,
+        "image/png",
+      ),
+    );
+    await assertFails(storage_temp_exp.ref(RUTA_EVIDENCIA_EXISTENTE).getDownloadURL());
   });
 });

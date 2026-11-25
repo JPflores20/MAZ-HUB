@@ -68,19 +68,29 @@ export const ResumenParetoCard: React.FC<PropiedadesTarjetaParetoResumen> = ({
       </CardHeader>
       <CardContent className="px-3 pt-3 pb-2">
         {datos_pareto.length > 0 && mounted ? (
-          <div className="h-[200px] w-full">
+          <div className="h-[230px] w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-              <BarChart data={datos_pareto} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
+              <BarChart data={datos_pareto} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="area" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} />
+                <XAxis
+                  dataKey="area"
+                  interval={datos_pareto.length > 8 ? "preserveStartEnd" : 0}
+                  angle={datos_pareto.length > 4 ? -35 : 0}
+                  textAnchor={datos_pareto.length > 4 ? "end" : "middle"}
+                  height={datos_pareto.length > 4 ? 62 : 28}
+                  tick={{ fontSize: 9 }}
+                  tickFormatter={(etiqueta: string) =>
+                    etiqueta.length > 14 ? `${etiqueta.slice(0, 13)}…` : etiqueta
+                  }
+                />
+                <YAxis width={36} tick={{ fontSize: 10 }} />
                 <Tooltip />
                 <Bar dataKey="gap" fill={color_barra} radius={[3, 3, 0, 0]} name={translate("pdcaResumen.gap")} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-[200px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
+          <div className="h-[230px] flex items-center justify-center border border-dashed rounded-lg bg-secondary/10">
             <p className="text-xs text-muted-foreground text-center px-4">{etiqueta_vacia}</p>
           </div>
         )}

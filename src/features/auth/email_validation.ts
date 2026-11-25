@@ -4,7 +4,7 @@
  */
 
 import { sendEmailVerification, type User } from "firebase/auth";
-import type { AuthErrorLike, CorporateEmailValidationResult } from "./auth_types";
+import type { AuthErrorLike, CorporateEmailValidationResult, UserProfile } from "./auth_types";
 
 export const ALLOWED_CORPORATE_DOMAINS = ["ab-inbev.com", "gmodelo.com.mx"] as const;
 
@@ -12,6 +12,24 @@ export const CORPORATE_EMAIL_ERROR =
   "Solo se permiten correos corporativos con terminación @ab-inbev.com o @gmodelo.com.mx.";
 
 const BASIC_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Validates basic email syntax without restricting the domain (used for admin-provisioned interns). */
+export function validate_general_email(raw_email: string): CorporateEmailValidationResult {
+  const normalized_email = raw_email.trim().toLowerCase();
+  if (
+    !normalized_email ||
+    normalized_email.length < 6 ||
+    normalized_email.length > 254 ||
+    !BASIC_EMAIL_REGEX.test(normalized_email)
+  ) {
+    return {
+      valid: false,
+      normalized: normalized_email,
+      error: "Ingresa un correo electrónico válido.",
+    };
+  }
+  return { valid: true, normalized: normalized_email };
+}
 
 /**
  * Normalizes an email address and validates its domain against the allowed corporate whitelist.
@@ -80,6 +98,36 @@ export function get_auth_error_info(caught_error: unknown): AuthErrorLike {
     return { message: caught_error.message };
   }
   return {};
+}
+
+/** Checks whether a user profile is an admin-provisioned temporary intern account. */
+export function is_temporary_intern_account(user_profile?: Partial<UserProfile> | null): boolean {
+  return Boolean(
+    user_profile &&
+    user_profile.role === "intern" &&
+    user_profile.temporaryAccount === true &&
+    user_profile.verifiedByAdmin === true,
+  );
+}
+
+/** Checks whether a temporary intern account has reached or passed its expiration timestamp. */
+export function is_account_expired(
+  user_profile?: Partial<UserProfile> | null,
+  now_ms = Date.now(),
+): boolean {
+  if (!user_profile || user_profile.temporaryAccount !== true) {
+    return false;
+  }
+  if (typeof user_profile.expiresAtMs === "number" && Number.isFinite(user_profile.expiresAtMs)) {
+    return now_ms >= user_profile.expiresAtMs;
+  }
+  if (user_profile.expiresAt) {
+    const parsed_ms = Date.parse(user_profile.expiresAt);
+    if (Number.isFinite(parsed_ms)) {
+      return now_ms >= parsed_ms;
+    }
+  }
+  return true;
 }
 
 /**

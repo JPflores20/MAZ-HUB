@@ -11,29 +11,22 @@ import {
   SlidersHorizontal,
   User,
 } from "lucide-react";
+import type { UserPermissions, UserProfile, UserRole } from "@/features/auth/auth_context";
 import {
   get_effective_permissions,
   has_custom_permissions,
   PERMISSION_METADATA,
   ROLE_DESCRIPTIONS,
   ROLE_LABELS,
-  type UserPermissions,
-  type UserProfile,
-  type UserRole,
-} from "@/features/auth/auth_context";
+} from "@/features/auth/role_permissions";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 interface AdminUserPermissionsPopoverProps {
   user_profile: UserProfile;
+  role_locked?: boolean;
   on_role_change: (uid: string, next_role: UserRole) => Promise<void>;
   on_permission_toggle: (
     user_profile: UserProfile,
@@ -48,6 +41,7 @@ interface AdminUserPermissionsPopoverProps {
  */
 export function AdminUserPermissionsPopover({
   user_profile,
+  role_locked = false,
   on_role_change,
   on_permission_toggle,
   on_reset_permissions,
@@ -58,8 +52,11 @@ export function AdminUserPermissionsPopover({
   return (
     <div className="flex items-center gap-1.5">
       <Select
+        disabled={role_locked}
         value={user_profile.role}
-        onValueChange={(next_value) => void on_role_change(user_profile.uid, next_value as UserRole)}
+        onValueChange={(next_value) =>
+          void on_role_change(user_profile.uid, next_value as UserRole)
+        }
       >
         <SelectTrigger className="h-8 w-44 text-xs font-semibold">
           <SelectValue />

@@ -2,7 +2,7 @@
  * @fileoverview Row action controls for activation link dispatch, approval, profile edit, and confirmed deletion.
  */
 
-import { CheckCircle2, Pencil, Send, Trash2 } from "lucide-react";
+import { CheckCircle2, Loader2, Pencil, Send, Trash2 } from "lucide-react";
 import type { UserProfile } from "@/features/auth/auth_context";
 import {
   AlertDialog,
@@ -16,13 +16,18 @@ import {
   AlertDialogTrigger,
 } from "@/shared/ui/alert_dialog";
 import { Button } from "@/shared/ui/button";
+import { AdminUserExtendPopover } from "./admin_user_extend_popover";
 
 interface AdminUserRowActionsProps {
   user_profile: UserProfile;
   is_sending_link: boolean;
-  is_approval_pending: boolean;
+  is_approving: boolean;
+  can_receive_link: boolean;
+  needs_admin_verification: boolean;
+  can_extend_intern: boolean;
   on_send_verification_link: (user_profile: UserProfile) => Promise<void>;
   on_approve_user: (user_profile: UserProfile) => Promise<void>;
+  on_extend_intern_days: (user_profile: UserProfile, active_days: number) => Promise<void>;
   on_edit_user: (uid: string) => void;
   on_delete_user: (uid: string, name: string) => Promise<void>;
 }
@@ -31,9 +36,13 @@ interface AdminUserRowActionsProps {
 export function AdminUserRowActions({
   user_profile,
   is_sending_link,
-  is_approval_pending,
+  is_approving,
+  can_receive_link,
+  needs_admin_verification,
+  can_extend_intern,
   on_send_verification_link,
   on_approve_user,
+  on_extend_intern_days,
   on_edit_user,
   on_delete_user,
 }: AdminUserRowActionsProps) {
@@ -43,23 +52,39 @@ export function AdminUserRowActions({
         type="button"
         variant="ghost"
         size="icon"
-        disabled={is_sending_link}
-        title={`Enviar enlace a ${user_profile.email} para completar registro y verificación`}
+        disabled={is_sending_link || !can_receive_link}
+        title={
+          can_receive_link
+            ? `Enviar enlace opcional al correo ${user_profile.email}`
+            : "Dominio externo bloqueado: solo se envían enlaces a correos @ab-inbev.com, @gmodelo.com.mx o becarios temporales"
+        }
         onClick={() => void on_send_verification_link(user_profile)}
         className="h-8 w-8 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
       >
         <Send className="size-4" />
       </Button>
-      {is_approval_pending && (
+      {can_extend_intern && (
+        <AdminUserExtendPopover
+          user_profile={user_profile}
+          on_extend_days={on_extend_intern_days}
+        />
+      )}
+      {needs_admin_verification && (
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          title={`Aprobar cuenta de ${user_profile.name}`}
+          disabled={is_approving}
+          aria-label={`Aprobar y verificar a ${user_profile.name} sin correo`}
+          title={`Aprobar y marcar correo verificado para ${user_profile.name} sin enviar correo`}
           onClick={() => void on_approve_user(user_profile)}
-          className="h-8 w-8 text-amber-600 hover:text-emerald-600 dark:text-amber-400 dark:hover:text-emerald-400 transition-colors"
+          className="h-8 w-8 text-emerald-600 hover:bg-emerald-500/15 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
         >
-          <CheckCircle2 className="size-4" />
+          {is_approving ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <CheckCircle2 className="size-4" />
+          )}
         </Button>
       )}
       <Button

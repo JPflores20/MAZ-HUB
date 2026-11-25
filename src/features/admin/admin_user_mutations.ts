@@ -1,18 +1,23 @@
 /**
- * @fileoverview Cloud Function / backend mutation callers for admin user management with structured toasts.
+ * @fileoverview Cloud Function role, permission, and deletion mutation callers for admin user management.
  */
 
 import { toast } from "sonner";
+import type { UserPermissions, UserProfile, UserRole } from "@/features/auth/auth_context";
+import { get_auth_error_info } from "@/features/auth/email_validation";
 import {
   get_effective_permissions,
   ROLE_DEFAULT_PERMISSIONS,
   ROLE_LABELS,
-  type UserPermissions,
-  type UserProfile,
-  type UserRole,
-} from "@/features/auth/auth_context";
-import { get_auth_error_info } from "@/features/auth/email_validation";
+} from "@/features/auth/role_permissions";
 import { user_service } from "@/features/auth/user_service";
+
+export {
+  execute_approve_user,
+  execute_bulk_approve_users,
+  execute_extend_intern_days,
+  execute_send_verification_link,
+} from "./admin_approval_mutations";
 
 /** Updates a user's system role on the server and resets permissions to role defaults. */
 export async function execute_role_change(

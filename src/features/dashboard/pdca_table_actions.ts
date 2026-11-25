@@ -3,7 +3,6 @@
  */
 
 import { toast } from "sonner";
-import * as xlsx from "xlsx";
 import { sanitize_rows_for_spreadsheet } from "@/core/security";
 import type { Pdca } from "@/domain/pdca";
 import type { DirectoryUser } from "@/features/auth/auth_context";
@@ -65,8 +64,9 @@ export function build_assignee_handlers(
   };
 }
 
-/** Exports the filtered PDCA rows into a formula-injection-sanitized Excel workbook. */
-export function export_pdcas_to_excel(rows: Pdca[]): void {
+/** Exports the filtered PDCA rows into a formula-injection-sanitized Excel workbook on demand. */
+export async function export_pdcas_to_excel(rows: Pdca[]): Promise<void> {
+  const xlsx = await import("xlsx");
   const sanitized_rows = sanitize_rows_for_spreadsheet(
     rows.map((pdca_entry) => ({
       ID: pdca_entry.id,

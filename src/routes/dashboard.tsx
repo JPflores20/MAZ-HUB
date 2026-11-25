@@ -2,8 +2,7 @@
  * @fileoverview Route adapter for `/dashboard` delegating UI rendering to ExecutiveDashboardView.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import { ExecutiveDashboardView } from "@/features/dashboard";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -20,5 +19,8 @@ export const Route = createFileRoute("/dashboard")({
       },
     ],
   }),
-  component: ExecutiveDashboardView,
+  component: lazyRouteComponent(
+    () => import("@/features/dashboard/executive_dashboard_view"),
+    "ExecutiveDashboardView",
+  ),
 });

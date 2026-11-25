@@ -4,8 +4,14 @@
 
 import { collection, onSnapshot, type Unsubscribe } from "firebase/firestore";
 import { db } from "@/core/config/firebase";
-import type { DirectoryUserProjection, UserPermissions, UserProfile } from "./auth_types";
-import { normalize_user_role } from "./role_permissions";
+import type {
+  DirectoryUser,
+  DirectoryUserProjection,
+  UserPermissions,
+  UserProfile,
+} from "./auth_types";
+import { normalize_user_role } from "./role_normalization";
+import { subscribe_to_all_users } from "./user_admin_service";
 
 const USER_DIRECTORY_COLLECTION = "user_directory";
 
@@ -36,6 +42,14 @@ export function map_user_snapshot(
       typeof raw_fields["verifiedByAdmin"] === "boolean"
         ? raw_fields["verifiedByAdmin"]
         : undefined,
+    temporaryAccount:
+      typeof raw_fields["temporaryAccount"] === "boolean"
+        ? raw_fields["temporaryAccount"]
+        : undefined,
+    activeDays: typeof raw_fields["activeDays"] === "number" ? raw_fields["activeDays"] : undefined,
+    expiresAt: (raw_fields["expiresAt"] as string) || undefined,
+    expiresAtMs:
+      typeof raw_fields["expiresAtMs"] === "number" ? raw_fields["expiresAtMs"] : undefined,
     lastVerificationSentAt: (raw_fields["lastVerificationSentAt"] as string) || undefined,
     createdAt: raw_fields["createdAt"] as string,
     updatedAt: raw_fields["updatedAt"] as string,
@@ -72,5 +86,72 @@ export function subscribe_to_user_directory(
       on_directory(directory_list);
     },
     (snapshot_error) => on_error(snapshot_error),
+  );
+}
+
+/** Maps either a private `/users` profile or public `/user_directory` record into `DirectoryUser`. */
+export function map_directory_entry(
+  source_user: UserProfile | DirectoryUserProjection,
+): DirectoryUser {
+  return {
+    uid: source_user.uid,
+    name: source_user.name,
+    email: source_user.email,
+    area: source_user.area,
+    position: source_user.position,
+    plant: source_user.plant,
+    avatarUrl: source_user.avatarUrl,
+    role: source_user.role,
+    approved: source_user.approved,
+    ...("permissions" in source_user && source_user.permissions
+      ? { permissions: source_user.permissions }
+      : {}),
+    ...("emailVerified" in source_user && typeof source_user.emailVerified === "boolean"
+      ? { emailVerified: source_user.emailVerified }
+      : {}),
+    ...("verifiedByAdmin" in source_user && typeof source_user.verifiedByAdmin === "boolean"
+      ? { verifiedByAdmin: source_user.verifiedByAdmin }
+      : {}),
+    ...("temporaryAccount" in source_user && typeof source_user.temporaryAccount === "boolean"
+      ? { temporaryAccount: source_user.temporaryAccount }
+      : {}),
+    ...("activeDays" in source_user && typeof source_user.activeDays === "number"
+      ? { activeDays: source_user.activeDays }
+      : {}),
+    ...("expiresAt" in source_user && source_user.expiresAt
+      ? { expiresAt: source_user.expiresAt }
+      : {}),
+    ...("expiresAtMs" in source_user && typeof source_user.expiresAtMs === "number"
+      ? { expiresAtMs: source_user.expiresAtMs }
+      : {}),
+    ...("lastVerificationSentAt" in source_user && source_user.lastVerificationSentAt
+      ? { lastVerificationSentAt: source_user.lastVerificationSentAt }
+      : {}),
+    ...("createdAt" in source_user && source_user.createdAt
+      ? { createdAt: source_user.createdAt }
+      : {}),
+  };
+}
+
+/** Attaches either full `/users` stream (admins) or `/user_directory` stream (standard users). */
+export function subscribe_to_role_directory(
+  user_role: string,
+  on_entries: (entries: DirectoryUser[]) => void,
+): Unsubscribe {
+  if (user_role === "admin") {
+    return subscribe_to_all_users(
+      (admin_users) => on_entries(admin_users.map(map_directory_entry)),
+      (directory_error) => {
+        console.error("Error fetching users snapshot:", directory_error);
+        on_entries([]);
+      },
+    );
+  }
+  return subscribe_to_user_directory(
+    (directory_users) => on_entries(directory_users.map(map_directory_entry)),
+    (directory_error) => {
+      console.error("Error fetching user directory snapshot:", directory_error);
+      on_entries([]);
+    },
   );
 }

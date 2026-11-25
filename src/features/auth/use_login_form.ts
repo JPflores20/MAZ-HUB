@@ -33,7 +33,9 @@ function classify_login_error(caught_error: unknown): {
     message &&
     (message.toLowerCase().includes("verifica tu correo") ||
       message.toLowerCase().includes("pendiente de aprobación") ||
-      message.toLowerCase().includes("correos corporativos"))
+      message.toLowerCase().includes("correos corporativos") ||
+      message.toLowerCase().includes("ha expirado") ||
+      message.toLowerCase().includes("acceso temporal"))
   ) {
     resolved_message = message;
   }

@@ -2,17 +2,39 @@
  * @fileoverview Main view orchestrator for `/pre-incidentes-proceso` managing severity matrix and QIR tabs.
  */
 
+import { lazy, Suspense } from "react";
 import { Calculator, FileWarning, SlidersHorizontal } from "lucide-react";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { ModalEditarSeveridad } from "./modal_editar_severidad";
-import { ModalNuevoPrecursor } from "./modal_nuevo_precursor";
 import { PreIncidentesFiltrosBar } from "./pre_incidentes_filtros_bar";
 import { PreIncidentesHeaderBanner } from "./pre_incidentes_header_banner";
 import { PreIncidentesKpiCards } from "./pre_incidentes_kpi_cards";
-import { TabAnalisisVariablesCharts } from "./tab_analisis_variables_charts";
 import { TabMatrizSeveridadTable } from "./tab_matriz_severidad_table";
-import { TabReportesQirCards } from "./tab_reportes_qir_cards";
 import { usePreIncidentesView } from "./use_pre_incidentes_view";
+
+const LazyTabAnalisisVariablesCharts = lazy(() =>
+  import("./tab_analisis_variables_charts").then((charts_module) => ({
+    default: charts_module.TabAnalisisVariablesCharts,
+  })),
+);
+
+const LazyTabReportesQirCards = lazy(() =>
+  import("./tab_reportes_qir_cards").then((qir_module) => ({
+    default: qir_module.TabReportesQirCards,
+  })),
+);
+
+const LazyModalEditarSeveridad = lazy(() =>
+  import("./modal_editar_severidad").then((modal_module) => ({
+    default: modal_module.ModalEditarSeveridad,
+  })),
+);
+
+const LazyModalNuevoPrecursor = lazy(() =>
+  import("./modal_nuevo_precursor").then((modal_module) => ({
+    default: modal_module.ModalNuevoPrecursor,
+  })),
+);
 
 /** Renders the Process Precursors & Incidents Matrix page with 3 analytical tabs and modals. */
 export function PreIncidentesProcesoView() {
@@ -93,34 +115,46 @@ export function PreIncidentesProcesoView() {
           />
         </TabsContent>
         <TabsContent value="analisis">
-          <TabAnalisisVariablesCharts
-            datos_top_variables_afectadas={datos_top_variables_afectadas}
-            datos_activacion_criterios={datos_activacion_criterios}
-          />
+          <Suspense fallback={<Skeleton className="h-[360px] w-full rounded-xl" />}>
+            <LazyTabAnalisisVariablesCharts
+              datos_top_variables_afectadas={datos_top_variables_afectadas}
+              datos_activacion_criterios={datos_activacion_criterios}
+            />
+          </Suspense>
         </TabsContent>
         <TabsContent value="qir">
-          <TabReportesQirCards reportes_incidentes_qir={reportes_incidentes_qir} />
+          <Suspense fallback={<Skeleton className="h-[360px] w-full rounded-xl" />}>
+            <LazyTabReportesQirCards reportes_incidentes_qir={reportes_incidentes_qir} />
+          </Suspense>
         </TabsContent>
       </Tabs>
 
-      <ModalEditarSeveridad
-        registro_en_edicion={registro_en_edicion}
-        borrador_severidad={borrador_severidad}
-        on_cambiar_severidad={set_borrador_severidad}
-        borrador_sdca={borrador_sdca}
-        on_cambiar_sdca={set_borrador_sdca}
-        borrador_estatus_qir={borrador_estatus_qir}
-        on_cambiar_estatus_qir={set_borrador_estatus_qir}
-        on_cerrar_modal={() => set_registro_en_edicion(null)}
-        on_guardar_cambios={guardar_edicion_severidad}
-      />
-      <ModalNuevoPrecursor
-        esta_abierto={modal_nuevo_abierto}
-        on_cambiar_abierto={set_modal_nuevo_abierto}
-        datos_formulario={datos_formulario_nuevo}
-        on_cambiar_formulario={set_datos_formulario_nuevo}
-        on_enviar_formulario={crear_nuevo_registro}
-      />
+      {registro_en_edicion && (
+        <Suspense fallback={null}>
+          <LazyModalEditarSeveridad
+            registro_en_edicion={registro_en_edicion}
+            borrador_severidad={borrador_severidad}
+            on_cambiar_severidad={set_borrador_severidad}
+            borrador_sdca={borrador_sdca}
+            on_cambiar_sdca={set_borrador_sdca}
+            borrador_estatus_qir={borrador_estatus_qir}
+            on_cambiar_estatus_qir={set_borrador_estatus_qir}
+            on_cerrar_modal={() => set_registro_en_edicion(null)}
+            on_guardar_cambios={guardar_edicion_severidad}
+          />
+        </Suspense>
+      )}
+      {modal_nuevo_abierto && (
+        <Suspense fallback={null}>
+          <LazyModalNuevoPrecursor
+            esta_abierto={modal_nuevo_abierto}
+            on_cambiar_abierto={set_modal_nuevo_abierto}
+            datos_formulario={datos_formulario_nuevo}
+            on_cambiar_formulario={set_datos_formulario_nuevo}
+            on_enviar_formulario={crear_nuevo_registro}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

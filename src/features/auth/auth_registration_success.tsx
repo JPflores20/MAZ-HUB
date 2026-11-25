@@ -1,5 +1,5 @@
 /**
- * @fileoverview Post-registration instructions screen prompting corporate email verification and admin approval.
+ * @fileoverview Post-registration instructions screen prompting corporate email verification for immediate sign-in.
  */
 
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
@@ -52,8 +52,8 @@ export function AuthRegistrationSuccess({
             (revisa también <strong>Spam o Correo no deseado</strong>).
           </p>
           <p>
-            2) Una vez verificado tu correo, un administrador deberá aprobar tu cuenta antes de
-            ingresar. Si necesitas reenviar el enlace, usa la opción en{" "}
+            2) En cuanto verifiques tu correo, podrás <strong>ingresar inmediatamente</strong> sin
+            esperar aprobación. Si necesitas reenviar el enlace, usa la opción en{" "}
             <strong>Iniciar Sesión</strong>.
           </p>
         </div>

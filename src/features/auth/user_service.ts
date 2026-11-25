@@ -6,10 +6,12 @@ import type { UserPermissions } from "./auth_types";
 import {
   admin_create_user,
   admin_delete_user,
+  admin_sync_auth_users,
   admin_update_user_access,
   approve_access_request_callable,
   reject_access_request_callable,
   subscribe_to_all_users,
+  sync_verified_profile,
   update_user_role_via_admin,
 } from "./user_admin_service";
 import { subscribe_to_user_directory } from "./user_directory_service";
@@ -23,7 +25,6 @@ import {
 } from "./user_profile_service";
 
 export type * from "./auth_types";
-export * from "./role_permissions";
 
 export const user_service = {
   get_user: get_user_profile,
@@ -51,6 +52,8 @@ export const user_service = {
     await mark_user_email_verified(target_uid);
   },
   record_verification_sent: record_verification_sent_timestamp,
+  sync_verified_profile,
+  admin_sync_auth_users,
   delete_user: admin_delete_user,
   approve_access_request: approve_access_request_callable,
   reject_access_request: reject_access_request_callable,

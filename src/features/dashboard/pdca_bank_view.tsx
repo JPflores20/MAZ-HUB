@@ -5,7 +5,6 @@
 import { Suspense, lazy } from "react";
 import { Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AccessRequestDialog } from "@/shared/components/access_request";
 import { Button } from "@/shared/ui/button";
 import { ErrorBoundary } from "@/shared/ui/error_boundary";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -13,6 +12,12 @@ import { DashboardFilters } from "./dashboard_filters";
 import { PdcaDeleteAlertDialog } from "./pdca_delete_alert_dialog";
 import { ProjectTable } from "./project_table";
 import { usePdcaBank } from "./use_pdca_bank";
+
+const LazyAccessRequestDialog = lazy(() =>
+  import("@/shared/components/access_request/access_request_dialog").then((dialog_module) => ({
+    default: dialog_module.AccessRequestDialog,
+  })),
+);
 
 const LazyPdcaDialog = lazy(() =>
   import("@/features/pdca/dialog/pdca_dialog_wrapper").then((pdca_module) => ({
@@ -161,11 +166,15 @@ export function PdcaBankView() {
         </>
       )}
 
-      <AccessRequestDialog
-        open={!!access_request_target}
-        onOpenChange={(is_open) => !is_open && set_access_request_target(null)}
-        target={access_request_target}
-      />
+      {access_request_target && (
+        <Suspense fallback={null}>
+          <LazyAccessRequestDialog
+            open={true}
+            onOpenChange={(is_open) => !is_open && set_access_request_target(null)}
+            target={access_request_target}
+          />
+        </Suspense>
+      )}
 
       <PdcaDeleteAlertDialog
         open={!!delete_id}

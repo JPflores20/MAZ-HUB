@@ -8,8 +8,6 @@ import { DEFAULT_RDA } from "@/domain/models/rda";
 import { useAuth } from "@/features/auth/auth_context";
 import { usePdcas } from "@/shared/context/pdca_context";
 import { useRdas } from "@/shared/context/rda_context";
-import { update_pdca_deadline } from "@/shared/services/pdca/pdca_firestore_mutations";
-import { update_rda } from "@/shared/services/rda/rda_firestore_mutations";
 import {
   compute_user_workload_stats,
   format_pdca_deadline_value,
@@ -109,6 +107,9 @@ export function useLayoutState() {
     is_no_limit = false,
   ) => {
     const formatted_deadline = format_pdca_deadline_value(selected_date, is_no_limit);
+    const { update_pdca_deadline } = await import(
+      "@/shared/services/pdca/pdca_firestore_mutations"
+    );
     await update_pdca_deadline(pdca_id, formatted_deadline || null);
     const existing_pdca = allPdcas.find((pdca_entry) => pdca_entry.id === pdca_id);
     if (existing_pdca) {
@@ -127,6 +128,7 @@ export function useLayoutState() {
       return;
     }
     const serialized_deadline = format_rda_deadline_value(selected_date, is_no_limit);
+    const { update_rda } = await import("@/shared/services/rda/rda_firestore_mutations");
     const saved_rda = await update_rda({
       ...existing_rda,
       portada: {
